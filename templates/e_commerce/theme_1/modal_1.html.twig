@@ -1,0 +1,480 @@
+{% block modal %}
+<!-- Modal1 -->
+<div class="wrap-modal1 js-modal1 p-t-60 p-b-20">
+  <div class="overlay-modal1 js-hide-modal1"></div>
+
+  <div class="container">
+    <div class="bg0 p-t-60 p-b-30 p-lr-15-lg how-pos3-parent">
+      <button class="how-pos3 hov3 trans-04 js-hide-modal1">
+        <img src="{{ asset('theme_1/images/icons/icon-close.png') }}" alt="CLOSE" />
+      </button>
+
+      <div class="row">
+        <!-- Galería -->
+        <div class="col-md-6 col-lg-7 p-b-30">
+          <div class="p-l-25 p-r-30 p-lr-0-lg">
+            <div class="wrap-slick3 flex-sb flex-w position-relative">
+              <div class="wrap-slick3-dots text-center mt-2"></div>
+              <div id="gallery-container" class="slick3 gallery-lb"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detalles del producto -->
+        <div class="col-md-6 col-lg-5 p-b-30">
+          <div class="p-r-50 p-t-5 p-lr-0-lg">
+            <h4 class="mtext-105 cl2 js-name-detail p-b-14" id="modal-product-name">...</h4>
+            <span class="mtext-106 cl2" id="modal-product-price"></span>
+            <div id="modal-product-stock" class="stext-109 cl6 p-t-5" style="display:none;"></div>
+            <div id="modal-product-description" class="stext-102 cl3 p-t-23"></div>
+
+            <div id="modal-product-color-picker"></div>
+
+            <div class="p-t-33">
+              <div class="flex-w flex-m flex-r-m p-b-10">
+                <div class="wrap-num-product flex-w m-r-10 m-tb-10">
+                  <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
+                    <i class="fs-16 zmdi zmdi-minus"></i>
+                  </div>
+                  <input class="mtext-104 cl3 txt-center num-product" type="number" name="num-product" value="1" />
+                  <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
+                    <i class="fs-16 zmdi zmdi-plus"></i>
+                  </div>
+                </div>
+                <button class="flex-c-m icon-btn-detail bg1 cl0 bor1 hov-btn1 trans-04 m-r-10 m-tb-10 js-icon-tooltip js-addcart-detail"
+                        title="{{ 'add_to_cart' | trans({}, 'store') | default('Agregar al carrito') }}">
+                  <i class="zmdi zmdi-shopping-cart fs-18"></i>
+                </button>
+                <a href="#" class="flex-c-m icon-btn-detail bor1 hov-btn3 trans-04 m-r-10 m-tb-10 js-icon-tooltip btn-addwish-detail js-addwish-detail"
+                   title="{{ 'add_to_wishlist' | trans({}, 'store') | default('Agregar a favoritos') }}"
+                   data-title-off="{{ 'add_to_wishlist' | trans({}, 'store') | default('Agregar a favoritos') }}"
+                   data-title-on="{{ 'remove_from_wishlist' | trans({}, 'store') | default('Quitar de favoritos') }}">
+                  <i class="zmdi zmdi-favorite-outline icon-wish-off fs-18"></i>
+                  <i class="zmdi zmdi-favorite icon-wish-on fs-18"></i>
+                </a>
+                <button class="flex-c-m stext-101 cl0 size-101 bg3 bor14 hov-btn3 p-lr-15 trans-04 m-tb-10 js-buynow-detail"
+                        data-logged-in="{{ is_granted('ROLE_USER') ? '1' : '0' }}">
+                  {{ 'buy_now' | trans({}, 'store') | default('Comprar ahora') }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+
+  .wrap-modal1 .wrap-slick3-dots {
+    display: flex !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .wrap-modal1 .wrap-slick3-dots li {
+    list-style: none;
+  }
+  .wrap-modal1 .wrap-slick3-dots img {
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .wrap-modal1 .wrap-slick3-dots img:hover {
+    border-color: #333;
+  }
+
+  .wrap-modal1 .slick-prev,
+  .wrap-modal1 .slick-next {
+    position: absolute !important;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    background: rgba(0,0,0,0.65) !important;
+    color: #fff !important;
+    border: none;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background 0.25s;
+  }
+  .wrap-modal1 .slick-prev:hover,
+  .wrap-modal1 .slick-next:hover { background: rgba(0,0,0,0.9) !important; }
+  .wrap-modal1 .slick-prev { left: 8px; }
+  .wrap-modal1 .slick-next { right: 8px; }
+
+  .wrap-modal1 .item-slick3 img { width: 100%; max-height: 400px; object-fit: contain; }
+
+  .wrap-modal1 .icon-btn-detail { width: 44px; height: 44px; min-width: 0; border-radius: 50%; flex-shrink: 0; }
+  .wrap-modal1 .btn-addwish-detail i { font-size: 18px; line-height: 1; }
+  .wrap-modal1 .btn-addwish-detail { color: #555; }
+  .wrap-modal1 .btn-addwish-detail:hover { border-color: #e04a4a; color: #e04a4a; }
+  .wrap-modal1 .btn-addwish-detail .icon-wish-on { display: none; }
+  .wrap-modal1 .btn-addwish-detail.js-addedwish-detail {
+    border-color: #e04a4a;
+    color: #e04a4a;
+    background: rgba(224, 74, 74, 0.06);
+  }
+  .wrap-modal1 .btn-addwish-detail.js-addedwish-detail .icon-wish-off { display: none; }
+  .wrap-modal1 .btn-addwish-detail.js-addedwish-detail .icon-wish-on { display: inline-block; }
+
+  .wrap-modal1 .js-icon-tooltip { position: relative; }
+  .wrap-modal1 .js-icon-tooltip::after {
+    content: attr(title);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    padding: 5px 10px;
+    border-radius: 4px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s, visibility 0.15s;
+    pointer-events: none;
+    z-index: 10;
+  }
+  .wrap-modal1 .js-icon-tooltip:hover::after {
+    opacity: 1;
+    visibility: visible;
+  }
+</style>
+
+<script>
+  var _storeLocale = '{{ app.request.locale }}';
+
+  function fetchProduct(productId) {
+    return fetch('/' + _storeLocale + '/general/product/' + productId)
+      .then(function(res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .catch(function(err) {
+        console.error('Error fetching product:', err);
+        return null;
+      });
+  }
+
+  function initGallerySlick($gallery) {
+    $gallery.slick({
+      slidesToShow: 1,
+      slidesToScroll: 1,
+      fade: true,
+      infinite: true,
+      arrows: true,
+      dots: true,
+      appendDots: $gallery.closest('.wrap-slick3').find('.wrap-slick3-dots'),
+      prevArrow: '<button type="button" class="slick-prev">&#8592;</button>',
+      nextArrow: '<button type="button" class="slick-next">&#8594;</button>',
+      customPaging: function(slider, i) {
+        var thumb = $(slider.$slides[i]).data('thumb');
+        return '<li><img src="' + thumb + '" alt="thumb"></li>';
+      }
+    });
+  }
+
+  function renderColorPicker(container, colors, galleryEl, allImages, stockEl) {
+    if (!container) return;
+    container.innerHTML = '';
+    if (!colors || colors.length === 0) return;
+
+    var picker = document.createElement('div');
+    picker.className = 'p-t-20 js-color-picker';
+    picker.setAttribute('data-required', '1');
+    container.appendChild(picker);
+
+    var distinctColors = [];
+    var seenColors = {};
+    var distinctMedidas = [];
+    var seenMedidas = {};
+    colors.forEach(function (v) {
+
+      if (v.colorId && !seenColors[v.colorId]) {
+        seenColors[v.colorId] = true;
+        distinctColors.push({ id: v.colorId, name: v.colorName, hex: v.hexCode });
+      }
+      if (v.medidaId && !seenMedidas[v.medidaId]) {
+        seenMedidas[v.medidaId] = true;
+        distinctMedidas.push({ id: v.medidaId, name: v.medidaName });
+      }
+    });
+
+    var hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.className = 'js-color-id-input';
+
+    var selectedColorId = '';
+    var selectedMedidaId = '';
+
+    var medidaEls = [];
+    var medidaNameSpanRef = null;
+
+    function isOutOfStock(v) {
+      return v.stock !== null && v.stock !== undefined && v.stock === 0;
+    }
+
+    function refreshOptions() {
+      var visibleMedidaIds = null;
+      if (selectedColorId) {
+        visibleMedidaIds = {};
+        colors.forEach(function (v) {
+          if (v.colorId === selectedColorId && v.medidaId) visibleMedidaIds[v.medidaId] = true;
+        });
+      }
+
+      medidaEls.forEach(function (entry) {
+        entry.el.style.display = (!visibleMedidaIds || visibleMedidaIds[entry.id]) ? 'inline-flex' : 'none';
+      });
+
+      if (selectedMedidaId && visibleMedidaIds && !visibleMedidaIds[selectedMedidaId]) {
+        selectedMedidaId = '';
+        medidaEls.forEach(function (entry) { entry.el.style.borderColor = '#999'; entry.el.style.fontWeight = 'normal'; });
+        if (medidaNameSpanRef) medidaNameSpanRef.textContent = '';
+      }
+    }
+
+    function resolve() {
+      var match = colors.find(function (v) {
+        var colorOk = distinctColors.length === 0 || v.colorId === selectedColorId;
+        var medidaOk = distinctMedidas.length === 0 || v.medidaId === selectedMedidaId;
+        return colorOk && medidaOk;
+      });
+
+      if (!match || isOutOfStock(match)) {
+        hiddenInput.value = '';
+        if (stockEl) stockEl.style.display = 'none';
+        return;
+      }
+
+      hiddenInput.value = match.id;
+
+      if (stockEl) {
+        if (match.stock !== null && match.stock !== undefined) {
+          stockEl.textContent = match.stock + ' disponibles';
+          stockEl.style.display = 'block';
+        } else {
+          stockEl.style.display = 'none';
+        }
+      }
+
+      if (!allImages || allImages.length === 0) return;
+
+      var matching = allImages.filter(function (img) {
+        return (img.colorIds || '').split(',').indexOf(match.id) !== -1;
+      });
+      if (matching.length === 0) matching = allImages;
+
+      var $gallery = $(galleryEl);
+      if ($gallery.hasClass('slick-initialized')) {
+        $gallery.slick('unslick');
+      }
+      galleryEl.innerHTML = '';
+      matching.forEach(function (img) {
+        var item = document.createElement('div');
+        item.className = 'item-slick3';
+        item.setAttribute('data-thumb', img.image);
+        item.setAttribute('data-color-id', img.colorIds || '');
+        item.innerHTML = '<div class="wrap-pic-w"><img src="' + img.image + '" alt=""></div>';
+        galleryEl.appendChild(item);
+      });
+      initGallerySlick($gallery);
+    }
+
+    if (distinctColors.length > 0) {
+      var colorLabel = document.createElement('div');
+      colorLabel.className = 'stext-110 cl2 p-b-10';
+      colorLabel.textContent = '{{ 'choose_color' | trans({}, 'store') | default('Color') | e('js') }}: ';
+      var nameLabel = document.createElement('span');
+      nameLabel.className = 'js-color-selected-name cl6';
+      colorLabel.appendChild(nameLabel);
+      picker.appendChild(colorLabel);
+
+      var swatchWrap = document.createElement('div');
+      swatchWrap.className = 'flex-w';
+      distinctColors.forEach(function (color) {
+        var rowsForColor = colors.filter(function (v) { return v.colorId === color.id; });
+        var allOut = rowsForColor.length > 0 && rowsForColor.every(isOutOfStock);
+
+        var swatch = document.createElement('div');
+        swatch.className = 'js-color-swatch' + (allOut ? ' is-disabled' : '');
+        swatch.setAttribute('data-color-id', color.id);
+        swatch.setAttribute('data-color-name', color.name);
+        swatch.title = color.name + (allOut ? ' ({{ 'out_of_stock' | trans({}, 'store') | default('Agotado') | e('js') }})' : '');
+
+        swatch.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;'
+          + 'width:34px;height:34px;border-radius:50%;margin:0 8px 8px 0;'
+          + 'cursor:' + (allOut ? 'not-allowed' : 'pointer') + ';border:2px solid #999;'
+          + 'background-color:' + color.hex + ';opacity:' + (allOut ? '0.35' : '1') + ';position:relative;';
+        if (allOut) {
+          swatch.innerHTML = '<i class="fa fa-close" style="color:#fff;text-shadow:0 0 2px rgba(0,0,0,.6);"></i>';
+        }
+        swatch.addEventListener('click', function () {
+          if (swatch.classList.contains('is-disabled')) return;
+          swatchWrap.querySelectorAll('.js-color-swatch').forEach(function (s) { s.style.borderColor = '#999'; });
+          swatch.style.borderColor = '#000';
+          selectedColorId = color.id;
+          nameLabel.textContent = color.name;
+          refreshOptions();
+          resolve();
+        });
+        swatchWrap.appendChild(swatch);
+      });
+      picker.appendChild(swatchWrap);
+    }
+
+    if (distinctMedidas.length > 0) {
+      var medidaLabel = document.createElement('div');
+      medidaLabel.className = 'stext-110 cl2 p-t-15 p-b-10';
+      medidaLabel.textContent = '{{ 'choose_medida' | trans({}, 'store') | default('Medida') | e('js') }}: ';
+      var medidaNameLabel = document.createElement('span');
+      medidaNameLabel.className = 'js-medida-selected-name cl6';
+      medidaLabel.appendChild(medidaNameLabel);
+      picker.appendChild(medidaLabel);
+      medidaNameSpanRef = medidaNameLabel;
+
+      var medidaWrap = document.createElement('div');
+      medidaWrap.className = 'flex-w';
+      distinctMedidas.forEach(function (medida) {
+        var rowsForMedida = colors.filter(function (v) { return v.medidaId === medida.id; });
+        var allOut = rowsForMedida.length > 0 && rowsForMedida.every(isOutOfStock);
+
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'js-medida-option' + (allOut ? ' is-disabled' : '');
+        btn.textContent = medida.name;
+        btn.disabled = allOut;
+        btn.setAttribute('data-medida-id', medida.id);
+        btn.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;'
+          + 'min-width:38px;height:34px;padding:0 10px;margin:0 8px 8px 0;'
+          + 'border:2px solid #999;background:#fff;'
+          + 'cursor:' + (allOut ? 'not-allowed' : 'pointer') + ';opacity:' + (allOut ? '0.35' : '1') + ';';
+        btn.addEventListener('click', function () {
+          if (btn.disabled) return;
+          medidaWrap.querySelectorAll('.js-medida-option').forEach(function (b) {
+            b.style.borderColor = '#999';
+            b.style.fontWeight = 'normal';
+          });
+          btn.style.borderColor = '#000';
+          btn.style.fontWeight = 'bold';
+          selectedMedidaId = medida.id;
+          medidaNameLabel.textContent = medida.name;
+          refreshOptions();
+          resolve();
+        });
+        medidaWrap.appendChild(btn);
+        medidaEls.push({ id: medida.id, el: btn });
+      });
+      picker.appendChild(medidaWrap);
+    }
+
+    picker.appendChild(hiddenInput);
+  }
+
+  function openModal(productId) {
+    var modal = document.querySelector('.wrap-modal1');
+    var nameEl = document.getElementById('modal-product-name');
+    var priceEl = document.getElementById('modal-product-price');
+    var stockEl = document.getElementById('modal-product-stock');
+    var descEl = document.getElementById('modal-product-description');
+    var galleryContainer = document.getElementById('gallery-container');
+    var colorPickerEl = document.getElementById('modal-product-color-picker');
+
+    if (colorPickerEl) colorPickerEl.innerHTML = '';
+
+    var addCartBtn = modal.querySelector('.js-addcart-detail');
+    if (addCartBtn) {
+      addCartBtn.setAttribute('data-product-id', productId);
+    }
+
+    var buyNowBtn = modal.querySelector('.js-buynow-detail');
+    if (buyNowBtn) {
+      buyNowBtn.setAttribute('data-product-id', productId);
+    }
+
+    var addWishBtn = modal.querySelector('.js-addwish-detail');
+    if (addWishBtn) {
+      addWishBtn.setAttribute('data-product-id', productId);
+      addWishBtn.classList.remove('js-addedwish-detail');
+      addWishBtn.setAttribute('title', addWishBtn.getAttribute('data-title-off'));
+    }
+
+    fetchProduct(productId).then(function(data) {
+      if (!data) return;
+
+      if (addWishBtn) {
+        addWishBtn.classList.toggle('js-addedwish-detail', !!data.isFavorite);
+
+        addWishBtn.setAttribute('title', data.isFavorite
+          ? addWishBtn.getAttribute('data-title-on')
+          : addWishBtn.getAttribute('data-title-off'));
+      }
+
+      nameEl.textContent = data.name || '';
+      descEl.innerHTML = data.description || '';
+
+      if (data.publicPrice) {
+        priceEl.textContent = window.formatCurrencyAmount(data.publicPrice);
+        priceEl.style.display = 'inline';
+      } else {
+        priceEl.style.display = 'none';
+      }
+
+      if (data.stock !== null && data.stock !== undefined) {
+        stockEl.textContent = data.stock + ' disponibles';
+        stockEl.style.display = 'block';
+      } else {
+        stockEl.style.display = 'none';
+      }
+
+      var $gallery = $(galleryContainer);
+      if ($gallery.hasClass('slick-initialized')) {
+        $gallery.slick('unslick');
+      }
+      galleryContainer.innerHTML = '';
+
+      if (data.images && data.images.length > 0) {
+        data.images.forEach(function(img) {
+          var item = document.createElement('div');
+          item.className = 'item-slick3';
+          item.setAttribute('data-thumb', img.image);
+
+          item.setAttribute('data-color-id', img.colorIds || '');
+          item.innerHTML = '<div class="wrap-pic-w"><img src="' + img.image + '" alt="' + (data.name || '') + '"></div>';
+          galleryContainer.appendChild(item);
+        });
+      } else {
+        galleryContainer.innerHTML = '<div class="item-slick3"><div class="wrap-pic-w">'
+          + '<img src="{{ asset('theme_1/images/product-placeholder.jpg') }}" alt=""></div></div>';
+      }
+
+      renderColorPicker(colorPickerEl, data.colors, galleryContainer, data.images || [], stockEl);
+
+      initGallerySlick($gallery);
+
+      $(modal).addClass('show-modal1');
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var overlay = document.querySelector('.overlay-modal1');
+    if (overlay) {
+      overlay.addEventListener('click', function() {
+        $('.wrap-modal1').removeClass('show-modal1');
+      });
+    }
+  });
+</script>
+{% endblock %}

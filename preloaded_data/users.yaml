@@ -1,0 +1,28 @@
+0:
+    email: levinson.bonilla22@gmail.com
+    roles: [ROLE_SUPER_ADMIN]
+    password: 1010194708Aa*
+    name: Levinson
+    lastName: Bonilla
+    dateOfBirth: "1990-12-11"
+    phone: 3173689055
+    address: Calle 47B sur No. 27-71
+    profilePicture: https://levinsonbonilla.github.io/thorha-assets/dashboard/production/images/img.jpg
+    neighborhood: Samore
+    prefix: 57
+    points: 0
+
+1:
+    email: admin.test@proyecto-grado.test
+    roles: [ROLE_ADMIN]
+    password: AdminTest1*
+    name: Admin
+    lastName: Test
+
+2:
+    email: customer.test@proyecto-grado.test
+    roles: [ROLE_USER]
+    password: CustomerTest1*
+    name: Cliente
+    lastName: Prueba
+

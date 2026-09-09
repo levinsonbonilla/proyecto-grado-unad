@@ -1,0 +1,317 @@
+{% block header %}
+
+	{% set currentRoute = app.request.attributes.get('_route') %}
+	<!-- Header -->
+	<header class="{{(isHome | default(false)) ? '' : 'header-v4' }}">
+		<!-- Header desktop -->
+		<div class="container-menu-desktop">
+			<div class="wrap-menu-desktop">
+				<nav class="limiter-menu-desktop container">
+
+					<!-- Logo desktop -->
+					<a href="{{ path('store', {_locale: app.request.locale}) }}" class="logo">
+						<img src="{{ asset('theme_1/images/icons/logo-01.png') }}" alt="Logo">
+					</a>
+
+					<!-- Menu desktop -->
+					<div class="menu-desktop">
+						<ul class="main-menu">
+							<li class="{{ currentRoute == 'store' ? 'active-menu' : '' }}">
+								<a href="{{ path('store', {_locale: app.request.locale}) }}">
+									{{ 'home' | trans({}, 'store') | default('Inicio') }}
+								</a>
+							</li>
+							<li class="{{ currentRoute in ['store_shop', 'store_category', 'store_product', 'store_search'] ? 'active-menu' : '' }}">
+								<a href="{{ path('store_shop', {_locale: app.request.locale}) }}">
+									{{ 'shop' | trans({}, 'store') | default('Tienda') }}
+								</a>
+							</li>
+							<li class="{{ currentRoute == 'store_about' ? 'active-menu' : '' }}">
+								<a href="{{ path('store_about', {_locale: app.request.locale}) }}">
+									{{ 'about' | trans({}, 'store') | default('Nosotros') }}
+								</a>
+							</li>
+							<li class="{{ currentRoute == 'store_contact' ? 'active-menu' : '' }}">
+								<a href="{{ path('store_contact', {_locale: app.request.locale}) }}">
+									{{ 'contact' | trans({}, 'store') | default('Contacto') }}
+								</a>
+							</li>
+						</ul>
+					</div>
+
+					<!-- Icon header -->
+					<div class="wrap-icon-header flex-w flex-r-m">
+						{% include 'e_commerce/theme_1/partials/_language_switcher.html.twig' %}
+
+						<div class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 js-show-modal-search"
+						     aria-label="{{ 'search' | trans({}, 'store') | default('Buscar') }}" role="button" tabindex="0">
+							<i class="zmdi zmdi-search" aria-hidden="true"></i>
+						</div>
+
+						<a href="{{ path('store_cart', {_locale: app.request.locale}) }}"
+						   class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti"
+						   id="header-cart-icon" data-notify="0"
+						   aria-label="{{ 'cart' | trans({}, 'store') | default('Carrito') }}">
+							<i class="zmdi zmdi-shopping-cart" aria-hidden="true"></i>
+						</a>
+
+						<a href="{{ path('store_favorites', {_locale: app.request.locale}) }}"
+						   class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11"
+						   aria-label="{{ 'favorites' | trans({}, 'store') | default('Favoritos') }}">
+							<i class="zmdi zmdi-favorite-outline" aria-hidden="true"></i>
+						</a>
+
+						{% if is_granted('ROLE_USER') %}
+						<a href="{{ path('store_orders', {_locale: app.request.locale}) }}"
+						   class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11"
+						   aria-label="{{ 'my_orders' | trans({}, 'store') | default('Mis pedidos') }}"
+						   title="{{ 'my_orders' | trans({}, 'store') | default('Mis pedidos') }}">
+							<i class="zmdi zmdi-shopping-basket" aria-hidden="true"></i>
+						</a>
+						<a href="{{ path('store_profile', {_locale: app.request.locale}) }}"
+						   class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11"
+						   aria-label="{{ app.user.name ?? ('my_account' | trans({}, 'store') | default('Mi cuenta')) }}"
+						   title="{{ app.user.name ?? ('my_account' | trans({}, 'store') | default('Mi cuenta')) }}">
+							<i class="zmdi zmdi-account" aria-hidden="true"></i>
+						</a>
+						<a href="{{ path('security_logout', {_locale: app.request.locale}) }}"
+						   class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11"
+						   aria-label="{{ 'logout' | trans({}, 'store') | default('Cerrar sesión') }}"
+						   title="{{ 'logout' | trans({}, 'store') | default('Cerrar sesión') }}">
+							<i class="zmdi zmdi-power" aria-hidden="true"></i>
+						</a>
+						{% else %}
+						<a href="{{ path('security_login', {_locale: app.request.locale}) }}"
+						   class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11"
+						   aria-label="{{ 'login' | trans({}, 'store') | default('Iniciar sesión') }}"
+						   title="{{ 'login' | trans({}, 'store') | default('Iniciar sesión') }}">
+							<i class="zmdi zmdi-sign-in" aria-hidden="true"></i>
+						</a>
+						<a href="{{ path('security_register', {_locale: app.request.locale}) }}"
+						   class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11"
+						   aria-label="{{ 'register' | trans({}, 'store') | default('Regístrate') }}"
+						   title="{{ 'register' | trans({}, 'store') | default('Regístrate') }}">
+							<i class="zmdi zmdi-account-add" aria-hidden="true"></i>
+						</a>
+						{% endif %}
+					</div>
+				</nav>
+			</div>
+		</div>
+
+		<!-- Header Mobile -->
+		<div class="wrap-header-mobile">
+			<!-- Logo mobile -->
+			<div class="logo-mobile">
+				<a href="{{ path('store', {_locale: app.request.locale}) }}">
+					<img src="{{ asset('theme_1/images/icons/logo-01.png') }}" alt="Logo">
+				</a>
+			</div>
+
+			<!-- Icon header -->
+			<div class="wrap-icon-header flex-w flex-r-m m-r-15">
+				<div class="icon-header-item cl2 hov-cl1 trans-04 p-r-11 js-show-modal-search"
+				     role="button" tabindex="0" aria-label="{{ 'search' | trans({}, 'store') | default('Buscar') }}">
+					<i class="zmdi zmdi-search" aria-hidden="true"></i>
+				</div>
+
+				<a href="{{ path('store_cart', {_locale: app.request.locale}) }}"
+				   class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-r-11 p-l-10 icon-header-noti"
+				   id="header-cart-icon-mobile" data-notify="0"
+				   aria-label="{{ 'cart' | trans({}, 'store') | default('Carrito') }}">
+					<i class="zmdi zmdi-shopping-cart" aria-hidden="true"></i>
+				</a>
+
+				<a href="{{ path('store_favorites', {_locale: app.request.locale}) }}"
+				   class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-r-11 p-l-10"
+				   aria-label="{{ 'favorites' | trans({}, 'store') | default('Favoritos') }}">
+					<i class="zmdi zmdi-favorite-outline" aria-hidden="true"></i>
+				</a>
+			</div>
+
+			<!-- Button show menu -->
+			<div class="btn-show-menu-mobile hamburger hamburger--squeeze" aria-label="Menu" role="button" tabindex="0">
+				<span class="hamburger-box">
+					<span class="hamburger-inner"></span>
+				</span>
+			</div>
+		</div>
+
+		<!-- Menu Mobile -->
+		<div class="menu-mobile">
+			<ul class="topbar-mobile">
+				<li>
+					<div class="right-top-bar flex-w h-full">
+						{% for loc, label in {es: 'ES', en: 'EN'} %}
+							{%- if app.request.locale == loc -%}
+								<span class="flex-c-m p-lr-10" style="font-weight:700;">{{ label }}</span>
+							{%- else -%}
+								<a href="{{ path('public_lang', {lang: loc}) }}" class="flex-c-m p-lr-10 trans-04">{{ label }}</a>
+							{%- endif -%}
+						{% endfor %}
+						{% if is_granted('ROLE_USER') %}
+						<a href="{{ path('store_profile', {_locale: app.request.locale}) }}" class="flex-c-m p-lr-10 trans-04">
+							{{ app.user.name ?? 'Mi cuenta' }}
+						</a>
+						<a href="{{ path('store_orders', {_locale: app.request.locale}) }}" class="flex-c-m p-lr-10 trans-04">
+							{{ 'my_orders' | trans({}, 'store') | default('Mis pedidos') }}
+						</a>
+						<a href="{{ path('security_logout', {_locale: app.request.locale}) }}" class="flex-c-m p-lr-10 trans-04">
+							{{ 'logout' | trans({}, 'store') | default('Salir') }}
+						</a>
+						{% else %}
+						<a href="{{ path('security_login', {_locale: app.request.locale}) }}" class="flex-c-m p-lr-10 trans-04">
+							{{ 'login' | trans({}, 'store') | default('Iniciar sesión') }}
+						</a>
+						{% endif %}
+					</div>
+				</li>
+			</ul>
+
+			<ul class="main-menu-m">
+				<li class="{{ currentRoute == 'store' ? 'active-menu' : '' }}">
+					<a href="{{ path('store', {_locale: app.request.locale}) }}">
+						{{ 'home' | trans({}, 'store') | default('Inicio') }}
+					</a>
+				</li>
+				<li class="{{ currentRoute in ['store_shop', 'store_category', 'store_product', 'store_search'] ? 'active-menu' : '' }}">
+					<a href="{{ path('store_shop', {_locale: app.request.locale}) }}">
+						{{ 'shop' | trans({}, 'store') | default('Tienda') }}
+					</a>
+				</li>
+				<li class="{{ currentRoute == 'store_about' ? 'active-menu' : '' }}">
+					<a href="{{ path('store_about', {_locale: app.request.locale}) }}">
+						{{ 'about' | trans({}, 'store') | default('Nosotros') }}
+					</a>
+				</li>
+				<li class="{{ currentRoute == 'store_contact' ? 'active-menu' : '' }}">
+					<a href="{{ path('store_contact', {_locale: app.request.locale}) }}">
+						{{ 'contact' | trans({}, 'store') | default('Contacto') }}
+					</a>
+				</li>
+
+				<li>
+					<a href="{{ path('store_cart', {_locale: app.request.locale}) }}">
+						{{ 'cart' | trans({}, 'store') | default('Carrito') }}
+					</a>
+				</li>
+				<li>
+					<a href="{{ path('store_favorites', {_locale: app.request.locale}) }}">
+						{{ 'favorites' | trans({}, 'store') | default('Favoritos') }}
+					</a>
+				</li>
+			</ul>
+		</div>
+
+		<!-- Modal Search con autocompletar -->
+		<div class="modal-search-header flex-c-m trans-04 js-hide-modal-search">
+			<div class="container-search-header">
+				<button class="flex-c-m btn-hide-modal-search trans-04 js-hide-modal-search"
+				        aria-label="{{ 'close' | trans({}, 'store') | default('Cerrar') }}">
+					<img src="{{ asset('theme_1/images/icons/icon-close2.png') }}" alt="">
+				</button>
+
+				<div class="wrap-search-header flex-w p-l-15" style="position:relative">
+					<button class="flex-c-m trans-04" type="button" id="search-submit-btn" aria-label="Buscar">
+						<i class="zmdi zmdi-search" aria-hidden="true"></i>
+					</button>
+					<input class="plh3" type="text" id="search-input"
+					       placeholder="{{ 'search_placeholder' | trans({}, 'store') | default('Buscar productos...') }}"
+					       autocomplete="off" aria-label="{{ 'search' | trans({}, 'store') | default('Buscar') }}">
+					<ul id="autocomplete-list" style="
+					    display:none;position:absolute;top:100%;left:0;right:0;
+					    background:#fff;border:1px solid #e0e0e0;list-style:none;
+					    margin:0;padding:0;z-index:9999;max-height:300px;overflow-y:auto">
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<script>
+		(function(){
+		    const locale = '{{ app.request.locale }}';
+
+		    document.addEventListener('click', function (e) {
+		        const el = e.target.closest('[data-track-event]');
+		        if (!el) return;
+
+		        const payload = JSON.stringify({
+		            eventName: el.dataset.trackEvent,
+		            eventTarget: el.dataset.trackTarget || null,
+		            page: window.location.pathname,
+		        });
+		        const url = '/' + locale + '/api/track/event';
+
+		        if (navigator.sendBeacon) {
+		            navigator.sendBeacon(url, new Blob([payload], { type: 'application/json' }));
+		        } else {
+		            fetch(url, { method: 'POST', body: payload, keepalive: true }).catch(() => {});
+		        }
+		    });
+
+		    window.updateCartBadge = function (count) {
+		        count = count || 0;
+		        ['header-cart-icon','header-cart-icon-mobile'].forEach(id => {
+		            const el = document.getElementById(id);
+		            if (el) el.setAttribute('data-notify', count > 0 ? count : 0);
+		        });
+		    };
+
+		    fetch('/' + locale + '/api/cart/count')
+		        .then(r => r.json())
+		        .then(data => window.updateCartBadge(data.count))
+		        .catch(() => {});
+
+		    const searchInput = document.getElementById('search-input');
+		    const acList      = document.getElementById('autocomplete-list');
+		    const submitBtn   = document.getElementById('search-submit-btn');
+		    let acTimeout;
+
+		    if (searchInput) {
+		        searchInput.addEventListener('input', function () {
+		            clearTimeout(acTimeout);
+		            const q = this.value.trim();
+		            if (q.length < 2) { acList.style.display = 'none'; return; }
+		            acTimeout = setTimeout(() => {
+		                fetch('/' + locale + '/api/autocomplete?q=' + encodeURIComponent(q))
+		                    .then(r => r.json())
+		                    .then(items => {
+		                        if (!items.length) { acList.style.display = 'none'; return; }
+		                        acList.innerHTML = items.map(p =>
+		                            `<li style="padding:10px 15px;border-bottom:1px solid #f0f0f0;cursor:pointer">
+		                                <a href="/${locale}/product/${p.id}" style="display:flex;justify-content:space-between;color:#333;text-decoration:none">
+		                                    <span>${p.name}</span>
+		                                    ${p.price ? '<span style="color:#999">' + window.formatCurrencyAmount(p.price) + '</span>' : ''}
+		                                </a>
+		                             </li>`
+		                        ).join('');
+		                        acList.style.display = 'block';
+		                    }).catch(() => { acList.style.display = 'none'; });
+		            }, 300);
+		        });
+
+		        searchInput.addEventListener('keydown', function (e) {
+		            if (e.key === 'Enter') {
+		                e.preventDefault();
+		                const q = this.value.trim();
+		                if (q) window.location.href = '/' + locale + '/search?q=' + encodeURIComponent(q);
+		            }
+		        });
+
+		        document.addEventListener('click', function (e) {
+		            if (!e.target.closest('#search-input') && !e.target.closest('#autocomplete-list')) {
+		                acList.style.display = 'none';
+		            }
+		        });
+		    }
+
+		    if (submitBtn) {
+		        submitBtn.addEventListener('click', function () {
+		            const q = searchInput?.value.trim();
+		            if (q) window.location.href = '/' + locale + '/search?q=' + encodeURIComponent(q);
+		        });
+		    }
+		})();
+		</script>
+	</header>
+{% endblock header %}

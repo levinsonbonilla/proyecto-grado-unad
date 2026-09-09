@@ -1,0 +1,356 @@
+{% extends 'dashboard/base_dashboard.html.twig' %}
+
+{% block title %}{{ 'product_stats_title'|trans({}, 'statistics') }}{% endblock %}
+
+{% block body %}
+<div class="right_col" role="main">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left">
+                <h3><i class="fa fa-shopping-cart"></i> {{ 'product_stats_title'|trans({}, 'statistics') }}</h3>
+            </div>
+            <div class="title_right">
+                <a href="{{ path('dashboard_statistics', {_locale: app.request.locale}) }}" class="btn btn-default btn-sm">
+                    <i class="fa fa-bar-chart-o"></i> {{ 'view_traffic_stats'|trans({}, 'statistics') }}
+                </a>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+
+        <div class="row mb-3" style="margin-bottom:16px;">
+            <div class="col-xs-12">
+                <div class="x_panel">
+                    <div class="x_content" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; padding:12px;">
+                        <label style="margin:0;">{{ 'date_from_label'|trans({}, 'statistics') }}</label>
+                        <input type="date" id="dateFrom" class="form-control" style="width:160px;">
+                        <label style="margin:0;">{{ 'date_to_label'|trans({}, 'statistics') }}</label>
+                        <input type="date" id="dateTo" class="form-control" style="width:160px;">
+                        <select id="quickRange" class="form-control" style="width:160px;">
+                            <option value="7">{{ 'last_7_days'|trans({}, 'statistics') }}</option>
+                            <option value="30" selected>{{ 'last_30_days'|trans({}, 'statistics') }}</option>
+                            <option value="90">{{ 'last_90_days'|trans({}, 'statistics') }}</option>
+                            <option value="365">{{ 'last_year'|trans({}, 'statistics') }}</option>
+                        </select>
+                        <button id="btnRefresh" class="btn btn-primary btn-sm">
+                            <i class="fa fa-refresh"></i> {{ 'refresh_button'|trans({}, 'statistics') }}
+                        </button>
+                        <label class="checkbox-inline" style="margin:0;">
+                            <input type="checkbox" id="autoRefreshToggle"> {{ 'auto_refresh_label'|trans({}, 'dashboard') }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id="kpiContainer" style="margin-bottom:16px;">
+            <div class="col-md-3 col-sm-6">
+                <div class="x_panel" style="text-align:center;">
+                    <div class="x_content">
+                        <p style="margin:4px 0; color:#888;">{{ 'kpi_total_sales'|trans({}, 'statistics') }}</p>
+                        <h2 id="kpiTotalVentas" style="margin:0; font-size:1.6rem;">—</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="x_panel" style="text-align:center;">
+                    <div class="x_content">
+                        <p style="margin:4px 0; color:#888;">{{ 'kpi_pending_payment'|trans({}, 'statistics') }}</p>
+                        <h2 id="kpiPendientesPago" style="margin:0; font-size:1.6rem;">—</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="x_panel" style="text-align:center;">
+                    <div class="x_content">
+                        <p style="margin:4px 0; color:#888;">{{ 'kpi_to_ship'|trans({}, 'statistics') }}</p>
+                        <h2 id="kpiPorEnviar" style="margin:0; font-size:1.6rem;">—</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="x_panel" style="text-align:center;">
+                    <div class="x_content">
+                        <p style="margin:4px 0; color:#888;">{{ 'kpi_avg_ticket'|trans({}, 'statistics') }}</p>
+                        <h2 id="kpiTicketPromedio" style="margin:0; font-size:1.6rem;">—</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-sm-12">
+                <div class="x_panel" style="text-align:center;">
+                    <div class="x_content">
+                        <p style="margin:4px 0; color:#888;">{{ 'kpi_avg_shipping_time'|trans({}, 'statistics') }}</p>
+                        <h2 id="kpiAvgShipping" style="margin:0; font-size:1.6rem;">—</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin-bottom:16px;">
+            <div class="col-xs-12">
+                <div class="x_panel">
+                    <div class="x_title"><h2>{{ 'funnel_title'|trans({}, 'statistics') }}</h2><div class="clearfix"></div></div>
+                    <div class="x_content">
+                        <div id="funnelContainer" style="display:flex; flex-direction:column; gap:10px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin-bottom:16px;">
+            <div class="col-xs-12">
+                <div class="x_panel">
+                    <div class="x_title"><h2>{{ 'chart_sales_by_day'|trans({}, 'statistics') }}</h2><div class="clearfix"></div></div>
+                    <div class="x_content">
+                        <div id="chartSalesByDay" style="height:300px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin-bottom:16px;">
+            <div class="col-xs-12">
+                <div class="x_panel">
+                    <div class="x_title"><h2>{{ 'chart_top_products'|trans({}, 'statistics') }}</h2><div class="clearfix"></div></div>
+                    <div class="x_content">
+                        <div id="chartTopProducts" style="height:320px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin-bottom:16px;">
+            <div class="col-md-6">
+                <div class="x_panel">
+                    <div class="x_title"><h2>{{ 'chart_sales_by_country'|trans({}, 'statistics') }}</h2><div class="clearfix"></div></div>
+                    <div class="x_content">
+                        <div id="chartByCountry" style="height:280px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="x_panel">
+                    <div class="x_title"><h2>{{ 'chart_sales_by_region'|trans({}, 'statistics') }}</h2><div class="clearfix"></div></div>
+                    <div class="x_content">
+                        <div id="chartByRegion" style="height:280px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin-bottom:16px;">
+            <div class="col-xs-12">
+                <div class="x_panel">
+                    <div class="x_title"><h2>{{ 'chart_sales_by_city'|trans({}, 'statistics') }}</h2><div class="clearfix"></div></div>
+                    <div class="x_content">
+                        <div id="chartByCity" style="height:320px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+
+<script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+
+<script>
+const BASE_URL = '{{ path("dashboard_statistics_products") }}';
+let currentFrom = '';
+let currentTo   = '';
+const i18n = {
+    hoursSuffix: '{{ 'hours_unit_suffix'|trans({}, 'statistics')|e('js') }}',
+    daysSuffix: '{{ 'days_unit_suffix'|trans({}, 'statistics')|e('js') }}',
+    ordersSuffix: '{{ 'orders_unit_suffix'|trans({}, 'statistics')|e('js') }}',
+    unitsSoldSuffix: '{{ 'units_sold_suffix'|trans({}, 'statistics')|e('js') }}',
+    funnelStages: [
+        { key: 'visited',       label: '{{ 'funnel_stage_visited'|trans({}, 'statistics')|e('js') }}',       color: '#26B99A' },
+        { key: 'viewedProduct', label: '{{ 'funnel_stage_viewed_product'|trans({}, 'statistics')|e('js') }}', color: '#4B77BE' },
+        { key: 'addedToCart',   label: '{{ 'funnel_stage_added_to_cart'|trans({}, 'statistics')|e('js') }}',  color: '#F39C12' },
+        { key: 'purchased',     label: '{{ 'funnel_stage_purchased'|trans({}, 'statistics')|e('js') }}',      color: '#E74C3C' },
+    ]
+};
+
+(function initDates() {
+    const today = new Date();
+    const from  = new Date();
+    from.setDate(today.getDate() - 30);
+    document.getElementById('dateTo').value   = today.toISOString().split('T')[0];
+    document.getElementById('dateFrom').value = from.toISOString().split('T')[0];
+    currentTo   = document.getElementById('dateTo').value;
+    currentFrom = document.getElementById('dateFrom').value;
+})();
+
+function getParams() {
+    return '?from=' + currentFrom + '&to=' + currentTo;
+}
+
+async function fetchData(endpoint) {
+    try {
+        const res = await fetch(BASE_URL + endpoint + getParams());
+        return await res.json();
+    } catch(e) {
+        return [];
+    }
+}
+
+function formatMoney(raw) {
+
+    if (raw === null || raw === undefined) return '—';
+    return window.formatCurrencyAmount(raw);
+}
+
+async function loadKpi() {
+    const data = await fetchData('/data/kpi');
+    document.getElementById('kpiTotalVentas').textContent    = formatMoney(data.totalVentas);
+    document.getElementById('kpiPendientesPago').textContent = data.pedidosPendientesPago ?? '—';
+    document.getElementById('kpiPorEnviar').textContent      = data.pedidosPorEnviar ?? '—';
+    document.getElementById('kpiTicketPromedio').textContent = formatMoney(data.ticketPromedio);
+}
+
+async function loadAvgShippingTime() {
+    const data = await fetchData('/data/avg-shipping-time');
+    const hours = data.avgHours;
+    document.getElementById('kpiAvgShipping').textContent = hours !== null && hours !== undefined
+        ? (hours < 24 ? Math.round(hours) + i18n.hoursSuffix : (hours / 24).toFixed(1) + i18n.daysSuffix)
+        : '—';
+}
+
+async function loadFunnel() {
+    const data = await fetchData('/data/funnel');
+    const stages = i18n.funnelStages;
+    const maxValue = Math.max(1, data.visited ?? 0);
+    const container = document.getElementById('funnelContainer');
+    container.innerHTML = '';
+
+    stages.forEach(function(stage, i) {
+        const value  = data[stage.key] ?? 0;
+        const widthPct = Math.round((value / maxValue) * 100);
+        const prevValue = i > 0 ? (data[stages[i - 1].key] ?? 0) : null;
+        const dropOff = prevValue ? Math.round(((prevValue - value) / prevValue) * 100) : null;
+
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex; align-items:center; gap:12px;';
+        row.innerHTML =
+            '<div style="width:160px; text-align:right; color:#555;">' + stage.label + '</div>' +
+            '<div style="flex:1; background:#f0f0f0; border-radius:3px; overflow:hidden;">' +
+                '<div style="width:' + widthPct + '%; min-width:2px; background:' + stage.color + '; color:#fff; padding:6px 10px; white-space:nowrap;">' + value + '</div>' +
+            '</div>' +
+            '<div style="width:90px; color:#999; font-size:0.9em;">' + (dropOff !== null ? '-' + dropOff + '%' : '') + '</div>';
+        container.appendChild(row);
+    });
+}
+
+async function loadSalesByDay() {
+    const data = await fetchData('/data/sales-by-day');
+    var root = am5.Root.new("chartSalesByDay");
+    root.setThemes([am5themes_Animated.new(root)]);
+    var chart = root.container.children.push(am5xy.XYChart.new(root, { panX: true, wheelX: "panX" }));
+    var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
+        baseInterval: { timeUnit: "day", count: 1 },
+        renderer: am5xy.AxisRendererX.new(root, { minGridDistance: 50 }),
+    }));
+    var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+        renderer: am5xy.AxisRendererY.new(root, {}),
+    }));
+    var series = chart.series.push(am5xy.ColumnSeries.new(root, {
+        xAxis: xAxis, yAxis: yAxis,
+        valueXField: "date", valueYField: "revenue",
+        tooltip: am5.Tooltip.new(root, { labelText: "{valueY.formatNumber('#,###')} ({orders}" + i18n.ordersSuffix + ")" }),
+    }));
+
+    var currency = window.__CURRENCY__ || { decimalPlaces: 2 };
+    var divisor = Math.pow(10, currency.decimalPlaces);
+    series.data.setAll(data.map(function(d) {
+        return { date: new Date(d.date).getTime(), revenue: Math.round(parseInt(d.revenue) / divisor), orders: parseInt(d.orders) };
+    }));
+    chart.set("cursor", am5xy.XYCursor.new(root, { behavior: "none" }));
+}
+
+async function loadBarChart(elementId, endpoint, categoryField, valueField, tooltipSuffix) {
+    const data = await fetchData(endpoint);
+    var root = am5.Root.new(elementId);
+    root.setThemes([am5themes_Animated.new(root)]);
+    var chart = root.container.children.push(am5xy.XYChart.new(root, {}));
+    var yAxis = chart.yAxes.push(am5xy.CategoryAxis.new(root, {
+        categoryField: categoryField,
+        renderer: am5xy.AxisRendererY.new(root, { inversed: true, minGridDistance: 20 }),
+    }));
+    var xAxis = chart.xAxes.push(am5xy.ValueAxis.new(root, {
+        renderer: am5xy.AxisRendererX.new(root, {}),
+    }));
+    var series = chart.series.push(am5xy.ColumnSeries.new(root, {
+        xAxis: xAxis, yAxis: yAxis,
+        valueXField: valueField, categoryYField: categoryField,
+        tooltip: am5.Tooltip.new(root, { labelText: "{valueX}" + (tooltipSuffix || "") }),
+    }));
+    series.columns.template.setAll({ cornerRadiusTR: 3, cornerRadiusBR: 3 });
+    var mappedData = data.map(function(d) {
+        var item = {};
+        item[categoryField] = d[categoryField];
+        item[valueField] = parseInt(d[valueField]);
+        return item;
+    });
+    yAxis.data.setAll(mappedData);
+    series.data.setAll(mappedData);
+}
+
+async function loadAll() {
+    currentFrom = document.getElementById('dateFrom').value;
+    currentTo   = document.getElementById('dateTo').value;
+    await loadKpi();
+    loadAvgShippingTime();
+    loadFunnel();
+    loadSalesByDay();
+    loadBarChart('chartTopProducts', '/data/top-products', 'product', 'unitsSold', i18n.unitsSoldSuffix);
+    loadBarChart('chartByCountry',   '/data/by-country',   'country', 'orders',    i18n.ordersSuffix);
+    loadBarChart('chartByRegion',    '/data/by-region',    'region',  'orders',    i18n.ordersSuffix);
+    loadBarChart('chartByCity',      '/data/by-city',      'city',    'orders',    i18n.ordersSuffix);
+}
+
+document.getElementById('btnRefresh').addEventListener('click', loadAll);
+document.getElementById('quickRange').addEventListener('change', function() {
+    const days = parseInt(this.value);
+    const today = new Date();
+    const from  = new Date();
+    from.setDate(today.getDate() - days);
+    document.getElementById('dateTo').value   = today.toISOString().split('T')[0];
+    document.getElementById('dateFrom').value = from.toISOString().split('T')[0];
+    loadAll();
+});
+
+window.addEventListener('load', loadAll);
+
+const AUTO_REFRESH_INTERVAL_MS = 20000;
+let autoRefreshTimer = null;
+
+function startAutoRefresh() {
+    stopAutoRefresh();
+    autoRefreshTimer = setInterval(loadAll, AUTO_REFRESH_INTERVAL_MS);
+}
+
+function stopAutoRefresh() {
+    if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+    autoRefreshTimer = null;
+}
+
+document.addEventListener('visibilitychange', function() {
+    const toggle = document.getElementById('autoRefreshToggle');
+    if (!toggle || !toggle.checked) return;
+    if (document.hidden) {
+        stopAutoRefresh();
+    } else {
+        startAutoRefresh();
+    }
+});
+
+document.getElementById('autoRefreshToggle').addEventListener('change', function() {
+    this.checked ? startAutoRefresh() : stopAutoRefresh();
+});
+</script>
+{% endblock %}

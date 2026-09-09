@@ -1,0 +1,53 @@
+and: "y"
+profile: Perfil
+logout: Logout
+cancel: Cancelar
+submit: Enviar
+upload_image: Subir imagen
+required_data: Dato requerido
+created_successfully: Creado con éxito
+updated_successfully: Actualizado con éxito
+yes: Sí
+no: No
+active: Activo
+actions: Acciones
+name: Nombre
+id: ID
+edit: Editar
+save: Guardar
+back: Atrás
+new: Nuevo
+change_status: Cambiar estado
+change_status_modal_title: Cambiar estado del registro
+change_status_modal_body: "¿Estás seguro de que deseas cambiar el estado de este registro?"
+change_status_modal_confirm: Confirmar cambio
+change_status_error: Ocurrió un error al cambiar el estado.
+countries: Países
+regions: Regiones
+cities: Ciudades
+geo_hold_ctrl: "Mantén Ctrl (o Cmd) para seleccionar varios"
+geo_select_country_first: Selecciona primero un país para ver regiones
+geo_select_region_first: Selecciona primero una región para ver ciudades
+
+add: Agregar
+prices: Precios
+by_country: Por país
+by_region: Por región
+by_city: Por ciudad
+country: País
+region: Región
+city: Ciudad
+price: Precio
+status: Estado
+enabled: Habilitado
+disabled: Deshabilitado
+
+new_message_subject: "Nuevo mensaje de %name%"
+new_message_body: "Hola,
+
+Tienes un nuevo mensaje de %senderName%:
+
+\"%preview%\"
+
+Inicia sesión para leerlo completo.
+"

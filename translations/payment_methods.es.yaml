@@ -1,0 +1,12 @@
+create_payment_method: Crear método de pago
+list_payment_methods: Lista de métodos de pago
+add_payment_method: Creación de método de pago
+edit_payment_method: Edición de método de pago
+payment_method_created_successfully: El método de pago ha sido creado con éxito.
+payment_method_edited_success: Método de pago editado exitosamente
+change_status_modal_body: "¿Estás seguro de que deseas cambiar el estado de este método de pago?"
+payment_provider: Tipo de pago
+payment_provider_manual: Manual (contraentrega, transferencia...)
+payment_provider_mock_gateway: Pasarela de pago (simulada)
+payment_instructions: Instrucciones para el cliente
+payment_instructions_help: "Solo aplica a métodos manuales. Ej.: datos de la cuenta bancaria. Se muestra en el checkout."

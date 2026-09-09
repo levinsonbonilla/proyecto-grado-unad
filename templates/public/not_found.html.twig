@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	{{ 'not_found'|trans({}, 'public') | raw }}
+{% endblock %}
+
+{% block body %}
+	<body class="nav-md">
+		<div class="container body">
+			<div
+				class="main_container">
+				<!-- page content -->
+				<div class="col-md-12">
+					<div class="col-middle">
+						<div class="text-center text-center">
+							<h1 class="error-number">404</h1>
+							<h2>{{ 'error_404_heading'|trans({}, 'public') }}</h2>
+							<p>{{ 'error_404_message'|trans({}, 'public') }}
+								<a href="#">{{ 'report_this'|trans({}, 'public') }}</a>
+							</p>
+							<div class="mid_center">
+								<h3>{{ 'search_label'|trans({}, 'public') }}</h3>
+								<form>
+									<div class="col-xs-12 form-group pull-right top_search">
+										<div class="input-group">
+											<input type="text" class="form-control" placeholder="{{ 'search_placeholder'|trans({}, 'public') }}">
+											<span class="input-group-btn">
+												<button class="btn btn-default" type="button">{{ 'go_button'|trans({}, 'public') }}</button>
+											</span>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- /page content -->
+			</div>
+		</div>
+	</body>
+{% endblock %}

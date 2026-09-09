@@ -1,0 +1,57 @@
+{% macro data_table_sales_orders() %}
+    <script>
+        var ajaxPath = "{{ path('dashboard_sales_orders_list') }}";
+        var pathDetail = "{{ path('dashboard_sales_orders_detail', {'id': 'CHANGE'}) }}";
+
+        var statusBadgeClass = {
+            'Pendiente':           'label-default',
+            'Procesando':          'label-info',
+            'Enviado':             'label-primary',
+            'Entregado':           'label-success',
+            'Cancelado':           'label-danger',
+            'Retracto Solicitado': 'label-warning',
+            'Retracto Aprobado':   'label-warning',
+        };
+
+        var columnDefs = [
+            {
+                data: 'statusName',
+                render: function(data) {
+                    var cls = statusBadgeClass[data] || 'label-default';
+                    return '<span class="label ' + cls + '">' + data + '</span>';
+                },
+                targets: 0
+            },
+            {
+                data: null,
+                render: function(data, type, row) {
+                    return `<li class="text-center" style="list-style-type: none;">
+                        <a class="btn btn-default btn-xs" href="${pathDetail.replace('CHANGE', row.id)}">
+                            <i class="fa fa-eye"></i> {{ 'view_detail'|trans({}, 'sales') }}
+                        </a>
+                    </li>`;
+                },
+                targets: 1
+            },
+            { data: 'customerName', targets: 2 },
+            { data: 'customerEmail', targets: 3 },
+            {
+                data: 'totalAmount',
+                render: function(data) {
+
+                    return window.formatCurrencyAmount(data);
+                },
+                targets: 4
+            },
+            {
+                data: 'createdAt',
+                render: function(data) {
+                    return data ? new Date(data).toLocaleString('es-CO') : '';
+                },
+                targets: 5
+            },
+            { data: 'trackingNumber', targets: 6 },
+            { data: 'id', visible: false, targets: 7 },
+        ];
+    </script>
+{% endmacro %}

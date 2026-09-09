@@ -1,0 +1,113 @@
+{% extends 'dashboard/base_dashboard.html.twig' %}
+{% import 'macros/alert.html.twig' as alert %}
+
+{% block title %}{{ 'new_message'|trans({}, 'help_messages') }}{% endblock %}
+
+{% block body %}
+    <div class="right_col" role="main">
+        <div class="">
+            <div class="page-title">
+                {{ alert.alert_success() }}
+                {{ alert.alert_error() }}
+                <div class="title_left">
+                    <h3><i class="fa fa-pencil"></i> {{ 'new_message'|trans({}, 'help_messages') }}</h3>
+                </div>
+                <div class="title_right">
+                    <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                        <div class="input-group">
+                            <a href="{{ path('dashboard_messages') }}" class="btn btn-default form-control">
+                                <i class="fa fa-arrow-left"></i>&nbsp;&nbsp;{{ 'back'|trans({}, 'messages') }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>{{ 'new_message'|trans({}, 'help_messages') }}</h2>
+                            <ul class="nav navbar-right panel_toolbox">
+                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                            </ul>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            {{ form_start(form, {'attr': {'id': 'compose_form', 'class': 'form-horizontal form-label-left', 'enctype': 'multipart/form-data'}}) }}
+
+                            {% if form.toUsers is defined %}
+                                <div class="item form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                                        {{ 'recipients_label'|trans({}, 'help_messages') }} <span class="required">*</span>
+                                    </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        {{ form_widget(form.toUsers, {'attr': {'class': 'form-control select2'}}) }}
+                                    </div>
+                                </div>
+                            {% elseif form.toUser is defined %}
+                                <div class="item form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                                        {{ 'recipient_label'|trans({}, 'help_messages') }} <span class="required">*</span>
+                                    </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        {{ form_widget(form.toUser, {'attr': {'class': 'form-control'}}) }}
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <div class="item form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                                    {{ 'subject_column'|trans({}, 'help_messages') }}
+                                </label>
+                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                    {{ form_widget(form.subject, {'attr': {'class': 'form-control', 'placeholder': 'optional'|trans({}, 'help_messages')}}) }}
+                                </div>
+                            </div>
+
+                            <div class="item form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                                    {{ 'message_column'|trans({}, 'help_messages') }} <span class="required">*</span>
+                                </label>
+                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                    {{ form_widget(form.message, {'attr': {'class': 'form-control'}}) }}
+                                </div>
+                            </div>
+
+                            <div class="item form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                                    {{ 'images_label'|trans({}, 'help_messages') }}
+                                </label>
+                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                    {{ form_widget(form.images, {'attr': {'class': 'form-control'}}) }}
+                                    <small class="text-muted">{{ 'images_help'|trans({}, 'help_messages') }}</small>
+                                </div>
+                            </div>
+
+                            <div class="ln_solid"></div>
+                            <div class="form-group">
+                                <div class="col-md-6 col-md-offset-3">
+                                    <a href="{{ path('dashboard_messages') }}" class="btn btn-default">{{ 'cancel'|trans({}, 'messages') }}</a>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fa fa-paper-plane"></i> {{ 'send_message'|trans({}, 'help_messages') }}
+                                    </button>
+                                </div>
+                            </div>
+
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+    $(document).ready(function () {
+        $('.select2').select2();
+    });
+    </script>
+{% endblock %}

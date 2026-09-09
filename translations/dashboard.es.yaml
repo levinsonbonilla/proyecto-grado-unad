@@ -1,0 +1,57 @@
+help: Ayuda
+log_out: Cerrar sesión
+fullscreen: Pantalla completa
+lock: Bloquear
+welcome: Bienvenido
+lang_es: Español
+lang_en: Inglés
+general: General
+users: Usuarios
+profile: Perfil
+home: Inicio
+user_list: Listado de usuarios
+datatable:
+    lengthMenu: "Mostrar _MENU_ registros por página"
+    zeroRecords: "No se encontraron resultados"
+    info: "Mostrando página _PAGE_ de _PAGES_"
+    infoEmpty: "No hay registros disponibles"
+    emptyTable: "No hay datos disponibles en la tabla"
+    loadingRecords: "Cargando..."
+    processing: "Procesando..."
+    search: "Buscar:"
+    infoFiltered: "(filtrado de _MAX_ registros totales)"
+    paginate:
+        next: "Siguiente"
+        previous: "Anterior"
+    buttons:
+        copy: Copiar
+        csv: CSV
+        print: Imprimir
+        copyTitle: Copiado al portapapeles
+        copySuccess: 
+            multiple: Copiadas %d filas al portapapeles
+            single: Copiada 1 fila al portapapeles
+
+business: Negocios
+tenants: Inquilinos
+tenant_management: Gestión de inquilinos
+settings: Configuraciones
+domains: Dominios
+slides: Carruseles
+payment_methods: Métodos de pago
+products: Productos
+categories: Categorías
+colors: Colores
+medidas: Medidas
+categories_list: Listado de categorías
+colors_list: Listado de colores
+medidas_list: Listado de medidas
+sales: Ventas
+products_config_section: Configuración
+products_management_section: Gestión
+
+select_active_domain_title: Elige tu dominio de trabajo
+select_active_domain_subtitle: Tienes acceso a más de un dominio. Elige con cuál quieres trabajar ahora — puedes cambiar en cualquier momento.
+active_domain_label: Dominio activo
+
+auto_refresh_label: Auto-actualizar

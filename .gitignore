@@ -1,0 +1,21 @@
+/var/cache/*
+/var/log/*
+/var/test.db
+/vendor/*
+/public/*
+/node_modules/*
+.env.local
+.env.test
+
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###
+
+###> phpunit ###
+.phpunit.result.cache
+###< phpunit ###
+
+###> docker ###
+.env.docker
+###< docker ###
+.env

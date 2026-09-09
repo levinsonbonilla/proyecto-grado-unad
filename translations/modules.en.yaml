@@ -1,0 +1,71 @@
+information: information
+acepted: Accept
+cancel: Cancel
+position: Order
+remove_image: Remove photo
+coming_soon: coming soon
+
+category_created_successfully: Category created successfully
+create_category: Create category
+categorie_edited_success: Categorie edited successfully
+add_categorie: Categorie creation
+edit_categorie: Categorie edition
+
+medida_created_successfully: Measurement created successfully
+create_medida: Create measurement
+medida_edited_success: Measurement edited successfully
+add_medida: Measurement creation
+edit_medida: Measurement edition
+medidas_list: Measurements list
+medida_name_placeholder: "E.g: S, M, L, 32'', 50 cm..."
+
+color_created_successfully: Color created successfully
+create_color: Create color
+color_edited_success: Color edited successfully
+add_color: Color creation
+edit_color: Color edition
+colors_list: Colors list
+hex_code: Color code
+color_name_placeholder: "E.g: Red, Black, Navy blue..."
+optional: optional
+product_colors: Colors
+product_colors_help: Group photos into blocks with "Add product" -- each block can have 1 or more photos, an optional color (picked from the list or created on the fly) and its own stock. The customer will have to pick a color before adding to cart if the product has any. Each block's stock is deducted separately from the general stock above, but counts against that same total.
+color_stock_placeholder: Stock (empty = unlimited)
+add_color_variant: Add color
+remove_color_variant: Remove
+product_color_stock_exceeds_general: "Stock assigned to the blocks (%assigned%) exceeds the product's general stock (%general%)."
+duplicate_medida_in_block: "The measurement \"%medida%\" is repeated within the same block -- each measurement can only appear once per color."
+stock_exceeds_available: "Exceeds available stock, maximum allowed: %max%"
+stock_summary_total: Total stock
+stock_summary_assigned: Assigned to blocks
+stock_summary_available: Available
+stock_summary_unlimited: Unlimited
+
+add_variant_button: Add product
+block_order_label: "Block order"
+block_order_placeholder: "E.g: 1"
+block_order_help: "Controls the order this block (and its photos) appears in for the customer. Lower number goes first -- gaps (e.g. 1 and 3, no 2) don't matter, the order is still respected. Empty = no order set, sorted by name."
+has_color_label: Color
+has_medida_label: Measurement
+select_color_placeholder: "Choose a color..."
+new_color_option: "+ New color..."
+select_medida_placeholder: "Choose a measurement..."
+new_medida_option: "+ New measurement..."
+add_photo_to_block: Add another photo
+variant_stock_placeholder: "Stock (empty = unlimited)"
+add_medida_row: "+ Add another measurement"
+
+name: Name
+description: Description
+categories: Categories
+base_price: Base price
+public_price: Public price
+stock: Stock
+stock_help: Optional. Leave it empty if you don't track inventory for this product — it will show and be purchasable without limit, same as today. If you set it, once it reaches 0 the product stops appearing in the store.
+create_product: Create product
+product_list: Products list
+add_product: Product creation
+edit_product: Product edition
+product_created_successfully: Product created successfully
+product_edited_success: Product edited successfully
+category_image: Category image

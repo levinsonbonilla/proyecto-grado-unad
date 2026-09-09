@@ -1,0 +1,29 @@
+
+{% set isOwn = (msg.fromUserId|default('') == app.user.id|default('')) %}
+<div class="row" style="margin-bottom: 15px;">
+    <div class="col-md-10 {% if isOwn %}col-md-offset-2{% endif %}">
+        <div class="panel {% if isOwn %}panel-primary{% else %}panel-default{% endif %}">
+            <div class="panel-heading" style="padding: 6px 12px;">
+                <strong>{{ msg.fromUserName|default('') }} {{ msg.fromUserLastName|default('') }}</strong>
+                <span class="pull-right text-muted" style="font-size: 11px;">
+                    {{ msg.createdAt|default('')|date('d/m/Y H:i') }}
+                </span>
+            </div>
+            <div class="panel-body">
+                <p style="white-space: pre-wrap; margin-bottom: {% if images|default([])|length > 0 %}10px{% else %}0{% endif %};">{{ msg.message }}</p>
+                {% if images|default([])|length > 0 %}
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+                        {% for imgUrl in images %}
+                            {% set fullUrl = imgUrl starts with 'http' ? imgUrl : cdnBaseUrl ~ '/' ~ imgUrl %}
+                            <a href="{{ fullUrl }}" target="_blank">
+                                <img src="{{ fullUrl }}"
+                                     style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;"
+                                     alt="{{ 'attached_image_alt'|trans({}, 'help_messages') }}">
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

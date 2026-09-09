@@ -1,0 +1,13 @@
+{% macro term_and_conditions() %}
+	<div>
+		<h1>
+			<i class="fa fa-shopping-basket"></i>
+			{{ 'name'|currentTenant }}</h1>
+		<p>
+			{{ 'copyright'|trans({ '%year%': 'now'|date('Y') }, 'public') }}
+			<a href="{{ path('public_privacy') }}">{{ 'privacy'|trans({}, 'public') }}</a>
+			{{ 'and'|trans({}) }}
+			<a href="{{ path('public_terms') }}">{{ 'terms'|trans({}, 'public') }}</a>
+		</p>
+	</div>
+{% endmacro %}

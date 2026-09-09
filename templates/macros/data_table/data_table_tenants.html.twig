@@ -1,0 +1,91 @@
+{% macro data_table_tenants() %}
+    <script>
+
+        var ajaxPath = "{{ path('dashboard_tenants_list') }}";
+        var pathEdit = "{{ path('dashboard_tenants_edit', {'id': 'CHANGE'}) }}";
+        var pathToggleStatus = "{{ path('dashboard_tenants_toggle_status', {'id': 'CHANGE'}) }}";
+        var pathDomainsNew = "{{ path('dashboard_tenants_domains_new', {'id': 'CHANGE'}) }}";
+
+        var columnDefs = [
+            { data: "active", render: function(data) { return data ? "<span class='label label-success'>{{ 'yes'|trans({}, 'users') }}</span>" :  "<span class='label label-danger'>{{ 'no'|trans({}, 'users') }}</span>"; }, targets: 0 },
+            {
+                data: null,
+                render: function(data, type, row) {
+
+                    var enterItem = '';
+                    if (row.primaryDomain) {
+                        enterItem = '<li><a class="dropdown-item" href="' + row.primaryDomain + '/{{ app.request.locale }}/dashboard" target="_blank" rel="noopener">'
+                            + '<i class="fa fa-external-link" aria-hidden="true"></i> {{ 'enter_tenant'|trans({}, 'tenants') }}</a></li>';
+                    }
+                    return `<li class="text-center" style="list-style-type: none; ">
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-bars fa-1x pull-center"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="dropdownMenuButton">
+                                <li>
+                                    <a class="dropdown-item" href="${pathEdit.replace('CHANGE', row.id)}">
+                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{ 'edit'|trans({}, 'users') }}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-warning" href="#" onclick="openTenantStatusModal('${row.id}'); return false;">
+                                        <i class="fa fa-refresh" aria-hidden="true"></i> {{ 'change_status'|trans({}, 'messages') }}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="${pathDomainsNew.replace('CHANGE', row.id)}">
+                                        <i class="fa fa-globe" aria-hidden="true"></i> {{ 'create_domain_for_tenant'|trans({}, 'tenants') }}
+                                    </a>
+                                </li>
+                                ${enterItem}
+                            </ul>
+                        </div>
+                    </li>`;
+                },
+                targets: 1
+            },
+            { data: "name", targets: 2 },
+            { data: "nit", targets: 3 },
+            { data: "phone", targets: 4 },
+            { data: "description", targets: 5 },
+            { data: "id", visible: false, targets: 6 },
+        ];
+
+        var pendingTenantStatusId = null;
+
+        function openTenantStatusModal(id) {
+            pendingTenantStatusId = id;
+            $('#tenantStatusModalError').hide();
+            $('#tenantStatusModal').modal('show');
+        }
+
+        $('#tenantStatusModalConfirmBtn').on('click', function() {
+            if (!pendingTenantStatusId) return;
+            var id = pendingTenantStatusId;
+            pendingTenantStatusId = null;
+            $('#tenantStatusModalError').hide();
+
+            fetch(pathToggleStatus.replace('CHANGE', id), {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    $('#tenantStatusModal').modal('hide');
+                    $('#datatable-tenants-loading').show();
+                    $('#datatable-tenants').DataTable().ajax.reload(function() {
+                        $('#datatable-tenants-loading').hide();
+                    }, false);
+                } else {
+                    $('#tenantStatusModalError').show();
+                }
+            })
+            .catch(function() {
+                $('#tenantStatusModalError').show();
+            });
+        });
+
+    </script>
+{% endmacro %}

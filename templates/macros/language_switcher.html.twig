@@ -1,0 +1,18 @@
+
+{% macro render(locale, domain, toggleClass, menuClass, linkClass, imgStyle = '') %}
+	<a href="javascript:;" class="{{ toggleClass }}" data-toggle="dropdown" aria-expanded="false">
+		<img src="{{ asset('default_images/' ~ locale ~ '.jpg') }}" alt=""{% if imgStyle %} style="{{ imgStyle }}"{% endif %}/>
+		{{ ('lang_' ~ locale) | trans({}, domain) }}
+		<span class="fa fa-angle-down"></span>
+	</a>
+	<ul class="{{ menuClass }}">
+		{% for loc in ['es', 'en'] %}
+			<li>
+				<a href="{{ path('public_lang', {lang: loc}) }}" class="{{ linkClass }}">
+					<img src="{{ asset('default_images/' ~ loc ~ '.jpg') }}" alt=""{% if imgStyle %} style="{{ imgStyle }}"{% endif %}/>
+					{{ ('lang_' ~ loc) | trans({}, domain) }}
+				</a>
+			</li>
+		{% endfor %}
+	</ul>
+{% endmacro %}

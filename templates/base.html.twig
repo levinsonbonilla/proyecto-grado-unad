@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="{{app.locale}}">
+	<head>
+		<meta
+		http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+		<!-- Meta, title, CSS, favicons, etc. -->
+		<meta charset="utf-8"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<title>
+			{% block title %}
+				Welcome!
+			{% endblock %}
+		</title>
+		<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>"/>
+		{% block stylesheets %}
+			<!-- Bootstrap -->
+			<link
+			href="{{ asset('dashboard/vendors/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet"/>
+			<!-- Font Awesome -->
+			<link
+			href="{{ asset('dashboard/vendors/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet"/>
+			<!-- NProgress -->
+			<link
+			href="{{ asset('dashboard/vendors/nprogress/nprogress.css') }}" rel="stylesheet"/>
+			<!-- Animate.css -->
+			<link
+			href="{{ asset('dashboard/vendors/animate.css/animate.min.css') }}" rel="stylesheet"/>
+			<!-- Custom Theme Style -->
+			<link href="{{ asset('dashboard/build/css/custom.min.css') }}" rel="stylesheet"/>
+			<link href="{{ asset('validations/parsley.css') }}" rel="stylesheet"/>
+		{% endblock %}
+	</head>
+	{% block javascripts %}
+		<!-- jQuery -->
+		<script src="{{ asset('dashboard/vendors/jquery/dist/jquery.min.js') }}"></script>
+		<!-- Bootstrap -->
+		<script src="{{ asset('dashboard/vendors/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+
+		<script src="{{ asset('validations/zxcvbn.js') }}"></script>
+		<script src="{{ asset('validations/parsley.min.js') }}"></script>
+		<script src="{{ asset('validations/' ~ app.request.locale ~ '.js') }}"></script>
+	{% endblock %}
+	{% block body %}{% endblock %}
+</html>

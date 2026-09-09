@@ -1,0 +1,95 @@
+{% macro data_table_users() %}
+    <script>
+
+        var ajaxPath = "{{ path('dashboard_users_list') }}";
+        var pathShow = "{{ path('dashboard_users_show', {'id': 'CHANGE'}) }}";
+        var pathEdit = "{{ path('dashboard_users_edit', {'id': 'CHANGE'}) }}";
+        var resendWelcomeEmail = "{{ path('dashboard_users_resend_welcome_email', {'id': 'CHANGE'}) }}";
+        var pathToggleStatus = "{{ path('dashboard_users_toggle_status', {'id': 'CHANGE'}) }}";
+
+        var columnDefs = [
+            { data: "active", render: function(data) { return data ? "<span class='label label-success'>{{ 'yes'|trans({}, 'users') }}</span>" :  "<span class='label label-danger'>{{ 'no'|trans({}, 'users') }}</span>"; }, targets: 0 },
+            {
+                data: null,
+                render: function(data, type, row) {
+                    return `<li class="text-center" style="list-style-type: none; ">
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-bars fa-1x pull-center"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="dropdownMenuButton">
+                                <li>
+                                    <a class="dropdown-item" href="${pathShow.replace('CHANGE', row.id)}">
+                                        <i class="fa fa-eye" aria-hidden="true"></i> {{ 'show'|trans({}, 'users') }}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="${pathEdit.replace('CHANGE', row.id)}">
+                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{ 'edit'|trans({}, 'users') }}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="${resendWelcomeEmail.replace('CHANGE', row.id)}">
+                                        <i class="fa fa-envelope-o" aria-hidden="true"></i> {{ 'resend_welcome_email'|trans({}, 'users') }}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-warning" href="#" onclick="openUserStatusModal('${row.id}'); return false;">
+                                        <i class="fa fa-refresh" aria-hidden="true"></i> {{ 'change_status'|trans({}, 'messages') }}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>`;
+                },
+                targets: 1
+            },
+            { data: "name", targets: 2 },
+            { data: "email", targets: 3 },
+            { data: "phone", targets: 4 },
+            { data: "roles",  render: function (data, type, row) {
+                var rolesString = data.join(", ");
+                return rolesString == "" ? "{{ 'ROLE_USER'|trans({}, 'users') }}" : "{{ 'ROLE_ADMIN'|trans({}, 'users') }}" ;
+            },
+            targets: 5
+            },
+            { data: "id", visible: false, targets: 6 },
+        ];
+
+        var pendingUserStatusId = null;
+
+        function openUserStatusModal(id) {
+            pendingUserStatusId = id;
+            $('#userStatusModalError').hide();
+            $('#userStatusModal').modal('show');
+        }
+
+        $('#userStatusModalConfirmBtn').on('click', function() {
+            if (!pendingUserStatusId) return;
+            var id = pendingUserStatusId;
+            pendingUserStatusId = null;
+            $('#userStatusModalError').hide();
+
+            fetch(pathToggleStatus.replace('CHANGE', id), {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    $('#userStatusModal').modal('hide');
+                    $('#datatable-users-loading').show();
+                    $('#datatable-users').DataTable().ajax.reload(function() {
+                        $('#datatable-users-loading').hide();
+                    }, false);
+                } else {
+                    $('#userStatusModalError').show();
+                }
+            })
+            .catch(function() {
+                $('#userStatusModalError').show();
+            });
+        });
+
+    </script>
+{% endmacro %}

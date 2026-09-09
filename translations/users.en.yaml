@@ -1,0 +1,56 @@
+create_user: Create user
+name: Name
+email: Email
+phone: Phone
+roles: Roles
+active: Active
+id: ID
+actions: Actions
+yes: Yes
+no: No
+show: Show
+edit: Edit
+delete: Delete
+ROLE_SUPER_ADMIN: Super Admin
+ROLE_ADMIN: Admin
+ROLE_USER: User
+back: Back
+add_user: User creation
+personal_info: Personal information
+last_name: Last name
+domain: Domain
+existing_user: Existing user
+domain_not_found: The selected domain does not exist
+admin_registered_account: One of our administrators has registered an account with this email address at
+admin_invitation: "and has invited you as an administrator to help manage the platform. To complete the process and log in, please confirm your email by clicking the button below:"
+user_invitation: "our website. To complete the process and log in, please confirm your email by clicking the button below:"
+ignore_message: If you did not request this account, you can ignore this message. The information contained in this email is confidential and only for the intended recipient.
+registration_successful: Registration successful. The user will receive an email to confirm their account. They will be able to log in after confirmation.
+user: "User:"
+password: "Password:" 
+credentials: Credentials
+tenant: Tenant
+user_edited_success: User edited successfully
+edit_error: An error occurred during the edit, please provide the following ID to your administrator.
+edit_user: User edition
+email_verified: Email verified
+show_user: Show user
+points: Points
+birthday_date: Birthday date
+country_of_residence: Country of residence
+region_of_residence: Region of residence
+city_of_residence: City of residence
+neighborhood: Neighborhood
+address: Address
+email_validated: email validated
+creation_date: Creation date
+last_modified: Last modified
+profile_image: Profile image
+personal_information: Personal information
+location: Location
+system_interaction: System interaction
+status: Status
+resend_welcome_email: Resend welcome email
+user_already_validated_email: User already validated email
+cannot_change_own_role: You cannot change your own role.
+cannot_remove_last_super_admin: You cannot remove the Super Admin role from the last active Super Admin on the platform.

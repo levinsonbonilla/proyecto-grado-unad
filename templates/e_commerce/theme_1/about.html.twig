@@ -1,0 +1,63 @@
+{% extends 'e_commerce/theme_1/base_theme_1.html.twig' %}
+
+{% block title %}
+  {{ 'about_title' | trans({}, 'store') | default('About') }}
+{% endblock %}
+
+{% block body %}
+  <!-- Title page -->
+  <section class="bg-img1 txt-center p-lr-15 p-tb-92" style="background-image: url('/images/bg-01.jpg');">
+    <h2 class="ltext-105 cl0 txt-center">{{ 'about_title' | trans({}, 'store') | default('About') }}</h2>
+  </section>
+
+  <!-- Content page -->
+  <section class="bg0 p-t-75 p-b-120">
+    <div class="container">
+      <div class="row p-b-148">
+        <div class="col-md-7 col-lg-8">
+          <div class="p-t-7 p-r-85 p-r-15-lg p-r-0-md">
+            <h3 class="mtext-111 cl2 p-b-16">{{ 'about_our_story_title' | trans({}, 'store') | default('Our Story') }}</h3>
+
+            <p class="stext-113 cl6 p-b-26">{{ 'about_our_story_p1' | trans({}, 'store') | default("This is where your store's story goes. Every business behind this storefront has its own beginning — replace this paragraph with how yours started, what you set out to sell, and what makes it worth telling.") }}</p>
+
+            <p class="stext-113 cl6 p-b-26">{{ 'about_our_story_p2' | trans({}, 'store') | default("Use this second paragraph for what's changed since then: how the catalog has grown, who you serve today, and anything that sets your store apart from the rest.") }}</p>
+
+            <p class="stext-113 cl6 p-b-26">{{ 'about_our_story_p3' | trans({}, 'store') | default('Any questions? Let us know in store or reach out through the contact page.') }}</p>
+          </div>
+        </div>
+
+        <div class="col-11 col-md-5 col-lg-4 m-lr-auto">
+          <div class="how-bor1">
+            <div class="hov-img0">
+              <img src="{{ asset('theme_1/images/about-01.jpg') }}" alt="IMG" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="order-md-2 col-md-7 col-lg-8 p-b-30">
+          <div class="p-t-7 p-l-85 p-l-15-lg p-l-0-md">
+            <h3 class="mtext-111 cl2 p-b-16">{{ 'about_our_mission_title' | trans({}, 'store') | default('Our Mission') }}</h3>
+
+            <p class="stext-113 cl6 p-b-26">{{ 'about_our_mission_p1' | trans({}, 'store') | default("This is where your store's mission goes — what you want customers to feel when they shop with you, and the standard you hold your products and service to. Replace this paragraph with that.") }}</p>
+
+            <div class="bor16 p-l-29 p-b-9 m-t-22">
+              <p class="stext-114 cl6 p-r-40 p-b-11">{{ 'about_mission_quote' | trans({}, 'store') | default("Creativity is just connecting things. When you ask creative people how they did something, they feel a little guilty because they didn't really do it, they just saw something. It seemed obvious to them after a while.") }}</p>
+
+              <span class="stext-111 cl8">- Steve Job’s</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="order-md-1 col-11 col-md-5 col-lg-4 m-lr-auto p-b-30">
+          <div class="how-bor2">
+            <div class="hov-img0">
+              <img src="{{ asset('theme_1/images/about-02.jpg') }}" alt="IMG" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

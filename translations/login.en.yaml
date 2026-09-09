@@ -1,0 +1,95 @@
+login_form_title: Login Form
+back_to_store: Back
+change_language: Change language
+lang_es: Spanish
+lang_en: English
+login_title: Log in
+login_form_forgot_password_link: Forgot Your Password?
+login_form_remember_me_label: Remember Me
+new_to_site_question: New to site?
+create_account_button: Create Account
+email_label: Email
+password_label: Password
+create_account: Create Account
+name_label: Name
+last_name_label: Last Name
+confirm_password_label: Confirm Password
+accept_button: Accept
+already_a_member_question: Already a member?
+log_in_action: Log in
+registration_success_message: Registration successful. You will receive an email to confirm your account. You can log in after confirmation.
+registration_error_with_id_message: An error occurred during registration, please provide the following ID to your administrator.
+zxcvbn:
+    add_another_word_or_two_message: Add another word or two. Uncommon words are better.
+    additional_verbiage_request: Use a few words, avoid common phrases.
+    no_need_for_symbols_digits_or_uppercase: No need for symbols, digits, or uppercase letters.
+    top_10_common_password_message: This is a top-10 common password.
+    top_100_common_password_message: This is a top-100 common password.
+    very_common_password_message: This is a very common password.
+    predictable_substitutions_message: Predictable substitutions like "@" instead of "a" don\'t help very much.
+    very_weak: Very weak
+    weak: Weak
+    moderate: Moderate
+    strong: Strong
+    very_strong: Very strong
+    adequate_strength: Adequate strength
+    avoid_repetitions_message: Avoid repeated words and characters
+    longer_keyboard_pattern_message: Use a longer keyboard pattern with more turns
+password_weak_message: The password is too weak.
+confirmation_does_not_match_message: Confirmation does not match the password.
+invalid_email_message: This value must be a valid email.
+confirm_email: Confirm your email address
+welcome_to: Welcome to
+hello: Hello
+thank_you_for_registering_at: Thank you for registering at
+please_confirm_email_button_below: ". Please confirm your email by clicking the button below:"
+confirm_my_email: Confirm my email
+copy_paste_link: "Or you can copy and paste the following link into your browser:"
+enjoy_experience: We hope you enjoy the experience.
+regards_team: Regards,<br>The team at
+if_you_have_questions: If you have any questions, feel free to
+contact_support: contact our support
+email_confirmation: Email confirmation
+user_not_found: User not found
+user_already_confirmed: User already confirmed
+welcome_to_name: Welcome to %name%!
+email_confirmed_successfully: Your email has been successfully confirmed.
+email_confirmed_login: "Email confirmed! You have been automatically logged in."
+hello_user: Hello, %name%!
+email_confirmation_success_message: We are pleased to inform you that you have successfully confirmed your email. You can now enjoy everything %name% has to offer.
+what_can_you_do_now: What can you do now?
+explore_our_products: "<strong>Explore our products:</strong> Browse our catalog and discover our wide range of products."
+configure_your_account: "<strong>Configure your account:</strong> Personalize your profile and adjust your preferences."
+login_prompt: "<strong>Log in:</strong> To make purchases and access additional features, <a href=\"%link%\" class=\"btn btn-link p-0\">log in</a> to your account."
+contact_support_help_page: If you have any questions or need assistance, feel free to <a href="mailto:%soporteEmail%" class="btn btn-link p-0">contact us</a> or visit our <a href="%linkHelp%" class="btn btn-link p-0">help page</a>.
+thank_you_for_joining: "<strong>Thank you for joining %name%!</strong>"
+check_email_for_instructions: Check your email, you will receive instructions to reset your password.
+reset_access: Reset access
+reset_password_request: You have requested to reset your password. Click the button below to reset it.
+reset_my_password: Reset my Password
+copy_and_paste_link_message: "If the button doesn't work, copy and paste the following link into your browser:"
+ignore_password_reset_email: If you did not request to reset your password, please ignore this email.
+password_change_successful: Password change successful
+password_change_error_message: An error occurred during password change, please provide the following ID to your administrator.
+restart_process_error_message: Please restart the process, there seems to be an issue with your user account.
+password_change_recently_message: This user changed their password less than an hour ago, please wait a little longer before trying again.
+existing_user: Existing user
+user_registration_success_to_login: Registration successful. You can now log in and start using your account.
+
+tenant_signup_title: Create your store
+tenant_signup_subtitle: Register your business and get your own store in minutes.
+tenant_signup_button: Create my store
+business_name_label: Business name
+subdomain_label: Subdomain
+business_name_required_message: Business name is required.
+invalid_slug: The subdomain must be 3-40 characters, lowercase letters, numbers and hyphens only.
+reserved_slug: That subdomain is reserved, please choose another one.
+slug_taken: That subdomain is already taken, please choose another one.
+tenant_registration_success_message: "Your store was created! Check your email to confirm your account before logging in."
+tenant_signup_form_invalid_message: Please check the highlighted fields and try again.
+registration_not_available_here: Customer registration is not available on this site.
+
+phone_label: Phone
+phone_required_message: Phone is required.
+new_tenant_domain_placeholder: Replace with your domain
+registration_form_invalid_message: Please check the highlighted fields and try again.

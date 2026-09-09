@@ -1,0 +1,19 @@
+create_tenant: Crear inquilino
+id: Identificación
+actions: Acciones
+name: Nombre
+tax_id: NIT
+phone: Teléfono
+description: Descripción
+existing_tenant: Inquilino existente
+edit_tenant: Edición de inquilino
+info: Información
+add_tenant: Creación de inquilino
+invalid_phone_number: El número de teléfono no es válido.
+tenant_created_successfully: El inquilino ha sido creado con éxito.
+tenant_edited_success: Tenant editado exitosamente
+tenant_list: Lista de inquilinos
+active: Activo
+enter_tenant: Entrar al tenant
+is_principal: ¿Es tenant principal (plataforma)?
+create_domain_for_tenant: Crear dominio para este tenant

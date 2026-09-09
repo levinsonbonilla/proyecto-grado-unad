@@ -1,0 +1,48 @@
+
+date_from_label: Desde
+date_to_label: Hasta
+last_7_days: Últimos 7 días
+last_30_days: Últimos 30 días
+last_90_days: Últimos 90 días
+last_year: Último año
+refresh_button: Actualizar
+
+traffic_stats_title: Estadísticas de Tráfico
+view_product_stats: Ver estadísticas de productos
+kpi_total_visits: Total Visitas
+kpi_unique_visitors: Visitantes Únicos
+kpi_sessions: Sesiones
+kpi_countries: Países
+chart_visits_by_day: Visitas por día
+chart_visits_by_country: Visitas por país
+chart_devices: Dispositivos
+chart_browsers: Navegadores
+chart_registered_vs_guests: Registrados vs. invitados
+chart_events: Eventos (clicks)
+chart_os: Sistemas operativos
+chart_top_pages: Páginas más visitadas
+chart_traffic_sources: Fuentes de tráfico
+chart_utm_campaigns: Campañas UTM
+visits_unit_suffix: " visitas"
+
+product_stats_title: Estadísticas de Productos
+view_traffic_stats: Ver estadísticas de tráfico
+kpi_total_sales: Total Ventas
+kpi_pending_payment: Pendientes de pago
+kpi_to_ship: Por enviar
+kpi_avg_ticket: Ticket promedio
+kpi_avg_shipping_time: Tiempo medio de envío
+hours_unit_suffix: " horas"
+days_unit_suffix: " días"
+funnel_title: Funnel de conversión
+funnel_stage_visited: Visitó
+funnel_stage_viewed_product: Vio un producto
+funnel_stage_added_to_cart: Agregó al carrito
+funnel_stage_purchased: Compró
+chart_sales_by_day: Ventas por día
+chart_top_products: Productos más vendidos
+chart_sales_by_country: Ventas por país
+chart_sales_by_region: Ventas por región
+chart_sales_by_city: Ventas por ciudad
+orders_unit_suffix: " pedidos"
+units_sold_suffix: " unidades"

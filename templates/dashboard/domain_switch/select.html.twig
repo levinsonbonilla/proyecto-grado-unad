@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	{{ 'select_active_domain_title'|trans({}, 'dashboard') | raw }}
+{% endblock %}
+
+{% block body %}
+	<body class="login">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+					<div class="x_panel" style="margin-top: 60px;">
+						<div class="x_content" style="padding: 30px;">
+							<h2 class="text-center">{{ 'select_active_domain_title'|trans({}, 'dashboard') }}</h2>
+							<p class="text-center">{{ 'select_active_domain_subtitle'|trans({}, 'dashboard') }}</p>
+							<ul class="list-unstyled" style="margin-top: 20px;">
+								{% for domain in domains %}
+									<li style="margin-bottom: 10px;">
+										<a href="{{ path('dashboard_domain_switch', {id: domain.id, _locale: app.request.locale}) }}"
+											class="btn btn-default btn-block" title="{{ domain.domain }}">
+											<i class="fa fa-globe" aria-hidden="true"></i>
+											{{ domain.displayName }}
+										</a>
+									</li>
+								{% endfor %}
+							</ul>
+							<div class="text-center" style="margin-top: 20px;">
+								<a href="{{ path('security_logout') }}">{{ 'log_out'|trans({}, 'dashboard') }}</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+{% endblock %}

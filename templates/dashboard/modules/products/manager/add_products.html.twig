@@ -1,0 +1,453 @@
+{% extends 'dashboard/base_dashboard.html.twig' %}
+{% import 'macros/register_form_script.html.twig' as registerScript %}
+{% import 'macros/alert.html.twig' as alert %}
+
+{% set type = isEdit|default(false) ? 'edit' : 'add' %}
+
+{% block title %}
+  {{ (type ~ '_product')|trans({}, 'modules') }}
+{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <style>
+    .panel {
+      transition: all 0.3s ease;
+    }
+
+    .panel:hover {
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .upload-overlay {
+      transition: all 0.3s ease;
+    }
+
+    .upload-overlay:hover {
+      background: rgba(0, 0, 0, 0.15) !important;
+      border-color: #999 !important;
+    }
+
+    #add-variant {
+      transition: all 0.3s ease;
+      border-radius: 4px;
+    }
+
+    #add-variant:hover {
+      background: rgba(52, 152, 219, 0.1) !important;
+      border-color: #3498db !important;
+      color: #3498db !important;
+    }
+
+    .variant-block-item .panel {
+      min-height: 320px;
+      position: relative;
+    }
+
+    .remove-variant-card,
+    .remove-photo-card {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 5;
+      padding: 4px 7px;
+      border-radius: 50%;
+      line-height: 1;
+      font-size: 10px;
+    }
+
+    .variant-images {
+      margin: 0 -4px;
+    }
+
+    .variant-image-item {
+      padding: 0 4px;
+      margin-bottom: 8px;
+    }
+
+    #stock-summary-bar {
+      transition: all 0.2s ease;
+    }
+
+    #stock-summary-bar.stock-summary-negative {
+      background-color: #f2dede;
+      border-color: #ebccd1;
+      color: #a94442;
+      font-weight: bold;
+    }
+
+    .js-variant-stock.is-invalid {
+      border-color: #a94442;
+      box-shadow: inset 0 1px 1px rgba(169, 68, 68, .3);
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+  <!-- page content -->
+  <div class="right_col" role="main">
+    <div class="">
+      <div class="page-title">
+        {{ alert.alert_success() }}
+        {{ alert.alert_error() }}
+        <div class="title_left">
+          <h3>{{ (type ~ '_product')|trans({}, 'modules') }}</h3>
+        </div>
+
+        <div class="title_right">
+          <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+            <div class="input-group">
+              <a href="{{ path('dashboard_products_manager') }}" class="btn btn-default form-control"><i class="fa fa-arrow-left" aria-hidden="true"></i>&nbsp;&nbsp;{{ 'back'|trans({}, 'users') }}</a>
+              <span class="input-group-btn"><button class="btn btn-default" type="button" onclick="window.location.href='{{ path('dashboard') }}'"><i class="fa fa-home" aria-hidden="true"></i></button></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="clearfix"></div>
+      {{ include('dashboard/modules/products/manager/products.html.twig') }}
+    </div>
+  </div>
+  <!-- /page content -->
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  {{ registerScript.form_script_validations('add_user_form') }}
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+      (function () {
+        const wrapper = document.getElementById('variants-wrapper')
+        if (!wrapper) return
+
+        const addButton = document.getElementById('add-variant')
+        let blockIndex = wrapper.querySelectorAll('.variant-block-item').length
+
+        function getAddColumn() {
+          return wrapper.querySelector('.variant-add-column')
+        }
+
+        function bindPhotoInput(block) {
+          const input = block.querySelector('.js-multi-photo-input')
+          if (!input || input.__bound) return
+          input.__bound = true
+          input.addEventListener('change', function () {
+            const files = Array.from(input.files || [])
+            files.forEach(function (file) { addPhotoToBlock(block, file) })
+            input.value = ''
+          })
+        }
+
+        function addPhotoToBlock(block, file) {
+          const imagesContainer = block.querySelector('.variant-images')
+          if (!imagesContainer || !imagesContainer.dataset.prototype) return
+
+          const photoIndex = imagesContainer.querySelectorAll('.variant-image-item').length
+          const html = imagesContainer.dataset.prototype.replace(/__image_name__/g, photoIndex)
+          const tmp = document.createElement('div')
+          tmp.innerHTML = html.trim()
+          const newNode = tmp.firstElementChild
+          if (!newNode) return
+
+          imagesContainer.appendChild(newNode)
+
+          const fileInput = newNode.querySelector('input[type="file"]')
+          if (fileInput && file) {
+            const dt = new DataTransfer()
+            dt.items.add(file)
+            fileInput.files = dt.files
+            fileInput.dispatchEvent(new Event('change', { bubbles: true }))
+          }
+
+          const positionInput = newNode.querySelector('input[id$="_position"]')
+          if (positionInput && !positionInput.value) positionInput.value = photoIndex + 1
+
+          const cont = newNode.querySelector('.improved-image-container') || newNode
+          if (typeof window.initImagePreview === 'function') window.initImagePreview(cont, photoIndex)
+        }
+
+        function bindColorControls(block) {
+          const checkbox = block.querySelector('.js-has-color-checkbox')
+          const colorFields = block.querySelector('.variant-color-fields')
+          const select = block.querySelector('.js-color-select')
+          const manualInputs = block.querySelector('.js-color-manual-inputs')
+          const nameInput = block.querySelector('.js-color-name-input')
+          const hexInput = block.querySelector('.js-color-hex-input')
+          if (!checkbox || !colorFields || !select || !manualInputs || !nameInput || !hexInput) return
+
+          checkbox.addEventListener('change', function () {
+            colorFields.style.display = checkbox.checked ? 'block' : 'none'
+            if (!checkbox.checked) {
+              select.value = ''
+              manualInputs.style.display = 'none'
+              nameInput.value = ''
+              hexInput.value = ''
+            }
+          })
+
+          select.addEventListener('change', function () {
+            const option = select.options[select.selectedIndex]
+            if (select.value === '__new__') {
+              manualInputs.style.display = 'block'
+              nameInput.value = ''
+              hexInput.value = ''
+            } else if (select.value === '') {
+              manualInputs.style.display = 'none'
+              nameInput.value = ''
+              hexInput.value = ''
+            } else {
+              manualInputs.style.display = 'none'
+              nameInput.value = option.getAttribute('data-name') || ''
+              hexInput.value = option.getAttribute('data-hex') || ''
+            }
+          })
+
+          const existingName = (nameInput.value || '').trim()
+          if (existingName !== '') {
+            checkbox.checked = true
+            colorFields.style.display = 'block'
+            const match = Array.from(select.options).find(function (opt) {
+              return (opt.getAttribute('data-name') || '').trim().toLowerCase() === existingName.toLowerCase()
+            })
+            if (match) {
+              select.value = match.value
+              manualInputs.style.display = 'none'
+            } else {
+              select.value = '__new__'
+              manualInputs.style.display = 'block'
+            }
+          }
+        }
+
+        function bindMedidaControls(block) {
+          const checkbox = block.querySelector('.js-has-medida-checkbox')
+          const medidaFields = block.querySelector('.variant-medida-fields')
+          const rowsContainer = block.querySelector('.variant-medida-rows')
+          const blockStockFields = block.querySelector('.variant-block-stock-fields')
+          if (!checkbox || !medidaFields || !rowsContainer || !blockStockFields) return
+
+          checkbox.addEventListener('change', function () {
+            medidaFields.style.display = checkbox.checked ? 'block' : 'none'
+            blockStockFields.style.display = checkbox.checked ? 'none' : 'block'
+            if (checkbox.checked) {
+              if (rowsContainer.querySelectorAll('.variant-medida-row').length === 0) {
+                addMedidaRowToBlock(block)
+              }
+            } else {
+              rowsContainer.innerHTML = ''
+            }
+            if (typeof window.recalculateVariantStock === 'function') window.recalculateVariantStock()
+          })
+
+          const existingRows = rowsContainer.querySelectorAll('.variant-medida-row')
+          if (existingRows.length > 0) {
+            checkbox.checked = true
+            medidaFields.style.display = 'block'
+            blockStockFields.style.display = 'none'
+            existingRows.forEach(bindMedidaRowControls)
+          }
+        }
+
+        function bindMedidaRowControls(row) {
+          const select = row.querySelector('.js-medida-select')
+          const manualWrap = row.querySelector('.js-medida-manual-input')
+          const nameInput = row.querySelector('.js-medida-name-input')
+          if (!select || !manualWrap || !nameInput || select.__bound) return
+          select.__bound = true
+
+          select.addEventListener('change', function () {
+            const option = select.options[select.selectedIndex]
+            if (select.value === '__new__') {
+              manualWrap.style.display = 'block'
+              nameInput.value = ''
+              nameInput.focus()
+            } else if (select.value === '') {
+              manualWrap.style.display = 'none'
+              nameInput.value = ''
+            } else {
+              manualWrap.style.display = 'none'
+              nameInput.value = option.getAttribute('data-name') || ''
+            }
+          })
+
+          const existingName = (nameInput.value || '').trim()
+          if (existingName !== '') {
+            const match = Array.from(select.options).find(function (opt) {
+              return (opt.getAttribute('data-name') || '').trim().toLowerCase() === existingName.toLowerCase()
+            })
+            if (match) {
+              select.value = match.value
+              manualWrap.style.display = 'none'
+            } else {
+              select.value = '__new__'
+              manualWrap.style.display = 'block'
+            }
+          }
+        }
+
+        function addMedidaRowToBlock(block) {
+          const rowsContainer = block.querySelector('.variant-medida-rows')
+          if (!rowsContainer || !rowsContainer.dataset.prototype) return
+
+          const rowIndex = rowsContainer.querySelectorAll('.variant-medida-row').length
+          const html = rowsContainer.dataset.prototype.replace(/__medida_name__/g, rowIndex)
+          const tmp = document.createElement('div')
+          tmp.innerHTML = html.trim()
+          const newNode = tmp.firstElementChild
+          if (!newNode) return
+
+          rowsContainer.appendChild(newNode)
+          bindMedidaRowControls(newNode)
+          if (typeof window.recalculateVariantStock === 'function') window.recalculateVariantStock()
+        }
+
+        function bindBlock(block) {
+          bindPhotoInput(block)
+          bindColorControls(block)
+          bindMedidaControls(block)
+        }
+
+        wrapper.addEventListener('click', function (e) {
+          const removeVariant = e.target.closest('.remove-variant-card')
+          if (removeVariant) {
+            e.preventDefault()
+            const item = removeVariant.closest('.variant-block-item')
+            if (item) item.remove()
+            return
+          }
+
+          const removePhoto = e.target.closest('.remove-photo-card')
+          if (removePhoto) {
+            e.preventDefault()
+            const photoItem = removePhoto.closest('.variant-image-item')
+            const block = removePhoto.closest('.variant-block-item')
+            if (photoItem) photoItem.remove()
+
+            if (block && block.querySelectorAll('.variant-image-item').length === 0) {
+              block.remove()
+            }
+            return
+          }
+
+          const addPhotoBtn = e.target.closest('.add-photo-to-block')
+          if (addPhotoBtn) {
+            e.preventDefault()
+            const block = addPhotoBtn.closest('.variant-block-item')
+            const input = block ? block.querySelector('.js-multi-photo-input') : null
+            if (input) input.click()
+            return
+          }
+
+          const addMedidaBtn = e.target.closest('.add-medida-row')
+          if (addMedidaBtn) {
+            e.preventDefault()
+            const block = addMedidaBtn.closest('.variant-block-item')
+            if (block) addMedidaRowToBlock(block)
+            return
+          }
+
+          const removeMedidaRow = e.target.closest('.remove-medida-row')
+          if (removeMedidaRow) {
+            e.preventDefault()
+            const row = removeMedidaRow.closest('.variant-medida-row')
+            if (row) row.remove()
+            if (typeof window.recalculateVariantStock === 'function') window.recalculateVariantStock()
+          }
+        })
+
+        if (addButton) {
+          addButton.addEventListener('click', function () {
+            if (!wrapper.dataset.prototype) return
+
+            const html = wrapper.dataset.prototype.replace(/__name__/g, blockIndex)
+            const tmp = document.createElement('div')
+            tmp.innerHTML = html.trim()
+            const newNode = tmp.firstElementChild
+            if (!newNode) return
+
+            const addCol = getAddColumn()
+            if (addCol) {
+              wrapper.insertBefore(newNode, addCol)
+            } else {
+              wrapper.appendChild(newNode)
+            }
+
+            bindBlock(newNode)
+            blockIndex++
+
+            const input = newNode.querySelector('.js-multi-photo-input')
+            if (input) input.click()
+          })
+        }
+
+        wrapper.querySelectorAll('.variant-block-item').forEach(function (block) {
+          if (block.classList.contains('variant-add-column')) return
+          bindBlock(block)
+        })
+      })()
+
+      window.initImagePreview = function (container, index) {
+        if (!container) return
+
+        const dataPrefix = container.closest('.image-upload-wrapper') ? container.closest('.image-upload-wrapper').dataset.prefix : null
+        const prefix = dataPrefix || `products_${index}`
+
+        const imageInput = container.querySelector(`#${prefix}_image`) || container.querySelector('input[type="file"]')
+        const previewContainer = container.querySelector('.improved-preview-container') || container.querySelector('.image-preview-container')
+        const previewImage = container.querySelector(`#${prefix}_image-preview`) || container.querySelector('img.improved-preview-img') || container.querySelector('img.image-preview')
+        const removeButton = container.querySelector('.improved-remove-btn') || container.querySelector('.remove-image')
+        const uploadLabel = container.querySelector('.improved-upload-label') || container.querySelector('.upload-label')
+
+        if (!imageInput || !previewContainer || !previewImage || !removeButton || !uploadLabel) {
+          console.warn('Elementos de previsualización no encontrados en el contenedor', container)
+          return
+        }
+
+        if (imageInput.__previewBound) return
+        imageInput.__previewBound = true
+
+        imageInput.style.zIndex = 1
+        uploadLabel.style.zIndex = 2
+
+        imageInput.addEventListener('change', function () {
+          const file = this.files && this.files[0]
+          if (!file) return
+
+          const reader = new FileReader()
+          reader.onload = function (e) {
+            previewImage.src = e.target.result
+            previewContainer.style.display = 'flex'
+            uploadLabel.style.display = 'none'
+            removeButton.style.display = 'block'
+          }
+          reader.readAsDataURL(file)
+        })
+
+        uploadLabel.addEventListener('click', function (e) {
+          if (imageInput) imageInput.click()
+        })
+
+        removeButton.addEventListener('click', function (e) {
+          e.preventDefault()
+          e.stopPropagation()
+          imageInput.value = ''
+          previewImage.src = '#'
+          previewContainer.style.display = 'none'
+          uploadLabel.style.display = 'flex'
+          this.style.display = 'none'
+        })
+
+        const initialSrc = previewImage.getAttribute('src') || ''
+        if (initialSrc && initialSrc !== '#' && initialSrc.trim() !== '') {
+          previewContainer.style.display = 'flex'
+          uploadLabel.style.display = 'none'
+          removeButton.style.display = 'block'
+        }
+      }
+    })
+
+    $(document).ready(function () {
+      $('#managers_productsCategories').select2()
+    })
+  </script>
+{% endblock %}

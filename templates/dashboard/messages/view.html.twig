@@ -1,0 +1,98 @@
+{% extends 'dashboard/base_dashboard.html.twig' %}
+{% import 'macros/alert.html.twig' as alert %}
+
+{% block title %}{{ 'conversation_title'|trans({}, 'help_messages') }}{% endblock %}
+
+{% block body %}
+    <div class="right_col" role="main">
+        <div class="">
+            <div class="page-title">
+                {{ alert.alert_success() }}
+                {{ alert.alert_error() }}
+                <div class="title_left">
+                    <h3><i class="fa fa-comments"></i> {{ 'conversation_title'|trans({}, 'help_messages') }}</h3>
+                </div>
+                <div class="title_right">
+                    <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                        <div class="input-group">
+                            <a href="{{ path('dashboard_messages') }}" class="btn btn-default form-control">
+                                <i class="fa fa-arrow-left"></i>&nbsp;&nbsp;{{ 'inbox_tooltip'|trans({}, 'help_messages') }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+
+            {% if thread.success is defined and not thread.success %}
+                <div class="alert alert-danger">{{ 'message_load_error'|trans({}, 'help_messages') }}</div>
+            {% else %}
+                <div class="row">
+                    <div class="col-md-10 col-md-offset-1">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>
+                                    {% if rootMessage.subject is not empty %}
+                                        {{ rootMessage.subject }}
+                                    {% else %}
+                                        {{ 'message_thread_default_title'|trans({}, 'help_messages') }}
+                                    {% endif %}
+                                </h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content" style="padding: 20px;">
+
+                                {% if thread.thread is defined %}
+                                    {% for msg in thread.thread %}
+                                        {% include 'dashboard/messages/_message_bubble.html.twig' with {
+                                            'msg': msg,
+                                            'images': thread.images[msg.id]|default([]),
+                                            'cdnBaseUrl': cdnBaseUrl
+                                        } %}
+                                    {% endfor %}
+                                {% endif %}
+
+                                <hr>
+
+                                <h4><i class="fa fa-reply"></i> {{ 'reply_label'|trans({}, 'help_messages') }}</h4>
+
+                                {{ form_start(replyForm, {
+                                    'action': path('dashboard_messages_reply', {'id': rootMessage.id}),
+                                    'method': 'POST',
+                                    'attr': {'enctype': 'multipart/form-data', 'class': 'form-horizontal form-label-left'}
+                                }) }}
+
+                                <div class="item form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">{{ 'message_column'|trans({}, 'help_messages') }} <span class="required">*</span></label>
+                                    <div class="col-md-8 col-sm-8 col-xs-12">
+                                        {{ form_widget(replyForm.message, {'attr': {'class': 'form-control'}}) }}
+                                    </div>
+                                </div>
+
+                                <div class="item form-group">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-12">{{ 'images_label'|trans({}, 'help_messages') }}</label>
+                                    <div class="col-md-8 col-sm-8 col-xs-12">
+                                        {{ form_widget(replyForm.images, {'attr': {'class': 'form-control'}}) }}
+                                        <small class="text-muted">{{ 'images_help_reply'|trans({}, 'help_messages') }}</small>
+                                    </div>
+                                </div>
+
+                                <div class="ln_solid"></div>
+                                <div class="form-group">
+                                    <div class="col-md-8 col-md-offset-2">
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fa fa-reply"></i> {{ 'send_reply'|trans({}, 'help_messages') }}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {{ form_end(replyForm) }}
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

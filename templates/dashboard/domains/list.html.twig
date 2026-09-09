@@ -1,0 +1,104 @@
+{% extends 'dashboard/base_dashboard.html.twig' %}
+{% import 'macros/data_table/data_table_domains.html.twig' as data_table_aditional %}
+{% import 'macros/data_table_configuration.html.twig' as data_table %}
+{% import 'macros/alert.html.twig' as alert %}
+{% import 'macros/modal_confirm_status.html.twig' as modal_status %}
+
+{% block title %}
+	{{ 'domains'|trans({}, 'dashboard') }}
+{% endblock %}
+
+{% block body %}
+
+	<div class="right_col" role="main">
+		<div class="">
+			<div class="page-title">
+				{{ alert.alert_success() }}
+				{{ alert.alert_error() }}
+				<div class="title_left">
+					<h3>{{ 'domains'|trans({}, 'dashboard') }}</h3>
+				</div>
+
+				<div class="title_right">
+					<div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+						<div class="input-group">
+							<a href="{{ path("dashboard_configurations_domains_new") }}" class="btn btn-default form-control"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;{{ 'create_domain'|trans({}, 'domains') }}</a>
+							<span class="input-group-btn">
+								<button class="btn btn-default" type="button" onclick="window.location.href='{{ path('dashboard') }}'"><i class="fa fa-home" aria-hidden="true"></i></button>
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="clearfix"></div>
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+					<div class="x_panel">
+						<div class="x_title">
+							<h2>{{ 'list_domains'|trans({}, 'domains') }}
+							</h2>
+							<ul class="nav navbar-right panel_toolbox">
+								<li>
+									<a class="collapse-link">
+										<i class="fa fa-chevron-up"></i>
+									</a>
+								</li>
+								<li>
+									<a href="{{ path("dashboard") }}" class="dropdown">
+										<i class="fa fa-home" aria-hidden="true"></i>
+									</a>
+								</li>
+								<li>
+									<a href="{{ path("dashboard_configurations_domains_new") }}" class="dropdown">
+										<i class="fa fa-plus" aria-hidden="true"></i>
+									</a>
+								</li>
+							</ul>
+							<div class="clearfix"></div>
+						</div>
+						<div class="x_content" style="position: relative;">
+							<div id="datatable-domains-loading" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.75); z-index:10; text-align:center; padding-top:60px;">
+								<i class="fa fa-spinner fa-spin fa-3x" style="color:#f39c12;"></i>
+							</div>
+							{% set isSuperAdmin = is_granted('ROLE_SUPER_ADMIN') %}
+							<table id="datatable-domains" class="table table-striped table-bordered">
+								<thead>
+									<tr>
+										<th>{{ 'active'|trans({}, 'domains') }}</th>
+										<th>{{ 'actions'|trans({}, 'domains') }}</th>
+										{% if isSuperAdmin %}
+											<th>{{ 'tenant'|trans({}, 'domains') }}</th>
+										{% endif %}
+										<th>{{ 'name'|trans({}, 'domains') }}</th>
+										<th>{{ 'domain'|trans({}, 'domains') }}</th>
+										<th>{{ 'notification_email'|trans({}, 'domains') }}</th>
+										<th>{{ 'support_email'|trans({}, 'domains') }}</th>
+										<th>{{ 'id'|trans({}, 'domains') }}</th>
+									</tr>
+								</thead>
+								<tbody>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	{{ modal_status.confirm_status(
+		'domainStatusModal',
+		'change_status_modal_title'|trans({}, 'messages'),
+		'change_status_modal_body'|trans({}, 'messages'),
+		'change_status_modal_confirm'|trans({}, 'messages'),
+		'change_status_error'|trans({}, 'messages'),
+		'cancel'|trans({}, 'messages')
+	) }}
+
+{% endblock %}
+ {% block javascripts %}
+	{{ parent() }}
+	{{ data_table_aditional.data_table_domains(is_granted('ROLE_SUPER_ADMIN')) }}
+	{{ data_table.data_table_configuration_general("#datatable-domains") }}
+ {% endblock %}

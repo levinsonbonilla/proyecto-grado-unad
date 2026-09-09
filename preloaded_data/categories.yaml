@@ -1,0 +1,6 @@
+0:
+    name: "Categoria Electronica"
+    description: "Categoria de prueba sin restriccion geografica -- usada para probar el CRUD de categorias con datos reales (listado, edicion, toggle de estado)."
+1:
+    name: "Categoria Hogar"
+    description: "Segunda categoria de prueba, sin relacion con productos ni geo -- cubre el caso de una categoria vacia en el listado."

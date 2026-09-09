@@ -1,0 +1,97 @@
+login_form_title: Inicio de sesión
+back_to_store: Volver
+change_language: Cambiar idioma
+lang_es: Español
+lang_en: Inglés
+login_title: Inicio de sesión
+login_form_forgot_password_link: ¿Olvidaste tu contraseña?
+login_form_remember_me_label: Recuérdame
+new_to_site_question: ¿Nuevo en el sitio?
+create_account_button: Crear cuenta
+email_label: Correo electrónico
+password_label: Contraseña
+create_account: Crear cuenta
+name_label: Nombre
+last_name_label: Apellido
+confirm_password_label: Confirmar contraseña
+accept_button: Aceptar
+already_a_member_question: ¿Ya eres miembro?
+log_in_action: Inicia sesión
+registration_success_message: Registro exitoso. Recibirá un correo electrónico para confirmar su cuenta. Podrá iniciar sesión después de la confirmación.
+registration_error_with_id_message: Ha ocurrido un error durante el registro, por favor proporcione el siguiente ID a su administrador.
+zxcvbn:
+    add_another_word_or_two_message: Agregue una palabra o dos más. Las palabras poco comunes son mejores.
+    additional_verbiage_request: Introduzca algunas palabras más, evite frases comunes.
+    no_need_for_symbols_digits_or_uppercase: No hay necesidad de símbolos, dígitos o letras mayúsculas
+    top_10_common_password_message: Esta es una contraseña común dentro del top 10.
+    top_100_common_password_message: Esta es una contraseña común dentro del top 100.
+    very_common_password_message: Esta es una contraseña muy común.
+    predictable_substitutions_message: Las sustituciones predecibles como '@' en lugar de 'a' no ayudan mucho.
+    very_weak: Muy débil
+    weak: Débil
+    moderate: Moderado
+    strong: Fuerte
+    very_strong: Muy fuerte
+    adequate_strength: Fortaleza adecuada
+    avoid_repetitions_message: Evita palabras y caracteres repetidos
+    longer_keyboard_pattern_message: Use un patrón de teclado más largo con más vueltas
+password_weak_message: La contraseña es demasiado débil.
+confirmation_does_not_match_message: La confirmación no corresponde a la contraseña.
+invalid_email_message: Este valor debe ser un correo válido.
+confirm_email: Confirma tu correo electrónico
+welcome_to: ¡Bienvenido a
+hello: Hola
+thank_you_for_registering_at: Gracias por registrarte en
+please_confirm_email_button_below: ". Por favor, confirma tu correo electrónico haciendo clic en el botón de abajo:"
+confirm_my_email: Confirmar mi correo
+copy_paste_link: "O puedes copiar y pegar el siguiente enlace en tu navegador:"
+enjoy_experience: Esperamos que disfrutes de la experiencia.
+regards_team: Saludos,<br>El equipo de
+if_you_have_questions: Si tienes alguna pregunta, no dudes en
+contact_support: contactar con nuestro soporte
+email_confirmation: Confirmación
+user_not_found: Usuario no encontrado
+user_already_confirmed: Usuario ya confirmado
+welcome_to_name: ¡Bienvenido(a) a %name%!
+email_confirmed_successfully: Tu correo electrónico ha sido confirmado exitosamente.
+email_confirmed_login: "¡Correo confirmado! Has iniciado sesión automáticamente."
+hello_user: ¡Hola, %name%!
+email_confirmation_success_message: Nos complace informarte que has confirmado tu correo electrónico con éxito. Ya puedes disfrutar de todo lo que %name% tiene para ofrecer.
+what_can_you_do_now: ¿Qué puedes hacer ahora?
+explore_our_products: "<strong>Explora nuestros productos:</strong> Navega por nuestro catálogo y descubre nuestra amplia gama de productos."
+configure_your_account: "<strong>Configura tu cuenta:</strong> Personaliza tu perfil y ajusta tus preferencias."
+login_prompt: "<strong>Inicia sesión:</strong> Para realizar compras y acceder a funciones adicionales, <a href=\"%link%\" class=\"btn btn-link p-0\">inicia sesión</a> en tu cuenta."
+contact_support_help_page: Si tienes alguna pregunta o necesitas asistencia, no dudes en <a href="mailto:%soporteEmail%" class="btn btn-link p-0">contactarnos</a> o visitar nuestra <a href="%linkHelp%" class="btn btn-link p-0">página de ayuda</a>.
+thank_you_for_joining: "<strong>¡Gracias por unirte a %name%!</strong>"
+check_email_for_instructions: Revise su correo electrónico, recibirá instrucciones para recuperar su contraseña.
+reset_access: Restablecer acceso
+reset_password_request: Has solicitado restablecer tu contraseña. Haz clic en el botón de abajo para restablecerla.
+reset_my_password: Restablecer mi Contraseña
+copy_and_paste_link_message: "Si el botón no funciona, copia y pega el siguiente enlace en tu navegador:"
+ignore_password_reset_email: Si no solicitaste restablecer tu contraseña, por favor ignora este correo.
+password_change_successful: Cambio exitoso de contraseña
+password_change_error_message: Ha ocurrido un error durante el cambio de contraseña, por favor proporcione el siguiente ID a su administrador.
+restart_process_error_message: Por favor, inicie el proceso nuevamente, al parecer hubo un error con su usuario.
+password_change_recently_message: Este usuario realizó un cambio de contraseña hace menos de una hora, por favor espere un poco más para realizar un nuevo intento.
+existing_user: Usuario existente
+access_denied: Acceso denegado
+internal_server_error: Error interno del servidor
+user_registration_success_to_login: Registro exitoso. Ya puede iniciar sesión y comenzar a usar su cuenta.
+
+tenant_signup_title: Crea tu tienda
+tenant_signup_subtitle: Registra tu negocio y obtén tu propia tienda en minutos.
+tenant_signup_button: Crear mi tienda
+business_name_label: Nombre del negocio
+subdomain_label: Subdominio
+business_name_required_message: El nombre del negocio es obligatorio.
+invalid_slug: El subdominio debe tener entre 3 y 40 caracteres, solo minúsculas, números y guiones.
+reserved_slug: Ese subdominio está reservado, elige otro.
+slug_taken: Ese subdominio ya está en uso, elige otro.
+tenant_registration_success_message: "¡Tu tienda fue creada! Revisa tu correo para confirmar tu cuenta antes de iniciar sesión."
+tenant_signup_form_invalid_message: Revisa los campos marcados e intenta de nuevo.
+registration_not_available_here: El registro de clientes no está disponible en este sitio.
+
+phone_label: Teléfono
+phone_required_message: El teléfono es obligatorio.
+new_tenant_domain_placeholder: Reemplace por su dominio
+registration_form_invalid_message: Revisa los campos marcados e intenta de nuevo.

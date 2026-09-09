@@ -1,0 +1,87 @@
+{% macro data_table_categories() %}
+    <script>
+
+        var ajaxPath = "{{ path('dashboard_products_categories_list') }}";
+        var pathEdit = "{{ path('dashboard_products_categories_edit', {'id': 'CHANGE'}) }}";
+        var pathToggleStatus = "{{ path('dashboard_products_categories_toggle_status', {'id': 'CHANGE'}) }}";
+
+        var columnDefs = [
+            { data: "active", render: function(data) { return data ? "<span class='label label-success'>{{ 'yes'|trans({}, 'users') }}</span>" :  "<span class='label label-danger'>{{ 'no'|trans({}, 'users') }}</span>"; }, targets: 0 },
+            {
+                data: null,
+                render: function(data, type, row) {
+                    return `<li class="text-center" style="list-style-type: none; ">
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-bars fa-1x pull-center"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="dropdownMenuButton">
+                                <li>
+                                    <a class="dropdown-item" href="${pathEdit.replace('CHANGE', row.id)}">
+                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{ 'edit'|trans({}, 'users') }}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-warning" href="#" onclick="openCategoryStatusModal('${row.id}'); return false;">
+                                        <i class="fa fa-refresh" aria-hidden="true"></i> {{ 'change_status'|trans({}, 'messages') }}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>`;
+                },
+                targets: 1
+            },
+            { data: "name", targets: 2 },
+            {
+                data: "description",
+                targets: 3,
+                render: function (data, type, row) {
+                    let limit = 110;
+                    if (data.length > limit) {
+                        return data.substring(0, limit) + '...';
+                    } else {
+                        return data;
+                    }
+                }
+            },
+            { data: "id", visible: false, targets: 4 },
+        ];
+
+        var pendingCategoryStatusId = null;
+
+        function openCategoryStatusModal(id) {
+            pendingCategoryStatusId = id;
+            $('#categoryStatusModalError').hide();
+            $('#categoryStatusModal').modal('show');
+        }
+
+        $('#categoryStatusModalConfirmBtn').on('click', function() {
+            if (!pendingCategoryStatusId) return;
+            var id = pendingCategoryStatusId;
+            pendingCategoryStatusId = null;
+            $('#categoryStatusModalError').hide();
+
+            fetch(pathToggleStatus.replace('CHANGE', id), {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    $('#categoryStatusModal').modal('hide');
+                    $('#datatable-categories-loading').show();
+                    $('#datatable-categories').DataTable().ajax.reload(function() {
+                        $('#datatable-categories-loading').hide();
+                    }, false);
+                } else {
+                    $('#categoryStatusModalError').show();
+                }
+            })
+            .catch(function() {
+                $('#categoryStatusModalError').show();
+            });
+        });
+
+    </script>
+{% endmacro %}

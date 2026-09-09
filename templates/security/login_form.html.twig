@@ -1,0 +1,47 @@
+{% import 'macros/dashboard.html.twig' as macros %}
+{% import 'macros/alert.html.twig' as alert %}
+
+{% if isLogin %}
+	{{ alert.alert_success() }}
+	{{ alert.alert_error() }}
+{% endif %}
+
+<section class="login_content">
+	<form id="login_form" method="post" action="{{ path('security_login') }}">
+		<h1>{{ 'login_form_title'|trans({}, 'login') }}</h1>
+		<div class="form-group">
+			<input type="email" class="form-control" placeholder="{{ 'email_label'|trans({}, 'login') }}" name="_username" id="username" autocomplete="email" required autofocus/>
+		</div>
+		<div class="form-group">
+			<input type="password" name="_password" id="password" class="form-control" placeholder="{{ 'password_label'|trans({}, 'login') }}" autocomplete="current-password" required/>
+		</div>
+		<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}"/>
+		<div>
+			<div class="checkbox mb-3">
+				<button class="btn btn-default submit" type="submit" style="vertical-align:middle; margin:0;">{{ 'login_title'|trans({}, 'login') }}</button>
+				<a href="{{ path('store', {_locale: app.request.locale}) }}" class="btn btn-default" style="display:inline-block; vertical-align:middle; margin:0;">{{ 'back_to_store'|trans({}, 'login') }}</a>
+				<a href="{{ path('security_recovery') }}">{{ 'login_form_forgot_password_link'|trans({}, 'login') }}</a>
+				<label><input type="checkbox" name="_remember_me"/>{{ 'login_form_remember_me_label'|trans({}, 'login') }}</label>
+			</div>
+		</div>
+
+		<div class="clearfix"></div>
+
+		<div class="separator">
+			<p class="change_link">
+				{{ 'new_to_site_question'|trans({}, 'login') }}
+				<a href="#signup" class="to_register">{{ 'create_account_button'|trans({}, 'login') }}</a>
+			</p>
+
+			<div class="clearfix"></div>
+			<br/>
+
+			{{ macros.term_and_conditions() }}
+		</div>
+	</form>
+</section>
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		$('#login_form').parsley();
+	});
+</script>

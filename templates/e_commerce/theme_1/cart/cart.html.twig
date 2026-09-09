@@ -1,0 +1,249 @@
+{% extends 'e_commerce/theme_1/base_theme_1.html.twig' %}
+
+{% block title %}{{ 'cart' | trans({}, 'store') | default('Carrito') }}{% endblock %}
+
+{% block body %}
+<div class="bg0 p-t-75 p-b-85">
+    <div class="container">
+        <div class="bread-crumb flex-w p-b-32">
+            <a href="{{ path('store', {_locale: app.request.locale}) }}" class="stext-109 cl8 hov-cl1 trans-04">
+                {{ 'home' | trans({}, 'store') | default('Inicio') }}
+                <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+            </a>
+            <span class="stext-109 cl4">{{ 'cart' | trans({}, 'store') | default('Carrito') }}</span>
+        </div>
+
+        {% if items is not empty %}
+        <div class="row">
+
+            <div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
+
+                <div class="m-l-25 m-lr-0-xl">
+                    <div class="wrap-table-shopping-cart">
+                        <table class="table-shopping-cart">
+                            <tr class="table_head">
+                                <th class="column-1">{{ 'product' | trans({}, 'store') | default('Producto') }}</th>
+                                <th class="column-2"></th>
+                                <th class="column-3">{{ 'price' | trans({}, 'store') | default('Precio') }}</th>
+                                <th class="column-4">{{ 'quantity' | trans({}, 'store') | default('Cantidad') }}</th>
+                                <th class="column-5">{{ 'total' | trans({}, 'store') | default('Total') }}</th>
+                                <th class="column-6"></th>
+                            </tr>
+                            {% for item in items %}
+                            <tr class="table_row" data-cart-item-id="{{ item.cartItemId }}" data-product-id="{{ item.productId }}" data-unit-price="{{ item.publicPrice }}" data-quantity="{{ item.quantity }}">
+                                <td class="column-1">
+                                    <div class="how-itemcart1">
+                                        {% if item.image %}
+                                            <img src="{{ asset(item.image) }}" alt="{{ item.name }}">
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td class="column-2">
+                                    {{ item.name }}
+                                    {% if item.colorName or item.medidaName %}
+                                    <br><span class="stext-109 cl6">
+                                        {% if item.colorName %}<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:{{ item.colorHexCode }};margin-right:4px;vertical-align:middle;"></span>{{ item.colorName }}{% endif %}
+                                        {% if item.colorName and item.medidaName %} - {% endif %}
+                                        {% if item.medidaName %}{{ item.medidaName }}{% endif %}
+                                    </span>
+                                    {% endif %}
+                                </td>
+                                <td class="column-3">{{ item.publicPrice | price }}</td>
+                                <td class="column-4">
+                                    <div class="wrap-num-product flex-w m-l-auto m-r-0">
+                                        <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m" data-action="decrease">
+                                            <i class="fs-16 zmdi zmdi-minus"></i>
+                                        </div>
+                                        <input class="mtext-104 cl3 txt-center num-product cart-quantity-input"
+                                               type="number" name="num-product" value="{{ item.quantity }}" min="1">
+                                        <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m" data-action="increase">
+                                            <i class="fs-16 zmdi zmdi-plus"></i>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="column-5 js-item-total">{{ item.itemTotal | price }}</td>
+                                <td class="column-6">
+                                    <button class="btn-remove-cart" aria-label="Remove" style="margin-right: 15px;"
+                                            title="{{ 'remove_item' | trans({}, 'store') | default('Eliminar') }}">
+                                        <i class="fa fa-trash-o"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+
+                    <div class="p-t-30 p-b-10">
+                        <a href="{{ path('store_shop', {_locale: app.request.locale}) }}"
+                           class="flex-c-m stext-101 cl5 size-105 bg8 bor13 hov-btn3 trans-04">
+                            {{ 'continue_shopping' | trans({}, 'store') | default('Continuar comprando') }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-10 col-lg-7 col-xl-5 m-lr-auto m-b-50">
+
+                <div class="bor10 p-lr-40 p-t-30 p-b-40 p-lr-15-sm">
+                    <h4 class="mtext-109 cl2 p-b-30">{{ 'order_summary' | trans({}, 'store') | default('Resumen del pedido') }}</h4>
+                    <div class="flex-w flex-t bor12 p-b-13">
+                        <div class="size-208">
+                            <span class="stext-110 cl2">{{ 'subtotal' | trans({}, 'store') | default('Subtotal') }}:</span>
+                        </div>
+                        <div class="size-209">
+                            <span class="mtext-110 cl2" id="cart-subtotal">
+                                {{ subtotal | price }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex-w flex-t p-t-27 p-b-33">
+                        <div class="size-208">
+                            <span class="stext-110 cl2">{{ 'total' | trans({}, 'store') | default('Total') }}:</span>
+                        </div>
+                        <div class="size-209 p-t-1">
+                            <span class="mtext-110 cl2" id="cart-total">
+                                {{ subtotal | price }}
+                            </span>
+                        </div>
+                    </div>
+                    {% if is_granted('ROLE_USER') %}
+                    <a href="{{ path('store_checkout', {_locale: app.request.locale}) }}"
+                       class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 trans-04">
+                        {{ 'proceed_checkout' | trans({}, 'store') | default('Ir al pago') }}
+                    </a>
+                    {% else %}
+                    <a href="{{ path('security_login', {_locale: app.request.locale}) }}"
+                       class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 trans-04">
+                        {{ 'login_to_checkout' | trans({}, 'store') | default('Inicia sesión para pagar') }}
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+        <div class="txt-center p-t-50 p-b-80">
+            <i class="zmdi zmdi-shopping-cart fs-80 cl6"></i>
+            <p class="stext-107 cl6 p-t-20">
+                {{ 'cart_empty' | trans({}, 'store') | default('Tu carrito está vacío.') }}
+            </p>
+            <a href="{{ path('store_shop', {_locale: app.request.locale}) }}"
+               class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 m-t-30">
+                {{ 'shop_now' | trans({}, 'store') | default('Ver productos') }}
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const locale = '{{ app.request.locale }}';
+
+    function formatMoney(amount) {
+        return window.formatCurrencyAmount(amount)
+    }
+
+    function recomputeTotals() {
+        let subtotal = 0
+        document.querySelectorAll('.table_row').forEach(row => {
+            const unitPrice = parseInt(row.dataset.unitPrice, 10) || 0
+            const qty       = parseInt(row.querySelector('.cart-quantity-input')?.value, 10) || 0
+            const itemTotal = unitPrice * qty
+
+            const totalCell = row.querySelector('.js-item-total')
+            if (totalCell) {
+                totalCell.textContent = formatMoney(itemTotal)
+            }
+            subtotal += itemTotal
+        })
+
+        const subtotalEl = document.getElementById('cart-subtotal')
+        const totalEl     = document.getElementById('cart-total')
+        if (subtotalEl) subtotalEl.textContent = formatMoney(subtotal)
+        if (totalEl) totalEl.textContent = formatMoney(subtotal)
+    }
+
+    function refreshCartBadge() {
+        fetch('/' + locale + '/api/cart/count')
+            .then(r => r.json())
+            .then(data => {
+                if (typeof window.updateCartBadge === 'function') {
+                    window.updateCartBadge(data.count)
+                }
+            })
+            .catch(() => {})
+    }
+
+    document.querySelectorAll('.btn-remove-cart').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const row    = this.closest('tr')
+            const itemId = row.dataset.cartItemId
+            fetch(`/${locale}/cart/remove`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({cartItemId: itemId})
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (!data.success) {
+                    return
+                }
+                if (document.querySelectorAll('.table_row').length <= 1) {
+
+                    location.reload()
+                    return
+                }
+                row.remove()
+                recomputeTotals()
+                refreshCartBadge()
+            })
+        })
+    })
+
+    document.querySelectorAll('.cart-quantity-input').forEach(input => {
+        let timeout
+        input.addEventListener('change', function () {
+            clearTimeout(timeout)
+            const row    = this.closest('tr')
+            const itemId = row.dataset.cartItemId
+            const qty    = Math.max(1, parseInt(this.value) || 1)
+            this.value   = qty
+
+            row.dataset.quantity = qty
+            timeout = setTimeout(() => {
+                fetch(`/${locale}/cart/update`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({cartItemId: itemId, quantity: qty})
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (!data.success) {
+                        return
+                    }
+                    recomputeTotals()
+                    refreshCartBadge()
+                })
+            }, 500)
+        })
+    })
+
+    document.querySelectorAll('[data-action]').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const row     = this.closest('tr')
+            const input   = row.querySelector('.cart-quantity-input')
+            const dir     = this.dataset.action === 'increase' ? 1 : -1
+            const current = parseInt(row.dataset.quantity, 10) || 1
+            const next    = Math.max(1, current + dir)
+            row.dataset.quantity = next
+            input.value = next
+            input.dispatchEvent(new Event('change'))
+        })
+    })
+})
+</script>
+{% endblock %}

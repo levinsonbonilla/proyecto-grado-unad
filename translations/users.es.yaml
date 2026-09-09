@@ -1,0 +1,56 @@
+create_user: Crear usuario
+name: Nombre
+email: Correo electrónico
+phone: Teléfono
+roles: Roles
+active: Activo
+id: ID
+actions: Acciones
+yes: Sí
+no: No
+show: Mostrar
+edit: Editar
+delete: Eliminar
+ROLE_SUPER_ADMIN: Super Administrador
+ROLE_ADMIN: Administrador
+ROLE_USER: Usuario
+back: Atrás
+add_user: Creación de usuario
+personal_info: Información personal
+last_name: Apellido
+domain: Dominio 
+existing_user: Usuario existente
+domain_not_found: El dominio seleccionado no existe
+admin_registered_account: Uno de nuestros administradores ha registrado una cuenta con este correo electrónico en
+admin_invitation: "y te ha invitado como administrador para ayudar a gestionar la plataforma. Para completar el proceso y poder iniciar sesión, por favor confirma tu correo electrónico haciendo clic en el botón de abajo:"
+user_invitation: "nuestra página web. Para completar el proceso y poder iniciar sesión, por favor confirma tu correo electrónico haciendo clic en el botón de abajo:"
+ignore_message: Si no has solicitado esta cuenta, puedes ignorar este mensaje. La información contenida en este correo es confidencial y solo para el destinatario.
+registration_successful: Registro exitoso. El usuario recibirá un correo electrónico para confirmar su cuenta. Podrá iniciar sesión después de la confirmación.
+user: "Usuario:"
+password: "Contraseña:" 
+credentials: Credenciales
+tenant: Inquilino
+user_edited_success: Usuario editado exitosamente
+edit_error: Ha ocurrido un error durante la edición, por favor proporcione el siguiente ID a su administrador.
+edit_user: Edición de usuario
+email_verified: Correo validado
+show_user: Mostrar usuario
+points: Puntos
+birthday_date: Fecha de cumpleaños
+country_of_residence: País de residencia
+region_of_residence: Región de residencia
+city_of_residence: Ciudad de residencia
+neighborhood: Barrio
+address: Dirección
+email_validated: correo validado
+creation_date: Fecha de creación
+last_modified: Última modificación
+profile_image: Imagen de perfil
+personal_information: Información personal
+location: Localización
+system_interaction: Interacción con el sistema
+status: Estado
+resend_welcome_email: Reenviar email de bienvenida
+user_already_validated_email: El usuario ya validó email
+cannot_change_own_role: No puedes cambiar tu propio rol.
+cannot_remove_last_super_admin: No es posible quitar el rol de Super Administrador al último que queda activo en la plataforma.

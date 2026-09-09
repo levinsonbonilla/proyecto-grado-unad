@@ -1,0 +1,60 @@
+title: Messages
+new_message: New message
+filter_by_sender: Filter by sender
+filter_by_status: Filter by status
+all_option: "— All —"
+unread: Unread
+read_status: Read
+apply_filter: Apply
+clear_filter: Clear
+received_messages: Received messages
+status_column: Status
+from_column: From
+subject_column: Subject
+message_column: Message
+date_column: Date
+read_label: Read
+new_label: New
+mark_as_unread: Mark as unread
+mark_as_read: Mark as read
+no_subject: (no subject)
+view: View
+
+sent_title: Sent messages
+inbox_tooltip: Inbox
+sent_panel_title: Sent
+to_column: To
+unread_label: Unread
+
+recipients_label: Recipients
+recipient_label: Recipient
+optional: Optional
+images_label: Images
+images_help: "You can attach up to 5 images (error screenshots)"
+send_message: Send message
+
+conversation_title: Conversation
+message_load_error: Could not load the message.
+message_thread_default_title: Message thread
+reply_label: Reply
+images_help_reply: "You can attach up to 5 images"
+send_reply: Send reply
+attached_image_alt: attached image
+
+fab_button_title: Send message or report an issue
+fab_modal_title: New message / Report an issue
+fab_recipients_multi_hint: (you can select multiple)
+fab_message_placeholder: "Describe the issue or write your message..."
+fab_images_optional_label: "Images (optional — up to 5 screenshots)"
+fab_attach_images: Attach images
+fab_max_hint: max. 5
+fab_send: Send
+fab_sending: Sending...
+fab_select_superadmin_placeholder: -- Select superadmin --
+fab_remove_thumb_title: Remove
+fab_message_empty_error: Message cannot be empty.
+fab_select_at_least_one_recipient: Select at least one recipient.
+fab_select_recipient: Select a recipient.
+fab_message_sent_default: Message sent.
+fab_send_error_default: Error sending.
+fab_connection_error: Connection error. Please try again.

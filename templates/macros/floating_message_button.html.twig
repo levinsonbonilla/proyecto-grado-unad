@@ -1,0 +1,336 @@
+
+{% macro render() %}
+<style>
+.fab-message-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1050;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #3498db;
+    color: #fff;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    cursor: pointer;
+    opacity: 0.35;
+    transition: opacity 0.2s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+.fab-message-btn:hover { opacity: 1; transform: scale(1.08); }
+.fab-badge {
+    position: absolute;
+    top: -4px; right: -4px;
+    background: #e74c3c;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 10px;
+    min-width: 18px;
+    height: 18px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    padding: 0 3px;
+}
+.fab-image-preview-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+.fab-image-thumb {
+    position: relative;
+    width: 70px; height: 70px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #ddd;
+}
+.fab-image-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.fab-image-thumb .remove-thumb {
+    position: absolute;
+    top: 2px; right: 2px;
+    background: rgba(231,76,60,0.85);
+    border: none; border-radius: 50%;
+    color: #fff; width: 18px; height: 18px;
+    font-size: 10px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+}
+.fab-recipient-checkboxes {
+    max-height: 140px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 6px 10px;
+}
+.fab-recipient-checkboxes label {
+    display: flex; align-items: center; gap: 6px;
+    margin: 4px 0; font-weight: normal; cursor: pointer;
+}
+</style>
+
+<!-- Botón flotante -->
+<button class="fab-message-btn" id="fabMessageBtn" title="{{ 'fab_button_title'|trans({}, 'help_messages') }}">
+    <i class="fa fa-comment"></i>
+    <span class="fab-badge" id="fabBadge"></span>
+</button>
+
+<!-- Modal de composición rápida -->
+<div class="modal fade" id="fabMessageModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><i class="fa fa-comment-o"></i> {{ 'fab_modal_title'|trans({}, 'help_messages') }}</h4>
+            </div>
+            <div class="modal-body">
+                <div id="fabAlert" class="alert" style="display:none;"></div>
+
+                <div class="form-group" id="fabRecipientGroup" style="display:none;">
+                    <label id="fabRecipientLabel">{{ 'recipient_label'|trans({}, 'help_messages') }} <span class="required">*</span></label>
+                    <div id="fabRecipientControl"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>{{ 'message_column'|trans({}, 'help_messages') }} <span class="required">*</span></label>
+                    <textarea id="fabMessage" class="form-control" rows="4"
+                        placeholder="{{ 'fab_message_placeholder'|trans({}, 'help_messages') }}"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>{{ 'fab_images_optional_label'|trans({}, 'help_messages') }}</label>
+                    <input type="file" id="fabImages" accept="image/*" multiple style="display:none;">
+                    <button type="button" class="btn btn-default btn-sm" id="fabAddImagesBtn">
+                        <i class="fa fa-paperclip"></i> {{ 'fab_attach_images'|trans({}, 'help_messages') }}
+                    </button>
+                    <small class="text-muted"> {{ 'fab_max_hint'|trans({}, 'help_messages') }}</small>
+                    <div class="fab-image-preview-grid" id="fabImagePreviewGrid"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'cancel'|trans({}, 'messages') }}</button>
+                <button type="button" class="btn btn-primary" id="fabSendBtn">
+                    <i class="fa fa-paper-plane"></i> {{ 'fab_send'|trans({}, 'help_messages') }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    var i18n = {
+        recipientsMultiHint: '{{ 'fab_recipients_multi_hint'|trans({}, 'help_messages')|e('js') }}',
+        recipientsLabel: '{{ 'recipients_label'|trans({}, 'help_messages')|e('js') }}',
+        recipientLabel: '{{ 'recipient_label'|trans({}, 'help_messages')|e('js') }}',
+        selectSuperadminPlaceholder: '{{ 'fab_select_superadmin_placeholder'|trans({}, 'help_messages')|e('js') }}',
+        removeThumbTitle: '{{ 'fab_remove_thumb_title'|trans({}, 'help_messages')|e('js') }}',
+        sending: '{{ 'fab_sending'|trans({}, 'help_messages')|e('js') }}',
+        send: '{{ 'fab_send'|trans({}, 'help_messages')|e('js') }}',
+        messageEmptyError: '{{ 'fab_message_empty_error'|trans({}, 'help_messages')|e('js') }}',
+        selectAtLeastOneRecipient: '{{ 'fab_select_at_least_one_recipient'|trans({}, 'help_messages')|e('js') }}',
+        selectRecipient: '{{ 'fab_select_recipient'|trans({}, 'help_messages')|e('js') }}',
+        messageSentDefault: '{{ 'fab_message_sent_default'|trans({}, 'help_messages')|e('js') }}',
+        sendErrorDefault: '{{ 'fab_send_error_default'|trans({}, 'help_messages')|e('js') }}',
+        connectionError: '{{ 'fab_connection_error'|trans({}, 'help_messages')|e('js') }}'
+    };
+    var MAX_IMAGES = 5;
+    var selectedFiles = [];
+    var currentMode = 'auto';
+    var autoUserId  = null;
+
+    fetch('{{ path('dashboard_messages_unread_count') }}')
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            var badge = document.getElementById('fabBadge');
+            if (data.count > 0) {
+                badge.textContent = data.count > 99 ? '99+' : data.count;
+                badge.style.display = 'flex';
+            }
+        })
+        .catch(function () {});
+
+    document.getElementById('fabMessageBtn').addEventListener('click', function () {
+        loadRecipients(function () {
+            $('#fabMessageModal').modal('show');
+        });
+    });
+
+    function loadRecipients(callback) {
+        fetch('{{ path('dashboard_messages_available_users') }}')
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                currentMode = data.mode;
+                buildRecipientControl(data.mode, data.users);
+                callback();
+            })
+            .catch(function () {
+                currentMode = 'auto';
+                callback();
+            });
+    }
+
+    function buildRecipientControl(mode, users) {
+        var group   = document.getElementById('fabRecipientGroup');
+        var label   = document.getElementById('fabRecipientLabel');
+        var control = document.getElementById('fabRecipientControl');
+        control.innerHTML = '';
+        autoUserId = null;
+
+        if (mode === 'auto') {
+            if (users.length > 0) {
+                autoUserId = users[0].id;
+            }
+            group.style.display = 'none';
+            return;
+        }
+
+        group.style.display = 'block';
+
+        if (mode === 'multi') {
+            label.innerHTML = i18n.recipientsLabel + ' <span class="required">*</span> <small class="text-muted">' + i18n.recipientsMultiHint + '</small>';
+            var checkboxContainer = document.createElement('div');
+            checkboxContainer.className = 'fab-recipient-checkboxes';
+            users.forEach(function (user) {
+                var lbl = document.createElement('label');
+                lbl.innerHTML = '<input type="checkbox" value="' + user.id + '"> ' + user.name;
+                checkboxContainer.appendChild(lbl);
+            });
+            control.appendChild(checkboxContainer);
+        } else {
+            label.innerHTML = i18n.recipientLabel + ' <span class="required">*</span>';
+            var select = document.createElement('select');
+            select.id = 'fabToUserSelect';
+            select.className = 'form-control';
+            select.innerHTML = '<option value="">' + i18n.selectSuperadminPlaceholder + '</option>';
+            users.forEach(function (user) {
+                var opt = document.createElement('option');
+                opt.value = user.id;
+                opt.textContent = user.name;
+                select.appendChild(opt);
+            });
+            control.appendChild(select);
+        }
+    }
+
+    document.getElementById('fabAddImagesBtn').addEventListener('click', function () {
+        document.getElementById('fabImages').click();
+    });
+
+    document.getElementById('fabImages').addEventListener('change', function () {
+        Array.from(this.files).forEach(function (file) {
+            if (selectedFiles.length >= MAX_IMAGES) return;
+            selectedFiles.push(file);
+            addThumb(file, selectedFiles.length - 1);
+        });
+        this.value = '';
+    });
+
+    function addThumb(file, index) {
+        var grid   = document.getElementById('fabImagePreviewGrid');
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            var wrapper = document.createElement('div');
+            wrapper.className = 'fab-image-thumb';
+            wrapper.dataset.index = index;
+            wrapper.innerHTML =
+                '<img src="' + e.target.result + '" alt="">' +
+                '<button type="button" class="remove-thumb" title="' + i18n.removeThumbTitle + '">&times;</button>';
+            wrapper.querySelector('.remove-thumb').addEventListener('click', function () {
+                selectedFiles.splice(parseInt(wrapper.dataset.index), 1);
+                wrapper.remove();
+                document.querySelectorAll('.fab-image-thumb').forEach(function (el, i) {
+                    el.dataset.index = i;
+                });
+            });
+            grid.appendChild(wrapper);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    document.getElementById('fabSendBtn').addEventListener('click', function () {
+        var messageText = document.getElementById('fabMessage').value.trim();
+        var alertBox    = document.getElementById('fabAlert');
+        alertBox.style.display = 'none';
+        alertBox.className = 'alert';
+
+        if (!messageText) {
+            showAlert('danger', i18n.messageEmptyError);
+            return;
+        }
+
+        var formData = new FormData();
+        formData.append('message', messageText);
+
+        if (currentMode === 'auto') {
+            if (autoUserId) formData.append('toUser', autoUserId);
+        } else if (currentMode === 'multi') {
+            var checked = document.querySelectorAll('.fab-recipient-checkboxes input[type="checkbox"]:checked');
+            if (checked.length === 0) {
+                showAlert('danger', i18n.selectAtLeastOneRecipient);
+                return;
+            }
+            checked.forEach(function (cb) { formData.append('toUsers[]', cb.value); });
+        } else {
+            var sel = document.getElementById('fabToUserSelect');
+            if (!sel || !sel.value) {
+                showAlert('danger', i18n.selectRecipient);
+                return;
+            }
+            formData.append('toUser', sel.value);
+        }
+
+        selectedFiles.forEach(function (file) { formData.append('images[]', file); });
+
+        var btn = this;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> ' + i18n.sending;
+
+        fetch('{{ path('dashboard_messages_quick_compose') }}', { method: 'POST', body: formData })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (data.success) {
+                    showAlert('success', data.message || i18n.messageSentDefault);
+                    resetForm();
+                    setTimeout(function () { $('#fabMessageModal').modal('hide'); }, 1500);
+                } else {
+                    showAlert('danger', data.message || i18n.sendErrorDefault);
+                }
+            })
+            .catch(function () { showAlert('danger', i18n.connectionError); })
+            .finally(function () {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa fa-paper-plane"></i> ' + i18n.send;
+            });
+    });
+
+    function showAlert(type, msg) {
+        var alertBox = document.getElementById('fabAlert');
+        alertBox.className = 'alert alert-' + type;
+        alertBox.textContent = msg;
+        alertBox.style.display = 'block';
+    }
+
+    function resetForm() {
+        document.getElementById('fabMessage').value = '';
+        document.getElementById('fabImagePreviewGrid').innerHTML = '';
+        selectedFiles = [];
+        var control = document.getElementById('fabRecipientControl');
+        if (control) {
+            control.querySelectorAll('input[type="checkbox"]').forEach(function (cb) { cb.checked = false; });
+            var sel = control.querySelector('select');
+            if (sel) sel.value = '';
+        }
+    }
+
+    $('#fabMessageModal').on('hidden.bs.modal', function () {
+        document.getElementById('fabAlert').style.display = 'none';
+        resetForm();
+    });
+})();
+</script>
+{% endmacro %}

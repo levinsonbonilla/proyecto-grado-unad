@@ -1,0 +1,103 @@
+{% import 'macros/language_switcher.html.twig' as language_switcher %}
+{% block navigation %}
+	<!-- top navigation -->
+	<div class="top_nav">
+		<div class="nav_menu">
+			<nav>
+				<div class="nav toggle">
+					<a id="menu_toggle">
+						<i class="fa fa-bars"></i>
+					</a>
+				</div>
+
+				<ul class="nav navbar-nav navbar-right">
+					<li class="">
+						<a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+							<img src="{{ asset(app.user.getProfilePicture() | default('') ) }}" alt=""/>
+							{{ app.user.getFullName() | default('') }}
+							<span class="fa fa-angle-down"></span>
+						</a>
+						<ul class="dropdown-menu dropdown-usermenu pull-right">
+							<li>
+								<a href="{{ path('dashboard_users_profile') }}">{{ 'profile'|trans() }}</a>
+							</li>
+							<li>
+								<a href="{{ path('dashboard_help') }}">{{ 'help'|trans({}, 'dashboard') }}</a>
+							</li>
+							<li>
+								<a href="{{ path('security_logout') }}">
+									<i class="fa fa-sign-out pull-right"></i>
+									{{ 'log_out'|trans({}, 'dashboard') }}</a>
+							</li>
+						</ul>
+					</li>
+
+					<li class="">
+						{{ language_switcher.render(app.locale, 'dashboard', 'user-profile dropdown-toggle', 'dropdown-menu dropdown-usermenu pull-right', 'user-profile dropdown-toggle') }}
+					</li>
+
+					{% if app.user is not null %}
+						{% set selectableDomains = dashboard_selectable_domains() %}
+						{% if selectableDomains|length > 0 %}
+							{% set activeDomain = dashboard_active_domain() %}
+							<li class="">
+								<a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false" title="{{ activeDomain ? activeDomain.domain : 'active_domain_label'|trans({}, 'dashboard') }}">
+									<i class="fa fa-globe"></i>
+									{{ activeDomain ? activeDomain.displayName : 'active_domain_label'|trans({}, 'dashboard') }}
+									{% if selectableDomains|length > 1 %}
+										<span class="fa fa-angle-down"></span>
+									{% endif %}
+								</a>
+								{% if selectableDomains|length > 1 %}
+									<ul class="dropdown-menu dropdown-usermenu pull-right">
+										{% for domain in selectableDomains %}
+											<li>
+												<a href="{{ path('dashboard_domain_switch', {id: domain.id, _locale: app.request.locale}) }}" class="user-profile dropdown-toggle{{ activeDomain and activeDomain.id == domain.id ? ' active' : '' }}" title="{{ domain.domain }}">
+													<i class="fa fa-globe"></i>
+													{{ domain.displayName }}
+												</a>
+											</li>
+										{% endfor %}
+									</ul>
+								{% endif %}
+							</li>
+						{% endif %}
+					{% endif %}
+
+					{% set HelpMessages = app.user.getHelpMessages() | default('') %}
+					<li role="presentation" class="dropdown">
+						<a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
+							<i class="fa fa-envelope-o"></i>
+							<span class="badge bg-green">{{ HelpMessages | length }}</span>
+						</a>
+						<ul id="menu1" class="dropdown-menu list-unstyled msg_list" role="menu">
+							<li>
+								<a href="{{ path('dashboard_messages', {_locale: app.locale}) }}" class="text-center" style="padding:8px 15px; display:block; border-bottom:1px solid #eee; font-weight:600;">
+									<i class="fa fa-inbox"></i> Ver todos los mensajes
+								</a>
+							</li>
+							{% for message in HelpMessages %}
+								<li>
+									<a href="{{ path('dashboard_messages_view', {id: message.id, _locale: app.locale}) }}">
+										<span class="image"><img src="{{ asset(message.getFromUser().getProfilePicture() | default('default_images/default_profile.png')) }}" alt="Profile Image"/></span>
+										<span>
+											<span>
+												<strong>{{ message.getFromUser().getFullName() }}</strong>
+											</span>
+											<span class="time">{{ message.createdAt | format_datetime('medium', 'short') }}</span>
+										</span>
+										<span class="message">
+											{{ message.message | slice(0, 80) ~ (message.message | length > 80 ? '...' : '') }}
+										</span>
+									</a>
+								</li>
+							{% endfor %}
+						</ul>
+					</li>
+
+				</ul>
+			</nav>
+		</div>
+	</div>
+	<!-- /top navigation -->
+{% endblock %}

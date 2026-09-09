@@ -1,0 +1,433 @@
+{% extends 'e_commerce/theme_1/base_theme_1.html.twig' %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+
+  .sec-product-detail .flex-w.flex-r-m.p-b-10 { gap: 12px; }
+  .sec-product-detail .flex-w.flex-r-m.p-b-10 > .respon6-next .wrap-num-product { margin-right: 0; }
+  .sec-product-detail .flex-w.flex-r-m.p-b-10 > .js-buynow-detail { margin-left: 0; }
+
+  .sec-product-detail .icon-btn-detail { width: 44px; height: 44px; min-width: 0; border-radius: 50%; flex-shrink: 0; }
+
+  .sec-product-detail .btn-addwish-detail { color: #555; }
+  .sec-product-detail .btn-addwish-detail i { font-size: 18px; line-height: 1; }
+  .sec-product-detail .btn-addwish-detail:hover { border-color: #e04a4a; color: #e04a4a; }
+  .sec-product-detail .btn-addwish-detail .icon-wish-on { display: none; }
+  .sec-product-detail .btn-addwish-detail.js-addedwish-detail {
+    border-color: #e04a4a;
+    color: #e04a4a;
+    background: rgba(224, 74, 74, 0.06);
+  }
+  .sec-product-detail .btn-addwish-detail.js-addedwish-detail .icon-wish-off { display: none; }
+  .sec-product-detail .btn-addwish-detail.js-addedwish-detail .icon-wish-on { display: inline-block; }
+
+  .sec-product-detail .js-icon-tooltip { position: relative; }
+  .sec-product-detail .js-icon-tooltip::after {
+    content: attr(title);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    padding: 5px 10px;
+    border-radius: 4px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s, visibility 0.15s;
+    pointer-events: none;
+    z-index: 10;
+  }
+  .sec-product-detail .js-icon-tooltip:hover::after {
+    opacity: 1;
+    visibility: visible;
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+    <div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
+        <a href="{{ path('store', {_locale: app.request.locale}) }}" class="stext-109 cl8 hov-cl1 trans-04">
+            {{ 'home' | trans({}, 'store') | default('Inicio') }}
+            <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+        </a>
+        <a href="{{ path('store_shop', {_locale: app.request.locale}) }}" class="stext-109 cl8 hov-cl1 trans-04">
+            {{ 'shop' | trans({}, 'store') | default('Tienda') }}
+            <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+        </a>
+        <span class="stext-109 cl4">{{ product.name }}</span>
+    </div>
+</div>
+
+<section class="sec-product-detail bg0 p-t-65 p-b-60">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-md-6 col-lg-7 p-b-30">
+                <div class="p-l-25 p-r-30 p-lr-0-lg">
+                    {% if images is not empty %}
+
+                    <script type="application/json" id="product-images-data">{{ images|json_encode|raw }}</script>
+                    <div class="wrap-slick3 flex-sb-m">
+                        <div class="wrap-slick3-dots"></div>
+                        <div class="wrap-slick3-arrows flex-sb-m flex-w"></div>
+                        <div class="slick3">
+                            {% for img in images %}
+                            <div class="item-slick3" data-thumb="{{ asset(img.image) }}" data-color-id="{{ img.colorIds ?? '' }}">
+                                <div class="wrap-pic-w pos-relative">
+                                    <img src="{{ asset(img.image) }}" alt="{{ product.name }}">
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% else %}
+                    <img class="img-fluid" src="{{ asset('theme_1/images/product-placeholder.jpg') }}" alt="{{ product.name }}">
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-5 p-b-30">
+                <div class="p-r-50 p-t-5 p-lr-0-lg">
+                    <h4 class="mtext-105 cl2 js-name-detail p-b-14">{{ product.name }}</h4>
+
+                    <span class="mtext-106 cl2">
+                        {{ product.publicPrice | price }}
+                    </span>
+
+                    {% if showStock %}
+                    <div id="product-stock-display" class="stext-109 cl6 p-t-10"
+                         data-stock-template="{{ 'stock_available' | trans({'%count%': '__COUNT__'}, 'store') | default('__COUNT__ disponibles') }}"
+                         style="{{ product.stock is null ? 'display:none;' : '' }}">
+                        {% if product.stock is not null %}
+                            {{ 'stock_available' | trans({'%count%': product.stock}, 'store') | default(product.stock ~ ' disponibles') }}
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <div class="stext-102 cl3 p-t-23">{{ product.description | raw }}</div>
+
+                    {% if colors is not empty %}
+                    <script type="application/json" id="product-variants-data">{{ colors|json_encode|raw }}</script>
+                    <div class="p-t-20 js-color-picker" data-required="1" id="product-variant-picker"></div>
+                    {% endif %}
+
+                    <div class="p-t-33">
+                        <div class="flex-w flex-r-m p-b-10">
+
+                            <div class="flex-c-m respon6-next">
+                                <div class="wrap-num-product flex-w m-r-20 m-tb-10">
+                                    <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
+                                        <i class="fs-16 zmdi zmdi-minus"></i>
+                                    </div>
+                                    <input class="mtext-104 cl3 txt-center num-product" type="number" value="1" min="1">
+                                    <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
+                                        <i class="fs-16 zmdi zmdi-plus"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="flex-c-m icon-btn-detail bg1 cl0 bor1 hov-btn1 trans-04 js-icon-tooltip js-addcart-detail"
+                                    title="{{ 'add_to_cart' | trans({}, 'store') | default('Agregar al carrito') }}"
+                                    data-product-id="{{ product.getId() }}"
+                                    data-track-event="add_to_cart"
+                                    data-track-target="{{ product.getId() }}">
+                                <i class="zmdi zmdi-shopping-cart fs-18"></i>
+                            </button>
+
+                            <a href="#" class="flex-c-m icon-btn-detail bor1 hov-btn3 trans-04 js-icon-tooltip btn-addwish-detail js-addwish-detail"
+                               data-product-id="{{ product.getId() }}"
+                               title="{{ 'add_to_wishlist' | trans({}, 'store') | default('Agregar a favoritos') }}"
+                               data-title-off="{{ 'add_to_wishlist' | trans({}, 'store') | default('Agregar a favoritos') }}"
+                               data-title-on="{{ 'remove_from_wishlist' | trans({}, 'store') | default('Quitar de favoritos') }}">
+                                <i class="zmdi zmdi-favorite-outline icon-wish-off fs-18"></i>
+                                <i class="zmdi zmdi-favorite icon-wish-on fs-18"></i>
+                            </a>
+                            <button class="flex-c-m stext-101 cl0 size-101 bg3 bor14 hov-btn3 p-lr-15 trans-04 m-l-10 js-buynow-detail"
+                                    data-product-id="{{ product.getId() }}"
+                                    data-logged-in="{{ is_granted('ROLE_USER') ? '1' : '0' }}">
+                                {{ 'buy_now' | trans({}, 'store') | default('Comprar ahora') }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    var addWishBtn = document.querySelector('.js-addwish-detail');
+    if (addWishBtn) {
+        var wishProductId = addWishBtn.getAttribute('data-product-id');
+        var wishLocale = '{{ app.request.locale }}';
+        if (wishProductId) {
+            fetch('/' + wishLocale + '/general/product/' + wishProductId)
+                .then(function (res) { return res.ok ? res.json() : null; })
+                .then(function (data) {
+                    if (!data) return;
+                    addWishBtn.classList.toggle('js-addedwish-detail', !!data.isFavorite);
+                    addWishBtn.setAttribute('title', data.isFavorite
+                        ? addWishBtn.getAttribute('data-title-on')
+                        : addWishBtn.getAttribute('data-title-off'));
+                })
+                .catch(function () {  });
+        }
+    }
+
+    var $gallery = window.jQuery ? jQuery('.slick3').not('#gallery-container') : null;
+    var allImages = [];
+    var imagesDataEl = document.getElementById('product-images-data');
+    if (imagesDataEl) {
+        try { allImages = JSON.parse(imagesDataEl.textContent || '[]'); } catch (e) { allImages = []; }
+    }
+
+    function rebuildGallery(colorId) {
+        if (!$gallery || !$gallery.length || allImages.length === 0) {
+            return false;
+        }
+        if ($gallery.hasClass('slick-initialized')) {
+            $gallery.slick('unslick');
+        }
+
+        var matching = colorId
+            ? allImages.filter(function (img) { return (img.colorIds || '').split(',').indexOf(colorId) !== -1; })
+            : allImages;
+        if (matching.length === 0) {
+            matching = allImages;
+        }
+
+        $gallery.empty();
+        matching.forEach(function (img) {
+            var item = document.createElement('div');
+            item.className = 'item-slick3';
+            item.setAttribute('data-thumb', img.image);
+            item.setAttribute('data-color-id', img.colorIds || '');
+            item.innerHTML = '<div class="wrap-pic-w pos-relative"><img src="' + img.image + '" alt=""></div>';
+            $gallery.append(item);
+        });
+
+        var $wrapSlick3 = $gallery.closest('.wrap-slick3');
+        $gallery.slick({
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            fade: true,
+            infinite: true,
+            autoplay: false,
+            autoplaySpeed: 6000,
+            arrows: true,
+            appendArrows: $wrapSlick3.find('.wrap-slick3-arrows'),
+            prevArrow: '<button class="arrow-slick3 prev-slick3"><i class="fa fa-angle-left" aria-hidden="true"></i></button>',
+            nextArrow: '<button class="arrow-slick3 next-slick3"><i class="fa fa-angle-right" aria-hidden="true"></i></button>',
+            dots: true,
+            appendDots: $wrapSlick3.find('.wrap-slick3-dots'),
+            dotsClass: 'slick3-dots',
+            customPaging: function (slick, index) {
+                var portrait = $(slick.$slides[index]).data('thumb');
+                return '<img src=" ' + portrait + ' "/><div class="slick3-dot-overlay"></div>';
+            }
+        });
+        return true;
+    }
+
+    var stockDisplay = document.getElementById('product-stock-display');
+    var stockTemplate = stockDisplay ? stockDisplay.getAttribute('data-stock-template') : null;
+    var mainImage = document.querySelector('.slick3 .item-slick3 img') || document.querySelector('.sec-product-detail img.img-fluid');
+
+    var dataEl = document.getElementById('product-variants-data');
+    var pickerEl = document.getElementById('product-variant-picker');
+    if (dataEl && pickerEl) {
+        var variants = [];
+        try { variants = JSON.parse(dataEl.textContent || '[]'); } catch (e) { variants = []; }
+        renderVariantPicker(pickerEl, variants);
+    }
+
+    function renderVariantPicker(container, variants) {
+        var distinctColors = [];
+        var seenColors = {};
+        var distinctMedidas = [];
+        var seenMedidas = {};
+        variants.forEach(function (v) {
+            if (v.colorId && !seenColors[v.colorId]) {
+                seenColors[v.colorId] = true;
+                distinctColors.push({ id: v.colorId, name: v.colorName, hex: v.hexCode });
+            }
+            if (v.medidaId && !seenMedidas[v.medidaId]) {
+                seenMedidas[v.medidaId] = true;
+                distinctMedidas.push({ id: v.medidaId, name: v.medidaName });
+            }
+        });
+
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.className = 'js-color-id-input';
+
+        var selectedColorId = '';
+        var selectedMedidaId = '';
+
+        var medidaEls = [];
+        var medidaNameSpanRef = null;
+
+        function isOutOfStock(v) {
+            return v.stock !== null && v.stock !== undefined && v.stock === 0;
+        }
+
+        function refreshOptions() {
+            var visibleMedidaIds = null;
+            if (selectedColorId) {
+                visibleMedidaIds = {};
+                variants.forEach(function (v) {
+                    if (v.colorId === selectedColorId && v.medidaId) visibleMedidaIds[v.medidaId] = true;
+                });
+            }
+
+            medidaEls.forEach(function (entry) {
+                entry.el.style.display = (!visibleMedidaIds || visibleMedidaIds[entry.id]) ? 'inline-flex' : 'none';
+            });
+
+            if (selectedMedidaId && visibleMedidaIds && !visibleMedidaIds[selectedMedidaId]) {
+                selectedMedidaId = '';
+                medidaEls.forEach(function (entry) { entry.el.style.borderColor = '#999'; entry.el.style.fontWeight = 'normal'; });
+                if (medidaNameSpanRef) medidaNameSpanRef.textContent = '';
+            }
+        }
+
+        function resolve() {
+            var match = variants.find(function (v) {
+                var colorOk = distinctColors.length === 0 || v.colorId === selectedColorId;
+                var medidaOk = distinctMedidas.length === 0 || v.medidaId === selectedMedidaId;
+                return colorOk && medidaOk;
+            });
+
+            if (!match || isOutOfStock(match)) {
+
+                input.value = '';
+                if (stockDisplay) stockDisplay.style.display = 'none';
+                return;
+            }
+
+            input.value = match.id;
+
+            if (stockDisplay && stockTemplate) {
+                if (match.stock !== null && match.stock !== undefined) {
+                    stockDisplay.textContent = stockTemplate.replace('__COUNT__', match.stock);
+                    stockDisplay.style.display = 'block';
+                } else {
+
+                    stockDisplay.style.display = 'none';
+                }
+            }
+
+            if (!rebuildGallery(match.id) && match.image && mainImage) {
+
+                mainImage.setAttribute('src', match.image);
+            }
+        }
+
+        if (distinctColors.length > 0) {
+            var colorLabel = document.createElement('div');
+            colorLabel.className = 'stext-110 cl2 p-b-10';
+            colorLabel.textContent = '{{ 'choose_color' | trans({}, 'store') | default('Color') | e('js') }}: ';
+            var colorNameSpan = document.createElement('span');
+            colorNameSpan.className = 'js-color-selected-name cl6';
+            colorLabel.appendChild(colorNameSpan);
+            container.appendChild(colorLabel);
+
+            var swatchWrap = document.createElement('div');
+            swatchWrap.className = 'flex-w';
+            distinctColors.forEach(function (color) {
+                var rowsForColor = variants.filter(function (v) { return v.colorId === color.id; });
+                var allOut = rowsForColor.length > 0 && rowsForColor.every(isOutOfStock);
+
+                var swatch = document.createElement('div');
+                swatch.className = 'js-color-swatch' + (allOut ? ' is-disabled' : '');
+                swatch.setAttribute('data-color-id', color.id);
+                swatch.setAttribute('data-color-name', color.name);
+                swatch.title = color.name + (allOut ? ' ({{ 'out_of_stock' | trans({}, 'store') | default('Agotado') | e('js') }})' : '');
+
+                swatch.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;'
+                    + 'width:34px;height:34px;border-radius:50%;margin:0 8px 8px 0;'
+                    + 'cursor:' + (allOut ? 'not-allowed' : 'pointer') + ';border:2px solid #999;'
+                    + 'background-color:' + color.hex + ';opacity:' + (allOut ? '0.35' : '1') + ';position:relative;';
+                if (allOut) {
+                    swatch.innerHTML = '<i class="fa fa-close" style="color:#fff;text-shadow:0 0 2px rgba(0,0,0,.6);"></i>';
+                }
+                swatch.addEventListener('click', function () {
+                    if (swatch.classList.contains('is-disabled')) return;
+                    swatchWrap.querySelectorAll('.js-color-swatch').forEach(function (s) { s.style.borderColor = '#999'; });
+                    swatch.style.borderColor = '#000';
+                    selectedColorId = color.id;
+                    colorNameSpan.textContent = color.name;
+                    refreshOptions();
+                    resolve();
+                });
+                swatchWrap.appendChild(swatch);
+            });
+            container.appendChild(swatchWrap);
+        }
+
+        if (distinctMedidas.length > 0) {
+            var medidaLabel = document.createElement('div');
+            medidaLabel.className = 'stext-110 cl2 p-t-15 p-b-10';
+            medidaLabel.textContent = '{{ 'choose_medida' | trans({}, 'store') | default('Medida') | e('js') }}: ';
+            var medidaNameSpan = document.createElement('span');
+            medidaNameSpan.className = 'js-medida-selected-name cl6';
+            medidaLabel.appendChild(medidaNameSpan);
+            container.appendChild(medidaLabel);
+            medidaNameSpanRef = medidaNameSpan;
+
+            var medidaWrap = document.createElement('div');
+            medidaWrap.className = 'flex-w';
+            distinctMedidas.forEach(function (medida) {
+                var rowsForMedida = variants.filter(function (v) { return v.medidaId === medida.id; });
+                var allOut = rowsForMedida.length > 0 && rowsForMedida.every(isOutOfStock);
+
+                var btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'js-medida-option' + (allOut ? ' is-disabled' : '');
+                btn.textContent = medida.name;
+                btn.disabled = allOut;
+                btn.setAttribute('data-medida-id', medida.id);
+                btn.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;'
+                    + 'min-width:38px;height:34px;padding:0 10px;margin:0 8px 8px 0;'
+                    + 'border:2px solid #999;background:#fff;'
+                    + 'cursor:' + (allOut ? 'not-allowed' : 'pointer') + ';opacity:' + (allOut ? '0.35' : '1') + ';';
+                btn.addEventListener('click', function () {
+                    if (btn.disabled) return;
+                    medidaWrap.querySelectorAll('.js-medida-option').forEach(function (b) {
+                        b.style.borderColor = '#999';
+                        b.style.fontWeight = 'normal';
+                    });
+                    btn.style.borderColor = '#000';
+                    btn.style.fontWeight = 'bold';
+                    selectedMedidaId = medida.id;
+                    medidaNameSpan.textContent = medida.name;
+                    refreshOptions();
+                    resolve();
+                });
+                medidaWrap.appendChild(btn);
+                medidaEls.push({ id: medida.id, el: btn });
+            });
+            container.appendChild(medidaWrap);
+        }
+
+        container.appendChild(input);
+    }
+});
+</script>
+{% endblock %}

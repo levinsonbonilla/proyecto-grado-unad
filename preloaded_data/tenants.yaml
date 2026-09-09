@@ -1,0 +1,13 @@
+0:
+    name: proyecto-grado-unad
+    description: Tenant principal
+    nit: 0
+    phone: 3505115456
+    prefix: 57
+    isPrincipal: true
+1:
+    name: tenant-demo-2
+    description: Segundo tenant de prueba (local, puerto 8090)
+    nit: 1
+    phone: 3000000000
+    prefix: 57

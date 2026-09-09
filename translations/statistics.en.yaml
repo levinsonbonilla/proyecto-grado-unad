@@ -1,0 +1,48 @@
+
+date_from_label: From
+date_to_label: To
+last_7_days: Last 7 days
+last_30_days: Last 30 days
+last_90_days: Last 90 days
+last_year: Last year
+refresh_button: Refresh
+
+traffic_stats_title: Traffic Statistics
+view_product_stats: View product statistics
+kpi_total_visits: Total Visits
+kpi_unique_visitors: Unique Visitors
+kpi_sessions: Sessions
+kpi_countries: Countries
+chart_visits_by_day: Visits by day
+chart_visits_by_country: Visits by country
+chart_devices: Devices
+chart_browsers: Browsers
+chart_registered_vs_guests: Registered vs. guests
+chart_events: Events (clicks)
+chart_os: Operating systems
+chart_top_pages: Most visited pages
+chart_traffic_sources: Traffic sources
+chart_utm_campaigns: UTM Campaigns
+visits_unit_suffix: " visits"
+
+product_stats_title: Product Statistics
+view_traffic_stats: View traffic statistics
+kpi_total_sales: Total Sales
+kpi_pending_payment: Pending payment
+kpi_to_ship: To ship
+kpi_avg_ticket: Average ticket
+kpi_avg_shipping_time: Average shipping time
+hours_unit_suffix: " hours"
+days_unit_suffix: " days"
+funnel_title: Conversion funnel
+funnel_stage_visited: Visited
+funnel_stage_viewed_product: Viewed a product
+funnel_stage_added_to_cart: Added to cart
+funnel_stage_purchased: Purchased
+chart_sales_by_day: Sales by day
+chart_top_products: Best selling products
+chart_sales_by_country: Sales by country
+chart_sales_by_region: Sales by region
+chart_sales_by_city: Sales by city
+orders_unit_suffix: " orders"
+units_sold_suffix: " units"

@@ -1,0 +1,16 @@
+{% macro ckeditor(form, id) %}
+{% form_theme form '@FOSCKEditor/Form/ckeditor_widget.html.twig' %}
+<style>
+    .cke_notification_warning {
+      display: none !important;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12 form-group">
+        <label class="control-label" for="products_description">{{ 'description'|trans({}, 'modules') }} <span class="required">*</span></label>
+        {{ form_widget(form.description, {'attr': {'id': id, 'class': 'form-control'}}) }}
+    </div>
+</div>
+
+{% endmacro %}

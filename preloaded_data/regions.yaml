@@ -1,0 +1,11 @@
+0:
+    name: '{"en":"Bogota D.C.","es":"Bogot\u00e1 D.C."}'
+    description: Región
+    isoCode: DC
+    country: CO
+1:
+    name: '{"de":"Cundinamarca","en":"Cundinamarca","es":"Cundinamarca","fr":"Cundinamarca","ja":"\u30af\u30f3\u30c7\u30a3\u30ca\u30de\u30eb\u30ab\u770c","pt-BR":"Cundinamarca","ru":"\u041a\u0443\u043d\u0434\u0438\u043d\u0430\u043c\u0430\u0440\u043a\u0430"}'
+    description: Región
+    isoCode: CUN
+    country: CO
+  

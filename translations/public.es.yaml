@@ -1,0 +1,16 @@
+existing_user: Usuario existente
+access_denied: Acceso denegado
+internal_server_error: Error interno del servidor
+not_found: No encontrado
+copyright: ©%year% Todos los derechos reservados.
+privacy: Privacidad
+terms: términos
+
+error_500_message: "Registramos estos errores automáticamente, pero si el problema persiste no dudes en contactarnos. Mientras tanto, intenta actualizar la página."
+error_403_message: Se requiere autenticación completa para acceder a este recurso.
+error_404_heading: Lo sentimos, no pudimos encontrar esta página
+error_404_message: La página que buscas no existe
+report_this: ¿Reportar esto?
+search_label: Buscar
+search_placeholder: "Buscar..."
+go_button: "¡Ir!"

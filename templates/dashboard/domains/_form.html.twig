@@ -1,0 +1,128 @@
+{% import 'macros/preview_image.html.twig' as image %}
+<div class="row">
+	<div class="col-md-12 col-sm-12 col-xs-12">
+		<div class="x_panel">
+			<div class="x_title">
+				<h2>{{ 'info'|trans({}, 'tenants') }}</h2>
+				<ul class="nav navbar-right panel_toolbox">
+					<li>
+						<a class="collapse-link">
+							<i class="fa fa-chevron-up"></i>
+						</a>
+					</li>
+					<li>
+						<a href="{{ path('dashboard') }}" class="dropdown">
+							<i class="fa fa-home" aria-hidden="true"></i>
+						</a>
+					</li>
+					<li>
+						<a href="{{ path('dashboard_configurations_domains') }}" class="dropdown">
+							<i class="fa fa-arrow-right" aria-hidden="true"></i>
+						</a>
+					</li>
+				</ul>
+				<div class="clearfix"></div>
+			</div>
+			<div class="x_content">
+
+				{{ form_start(form, {'attr': {'id': 'add_domain_form', 'class': 'form-horizontal form-label-left', "enctype": "multipart/form-data", "method":"POST"}}) }}
+
+				<div class="item form-group">
+					<label class="control-label col-md-3 col-sm-3 col-xs-12" for="domains_logo">
+						{{ 'logo'|trans({}, 'domains') }}
+						<span class="required">*</span>
+					</label>
+					{{ image.general(form, "domains", domain.logo | default("#")) }}
+				</div>
+
+				<div class="item form-group">
+					<label class="control-label col-md-3 col-sm-3 col-xs-12" for="domain">{{ 'domain'|trans({}, 'domains') }}
+						<span class="required">*</span>
+					</label>
+					<div class="col-md-6 col-sm-6 col-xs-12">
+						{{ form_widget(form.domain, {'attr': {'class': 'form-control col-md-7 col-xs-12'}}) }}
+					</div>
+				</div>
+
+				<div class="item form-group">
+					<label class="control-label col-md-3 col-sm-3 col-xs-12" for="domains_name">{{ 'name'|trans({}, 'domains') }}</label>
+					<div class="col-md-6 col-sm-6 col-xs-12">
+						{{ form_widget(form.name, {'attr': {'class': 'form-control col-md-7 col-xs-12', 'placeholder': domain.domain|default('')}}) }}
+					</div>
+				</div>
+
+				<div class="item form-group">
+					<label class="control-label col-md-3 col-sm-3 col-xs-12" for="notification_email">{{ 'notification_email'|trans({}, 'domains') }}
+						<span class="required">*</span>
+					</label>
+					<div class="col-md-6 col-sm-6 col-xs-12">
+						{{ form_widget(form.notificationEmail, {'attr': {'class': 'form-control col-md-7 col-xs-12'}}) }}
+					</div>
+				</div>
+
+				<div class="item form-group">
+					<label class="control-label col-md-3 col-sm-3 col-xs-12" for="support_email">{{ 'support_email'|trans({}, 'domains') }}
+						<span class="required">*</span>
+					</label>
+					<div class="col-md-6 col-sm-6 col-xs-12">
+						{{ form_widget(form.supportEmail, {'attr': {'class': 'form-control col-md-7 col-xs-12'}}) }}
+					</div>
+				</div>
+
+				<div class="item form-group">
+					<label class="control-label col-md-3 col-sm-3 col-xs-12" for="domains_facebookUrl">{{ 'facebook_url'|trans({}, 'domains') }}</label>
+					<div class="col-md-6 col-sm-6 col-xs-12">
+						{{ form_widget(form.facebookUrl, {'attr': {'class': 'form-control col-md-7 col-xs-12', 'placeholder': 'https://facebook.com/tu-tienda'}}) }}
+					</div>
+				</div>
+
+				<div class="item form-group">
+					<label class="control-label col-md-3 col-sm-3 col-xs-12" for="domains_instagramUrl">{{ 'instagram_url'|trans({}, 'domains') }}</label>
+					<div class="col-md-6 col-sm-6 col-xs-12">
+						{{ form_widget(form.instagramUrl, {'attr': {'class': 'form-control col-md-7 col-xs-12', 'placeholder': 'https://instagram.com/tu-tienda'}}) }}
+					</div>
+				</div>
+
+				<div class="item form-group">
+					<label class="control-label col-md-3 col-sm-3 col-xs-12" for="domains_pinterestUrl">{{ 'pinterest_url'|trans({}, 'domains') }}</label>
+					<div class="col-md-6 col-sm-6 col-xs-12">
+						{{ form_widget(form.pinterestUrl, {'attr': {'class': 'form-control col-md-7 col-xs-12', 'placeholder': 'https://pinterest.com/tu-tienda'}}) }}
+					</div>
+				</div>
+
+				{% if isEdit | default(false) %}
+					<div class="item form-group">
+						<label class="control-label col-md-3 col-sm-3 col-xs-12" for="active">{{ 'active'|trans({}, 'users') }}
+							<span class="required">*</span>
+						</label>
+						<div class="col-md-6 col-sm-6 col-xs-12">
+							{{ form_widget(form.activated, {'attr': {'class': 'form-control col-md-7 col-xs-12'}}) }}
+						</div>
+					</div>
+				{% endif %}
+				{% import 'macros/geo_selection.html.twig' as geo %}
+				{{ geo.geo_selector(
+					'domains',
+					allCountries,
+					selectedCountryIds,
+					selectedRegionIds,
+					selectedCityIds,
+					path('dashboard_geo_regions'),
+					path('dashboard_geo_cities'),
+					app.request.locale
+				) }}
+
+				<div class="ln_solid"></div>
+				<div class="form-group">
+					<div class="col-md-6 col-md-offset-3">
+						<a href="{{ path('dashboard_tenants') }}" class="btn btn-primary">{{ 'cancel'|trans() }}</a>
+						<button id="send" type="submit" class="btn btn-success">{{ 'submit'|trans() }}</button>
+					</div>
+				</div>
+
+				{{ form_end(form) }}
+
+			</div>
+		</div>
+	</div>
+</div>

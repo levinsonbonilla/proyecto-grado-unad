@@ -1,0 +1,76 @@
+{% extends 'dashboard/base_dashboard.html.twig' %}
+{% import 'macros/alert.html.twig' as alert %}
+
+{% set type = isEdit | default(false) ? "edit" : "add" %}
+
+{% block title %}{{ (type ~ '_medida')|trans({}, 'modules') }}
+{% endblock %}
+
+{% block body %}
+	<div class="right_col" role="main">
+		<div class="">
+			<div class="page-title">
+				{{ alert.alert_success() }}
+				{{ alert.alert_error() }}
+				<div class="title_left">
+					<h3>{{ (type ~ '_medida')|trans({}, 'modules') }}</h3>
+				</div>
+
+				<div class="title_right">
+					<div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+						<div class="input-group">
+							<a href="{{ path('dashboard_products_medidas') }}" class="btn btn-default form-control">
+								<i class="fa fa-arrow-left" aria-hidden="true"></i>&nbsp;&nbsp;{{ 'back'|trans({}, 'users') }}</a>
+							<span class="input-group-btn">
+								<button class="btn btn-default" type="button" onclick="window.location.href='{{ path('dashboard') }}'">
+									<i class="fa fa-home" aria-hidden="true"></i>
+								</button>
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="clearfix"></div>
+
+			<div class="row">
+				<div class="col-md-8 col-sm-12 col-xs-12">
+					<div class="x_panel">
+						<div class="x_title">
+							<h2>{{ 'information'|trans({}, 'modules') }}</h2>
+							<div class="clearfix"></div>
+						</div>
+						<div class="x_content">
+							{{ form_start(form, {'attr': {'class': 'form-horizontal form-label-left', "method": "POST"}}) }}
+
+							<div class="row">
+								<div class="col-md-6 col-sm-12 col-xs-12 form-group">
+									<label class="control-label" for="medidas_name">{{ 'name'|trans({}, 'users') }} <span class="required">*</span></label>
+									{{ form_widget(form.name, {'attr': {'class': 'form-control', 'id': 'medidas_name'}}) }}
+								</div>
+							</div>
+
+							{% if isEdit | default(false) %}
+							<div class="row">
+								<div class="col-md-6 col-sm-12 col-xs-12 form-group">
+									<label class="control-label">{{ 'active'|trans({}, 'users') }} <span class="required">*</span></label>
+									{{ form_widget(form.activated, {'attr': {'class': 'form-control'}}) }}
+								</div>
+							</div>
+							{% endif %}
+
+							<div class="ln_solid"></div>
+							<div class="form-group">
+								<div class="col-md-6 col-md-offset-3">
+									<a href="javascript:void(0);" onclick="history.back();" class="btn btn-primary">{{ 'cancel'|trans({}, 'modules') }}</a>
+									<button id="send" type="submit" class="btn btn-success">{{ 'acepted'|trans({}, 'modules') }}</button>
+								</div>
+							</div>
+
+							{{ form_end(form) }}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

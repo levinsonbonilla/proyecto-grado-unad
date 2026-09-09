@@ -1,0 +1,10 @@
+0:
+    name: 3688689
+    description: '{"names":{"de":"Bogot\u00e1","en":"Bogot\u00e1","es":"Bogot\u00e1","fr":"Bogota","ja":"\u30dc\u30b4\u30bf","pt-BR":"Bogot\u00e1","ru":"\u0411\u043e\u0433\u043e\u0442\u0430","zh-CN":"\u6ce2\u54e5\u5927"},"geoname_id":3688689}'
+    names: '{"de":"Bogot\u00e1","en":"Bogot\u00e1","es":"Bogot\u00e1","fr":"Bogota","ja":"\u30dc\u30b4\u30bf","pt-BR":"Bogot\u00e1","ru":"\u0411\u043e\u0433\u043e\u0442\u0430","zh-CN":"\u6ce2\u54e5\u5927"}'
+    region: DC 
+1:
+    name: 3688689
+    description: '{"de":"Soacha","en":"Soacha","es":"Soacha","ru":"\u0421\u043e\u0430\u0447\u0443"}'
+    names: '{"names":{"de":"Soacha","en":"Soacha","es":"Soacha","ru":"\u0421\u043e\u0430\u0447\u0443"},"geoname_id":3667905}'
+    region: CUN

@@ -1,0 +1,26 @@
+{% macro money(moneyType, idInput) %}
+	<div class="col-md-12 col-sm-6 col-xs-12">
+		{{ form_widget(moneyType, {'attr': {'class': 'form-control col-md-7 col-xs-12'}}) }}
+	</div>
+	<script>
+		const {{idInput}} = document.getElementById('{{idInput}}');
+
+			{{idInput}}.addEventListener('input', function (event) {
+				let value = {{idInput}}.value;
+
+				value = value.replace(/[^0-9.]/g, '');
+
+				let [integer, decimal] = value.split('.');
+
+				integer = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+				if (decimal !== undefined) {
+					value = `${integer}.${decimal}`;
+				} else {
+					value = integer;
+				}
+
+				{{idInput}}.value = value;
+			});
+	</script>
+{% endmacro %}

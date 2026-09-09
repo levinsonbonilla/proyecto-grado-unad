@@ -1,0 +1,22 @@
+0:
+    name: "Producto Test A"
+    description: "Producto de prueba para escenarios de precios geograficos"
+    basePrice: "80000"
+    publicPrice: "100000"
+1:
+    name: "Producto Test B"
+    description: "Producto de prueba sin precios geograficos asignados"
+    basePrice: "150000"
+    publicPrice: "200000"
+2:
+    name: "Producto Test C (con stock)"
+    description: "Producto de prueba con stock trackeado y disponible"
+    basePrice: "40000"
+    publicPrice: "60000"
+    stock: "5"
+3:
+    name: "Producto Test D (agotado)"
+    description: "Producto de prueba con stock en 0 -- no debe aparecer en listados públicos"
+    basePrice: "40000"
+    publicPrice: "60000"
+    stock: "0"

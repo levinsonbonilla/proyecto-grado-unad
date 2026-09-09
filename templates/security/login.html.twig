@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+{% import 'macros/language_switcher.html.twig' as language_switcher %}
+
+{% block title %}
+  {{ 'name'|currentTenant }}
+{% endblock %}
+
+{% block body %}
+  {% set isLogin = true %}
+  {% if app.request.attributes.get('_route') == 'security_register' %}
+    {% set isLogin = false %}
+  {% endif %}
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const currentPath = window.location.pathname;
+      if (currentPath === "{{ path('security_register') }}") {
+          if (!window.location.hash.includes('signup')) {
+              window.history.replaceState({}, '', window.location.pathname + '#signup');
+              document.getElementById('signup-form').scrollIntoView({ behavior: 'smooth' });
+          }
+      }
+    });
+  </script>
+  <body class="login">
+    <div>
+
+      <div style="position:absolute; top:15px; right:20px; z-index:10;" class="dropdown" aria-label="{{ 'change_language'|trans({}, 'login') }}">
+        {{ language_switcher.render(app.request.locale, 'login', 'user-profile dropdown-toggle', 'dropdown-menu dropdown-usermenu pull-right', 'user-profile dropdown-toggle') }}
+      </div>
+
+      <a class="hiddenanchor" id="signup"></a>
+      <a class="hiddenanchor" id="signin"></a>
+      <div class="login_wrapper">
+        <div class="animate form login_form">
+          {% include 'security/login_form.html.twig' %}
+        </div>
+
+        <div id="" class="animate form registration_form">
+          {% include 'security/register_form.html.twig' %}
+        </div>
+      </div>
+    </div>
+  </body>
+{% endblock %}

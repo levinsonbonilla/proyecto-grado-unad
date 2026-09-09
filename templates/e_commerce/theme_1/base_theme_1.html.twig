@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+
+      window.__CURRENCY__ = {{ currentCurrency() | json_encode | raw }};
+      window.formatCurrencyAmount = function (raw) {
+        var c = window.__CURRENCY__ || { symbol: '$', decimalPlaces: 2, thousandsSeparator: ',', decimalSeparator: '.' };
+        var divisor = Math.pow(10, c.decimalPlaces);
+        var value = (Number(raw) || 0) / divisor;
+        var parts = value.toFixed(c.decimalPlaces).split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, c.thousandsSeparator);
+        return c.symbol + (parts.length > 1 ? parts.join(c.decimalSeparator) : parts[0]);
+      };
+    </script>
+    <title>
+      {% block title %}Welcome!{% endblock %}
+    </title>
+    {% block stylesheets %}
+      <link rel="icon" type="image/png" href="{{ asset('theme_1/images/icons/favicon.png') }}" />
+      <!-- =============================================================================================== -->
+      <link rel="stylesheet" type="text/css" href="{{ asset('theme_1/vendor/bootstrap/css/bootstrap.min.css') }}" />
+      <!-- =============================================================================================== -->
+      <link rel="stylesheet" type="text/css" href="{{ asset('theme_1/fonts/font-awesome-4.7.0/css/font-awesome.min.css') }}" />
+      <!-- =============================================================================================== -->
+      <link rel="stylesheet" type="text/css" href="{{ asset('theme_1/fonts/iconic/css/material-design-iconic-font.min.css') }}" />
+      <!-- =============================================================================================== -->
+      <link rel="stylesheet" type="text/css" href="{{ asset('theme_1/fonts/linearicons-v1.0.0/icon-font.min.css') }}" />
+      <!-- =============================================================================================== -->
+      <link rel="stylesheet" type="text/css" href="{{ asset('theme_1/vendor/animate/animate.css') }}" />
+      <!-- =============================================================================================== -->
+      <link rel="stylesheet" type="text/css" href="{{ asset('theme_1/vendor/css-hamburgers/hamburgers.min.css') }}" />
+      <!-- =============================================================================================== -->
+      <link rel="stylesheet" type="text/css" href="{{ asset('theme_1/vendor/animsition/css/animsition.min.css') }}" />
+      <!-- =============================================================================================== -->
+      <link rel="stylesheet" type="text/css" href="{{ asset('theme_1/vendor/select2/select2.min.css') }}" />
+      <!-- =============================================================================================== -->
+      <link rel="stylesheet" type="text/css" href="{{ asset('theme_1/vendor/daterangepicker/daterangepicker.css') }}" />
+      <!-- =============================================================================================== -->
+      <link rel="stylesheet" type="text/css" href="{{ asset('theme_1/vendor/slick/slick.css') }}" />
+      <!-- =============================================================================================== -->
+      <link rel="stylesheet" type="text/css" href="{{ asset('theme_1/vendor/MagnificPopup/magnific-popup.css') }}" />
+      <!-- =============================================================================================== -->
+      <link rel="stylesheet" type="text/css" href="{{ asset('theme_1/vendor/perfect-scrollbar/perfect-scrollbar.css') }}" />
+      <!-- =============================================================================================== -->
+      <link rel="stylesheet" type="text/css" href="{{ asset('theme_1/css/util.css') }}" />
+      <link rel="stylesheet" type="text/css" href="{{ asset('theme_1/css/main.css') }}" />
+    {% endblock %}
+    <style>
+
+      .block1-pic,
+      .block2-pic { height: 250px; overflow: hidden; }
+      .block1-pic img,
+      .block2-pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+      .item-slick1 { background-size: cover; background-position: center center; }
+      .section-slide { overflow: hidden; }
+
+      .slick3 .item-slick3 img { width: 100%; max-height: 440px; object-fit: cover; }
+    </style>
+  </head>
+  <body>
+    {% if (header|default(1)) == 1 %}
+      {% include 'e_commerce/theme_1/header.html.twig' %}
+    {% elseif (header|default(1)) == 2 %}
+      {% include 'e_commerce/theme_1/header_2.html.twig' %}
+    {% elseif (header|default(1)) == 3 %}
+      {% include 'e_commerce/theme_1/header_3.html.twig' %}
+    {% endif %}
+    {% include 'e_commerce/theme_1/modal_1.html.twig' %}
+    {% block body %}
+
+    {% endblock %}
+    {% include 'e_commerce/theme_1/footer.html.twig' %}
+
+    {% block javascripts %}
+      <!-- =============================================================================================== -->
+      <script src="{{ asset('theme_1/vendor/jquery/jquery-3.2.1.min.js') }}"></script>
+      <!-- =============================================================================================== -->
+      <script src="{{ asset('theme_1/vendor/animsition/js/animsition.min.js') }}"></script>
+      <!-- =============================================================================================== -->
+      <script src="{{ asset('theme_1/vendor/bootstrap/js/popper.js') }}"></script>
+      <script src="{{ asset('theme_1/vendor/bootstrap/js/bootstrap.min.js') }}"></script>
+      <!-- =============================================================================================== -->
+      <script src="{{ asset('theme_1/vendor/select2/select2.min.js') }}"></script>
+      <script>
+        $('.js-select2').each(function () {
+          $(this).select2({
+            minimumResultsForSearch: 20,
+            dropdownParent: $(this).next('.dropDownSelect2')
+          })
+        })
+      </script>
+      <!-- =============================================================================================== -->
+      <script src="{{ asset('theme_1/vendor/daterangepicker/moment.min.js') }}"></script>
+      <script src="{{ asset('theme_1/vendor/daterangepicker/daterangepicker.js') }}"></script>
+      <!-- =============================================================================================== -->
+      <script src="{{ asset('theme_1/vendor/slick/slick.min.js') }}"></script>
+      <script src="{{ asset('theme_1/js/slick-custom.js') }}"></script>
+      <!-- =============================================================================================== -->
+      <script src="{{ asset('theme_1/vendor/parallax100/parallax100.js') }}"></script>
+      <script>
+        $('.parallax100').parallax100()
+      </script>
+      <!-- =============================================================================================== -->
+      <script src="{{ asset('theme_1/vendor/MagnificPopup/jquery.magnific-popup.min.js') }}"></script>
+      <script>
+        $('.gallery-lb').each(function () {
+
+          $(this).magnificPopup({
+            delegate: 'a',
+            type: 'image',
+            gallery: {
+              enabled: true
+            },
+            mainClass: 'mfp-fade'
+          })
+        })
+      </script>
+      <!-- =============================================================================================== -->
+      <script src="{{ asset('theme_1/vendor/isotope/isotope.pkgd.min.js') }}"></script>
+      <!-- =============================================================================================== -->
+      <script src="{{ asset('theme_1/vendor/sweetalert/sweetalert.min.js') }}"></script>
+      <script>
+
+        var swalI18n = {
+          productIdMissing: '{{ 'product_id_missing' | trans({}, 'store') | default('No se pudo identificar el producto') | e('js') }}',
+          addedToWishlist: '{{ 'added_to_wishlist' | trans({}, 'store') | default('is added to wishlist !') | e('js') }}',
+          removedFromWishlist: '{{ 'removed_from_wishlist' | trans({}, 'store') | default('is removed from wishlist !') | e('js') }}',
+          favoritesUpdateError: '{{ 'favorites_update_error' | trans({}, 'store') | default('No se pudo actualizar favoritos') | e('js') }}',
+          addedToCart: '{{ 'added_to_cart_message' | trans({}, 'store') | default('is added to cart !') | e('js') }}',
+          cartAddError: '{{ 'cart_add_error' | trans({}, 'store') | default('No se pudo agregar el producto al carrito') | e('js') }}',
+          buyNowError: '{{ 'buy_now_error' | trans({}, 'store') | default('No se pudo procesar la compra') | e('js') }}',
+          pleaseSelectColor: '{{ 'please_select_color' | trans({}, 'store') | default('Elige un color antes de continuar') | e('js') }}'
+        };
+
+        function toggleFavorite($btn, activeClass, nameProduct) {
+          if ($btn.data('wish-loading')) {
+            return
+          }
+
+          var productId = $btn.attr('data-product-id')
+          if (!productId) {
+            swal('Error', swalI18n.productIdMissing, 'error')
+            return
+          }
+
+          var locale = '{{ app.request.locale }}'
+          $btn.data('wish-loading', true)
+
+          fetch('/' + locale + '/favorites/toggle', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId: productId })
+          })
+            .then(function (res) { return res.json() })
+            .then(function (data) {
+              if (data.success) {
+                $btn.toggleClass(activeClass, data.isFavorite)
+
+                var titleOn = $btn.attr('data-title-on')
+                var titleOff = $btn.attr('data-title-off')
+                if (titleOn && titleOff) {
+                  $btn.attr('title', data.isFavorite ? titleOn : titleOff)
+                }
+                swal(
+                  nameProduct,
+                  data.isFavorite ? swalI18n.addedToWishlist : swalI18n.removedFromWishlist,
+                  'success'
+                )
+                $btn[0].dispatchEvent(new CustomEvent('favorite:toggled', {
+                  bubbles: true,
+                  detail: { productId: productId, isFavorite: data.isFavorite }
+                }))
+              } else {
+                swal('Error', data.message || swalI18n.favoritesUpdateError, 'error')
+              }
+            })
+            .catch(function () {
+              swal('Error', swalI18n.favoritesUpdateError, 'error')
+            })
+            .finally(function () {
+              $btn.data('wish-loading', false)
+            })
+        }
+
+        $(document).on('click', '.js-addwish-b2', function (e) {
+          e.preventDefault()
+          var $btn = $(this)
+          var nameProduct = $btn.closest('.block2').find('.js-name-b2').html() || ''
+          toggleFavorite($btn, 'js-addedwish-b2', nameProduct)
+        })
+
+        $(document).on('click', '.js-addwish-detail', function (e) {
+          e.preventDefault()
+          var $btn = $(this)
+          var nameProduct = $btn.closest('.row, .col-md-6, .col-lg-5').find('.js-name-detail').first().html() || ''
+          toggleFavorite($btn, 'js-addedwish-detail', nameProduct)
+        })
+
+        $(document).on('click', '.js-addcart-detail', function (e) {
+          e.preventDefault()
+
+          var $btn = $(this)
+          if ($btn.data('cart-loading')) {
+            return
+          }
+
+          var productId = $btn.attr('data-product-id')
+          if (!productId) {
+            swal('Error', swalI18n.productIdMissing, 'error')
+            return
+          }
+
+          var $scope       = $btn.closest('.p-t-33')
+          var quantity     = parseInt($scope.find('.num-product').val(), 10) || 1
+          var nameProduct  = $btn.closest('.row, .col-md-6, .col-lg-5').find('.js-name-detail').first().html() || ''
+          var locale       = '{{ app.request.locale }}'
+
+          var $colorPicker = $btn.closest('.col-md-6, .col-lg-5').find('.js-color-picker')
+          var colorId = ''
+          if ($colorPicker.length) {
+            colorId = $colorPicker.find('.js-color-id-input').val()
+            if (!colorId) {
+              swal('Error', swalI18n.pleaseSelectColor, 'warning')
+              return
+            }
+          }
+
+          $btn.data('cart-loading', true)
+
+          fetch('/' + locale + '/cart/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId: productId, quantity: quantity, colorId: colorId })
+          })
+            .then(function (res) { return res.json() })
+            .then(function (data) {
+              if (data.success) {
+                swal(nameProduct, swalI18n.addedToCart, 'success')
+                if (typeof window.updateCartBadge === 'function') {
+                  window.updateCartBadge(data.count)
+                }
+              } else {
+                swal('Error', data.message || swalI18n.cartAddError, 'error')
+              }
+            })
+            .catch(function () {
+              swal('Error', swalI18n.cartAddError, 'error')
+            })
+            .finally(function () {
+              $btn.data('cart-loading', false)
+            })
+        })
+
+        $(document).on('click', '.js-buynow-detail', function (e) {
+          e.preventDefault()
+
+          var $btn   = $(this)
+          var locale = '{{ app.request.locale }}'
+
+          if ($btn.attr('data-logged-in') !== '1') {
+            window.location.href = '{{ path('security_login', {_locale: app.request.locale}) }}'
+            return
+          }
+
+          if ($btn.data('cart-loading')) {
+            return
+          }
+
+          var productId = $btn.attr('data-product-id')
+          if (!productId) {
+            swal('Error', swalI18n.productIdMissing, 'error')
+            return
+          }
+
+          var $scope   = $btn.closest('.p-t-33')
+          var quantity = parseInt($scope.find('.num-product').val(), 10) || 1
+
+          var $colorPicker = $btn.closest('.col-md-6, .col-lg-5').find('.js-color-picker')
+          var colorId = ''
+          if ($colorPicker.length) {
+            colorId = $colorPicker.find('.js-color-id-input').val()
+            if (!colorId) {
+              swal('Error', swalI18n.pleaseSelectColor, 'warning')
+              return
+            }
+          }
+
+          $btn.data('cart-loading', true)
+          $btn.prop('disabled', true)
+
+          fetch('/' + locale + '/cart/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId: productId, quantity: quantity, colorId: colorId })
+          })
+            .then(function (res) { return res.json() })
+            .then(function (data) {
+              if (data.success) {
+                window.location.href = '/' + locale + '/cart'
+              } else {
+                swal('Error', data.message || swalI18n.buyNowError, 'error')
+                $btn.prop('disabled', false)
+                $btn.data('cart-loading', false)
+              }
+            })
+            .catch(function () {
+              swal('Error', swalI18n.buyNowError, 'error')
+              $btn.prop('disabled', false)
+              $btn.data('cart-loading', false)
+            })
+        })
+      </script>
+      <!-- =============================================================================================== -->
+      <script src="{{ asset('theme_1/vendor/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
+      <script>
+        $('.js-pscroll').each(function () {
+          $(this).css('position', 'relative')
+          $(this).css('overflow', 'hidden')
+          var ps = new PerfectScrollbar(this, {
+            wheelSpeed: 1,
+            scrollingThreshold: 1000,
+            wheelPropagation: false
+          })
+
+          $(window).on('resize', function () {
+            ps.update()
+          })
+        })
+      </script>
+      <!-- =============================================================================================== -->
+      <script src="{{ asset('theme_1/js/main.js') }}"></script>
+    {% endblock %}
+  </body>
+</html>

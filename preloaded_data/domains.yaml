@@ -1,0 +1,18 @@
+0:
+    domain: http://localhost:8060
+    tenantIndex: 0
+    logo: https://levinsonbonilla.github.io/thorha-assets/images/apple-touch-icon-precomposed.png
+    notificationEmail: from@example.org
+    supportEmail: support@example.org
+1:
+    domain: http://onurix.local:8061
+    tenantIndex: 0
+    logo: https://levinsonbonilla.github.io/thorha-assets/images/apple-touch-icon-precomposed.png
+    notificationEmail: from@example.org
+    supportEmail: support@example.org
+2:
+    domain: http://localhost:8090
+    tenantIndex: 1
+    logo: https://levinsonbonilla.github.io/thorha-assets/images/apple-touch-icon-precomposed.png
+    notificationEmail: from@example.org
+    supportEmail: support@example.org

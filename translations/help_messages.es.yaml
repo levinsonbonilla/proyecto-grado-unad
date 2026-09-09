@@ -1,0 +1,60 @@
+title: Mensajes
+new_message: Nuevo mensaje
+filter_by_sender: Filtrar por remitente
+filter_by_status: Filtrar por estado
+all_option: "— Todos —"
+unread: No leídos
+read_status: Leídos
+apply_filter: Aplicar
+clear_filter: Limpiar
+received_messages: Mensajes recibidos
+status_column: Estado
+from_column: De
+subject_column: Asunto
+message_column: Mensaje
+date_column: Fecha
+read_label: Leído
+new_label: Nuevo
+mark_as_unread: Marcar como no leído
+mark_as_read: Marcar como leído
+no_subject: (sin asunto)
+view: Ver
+
+sent_title: Mensajes enviados
+inbox_tooltip: Bandeja de entrada
+sent_panel_title: Enviados
+to_column: Para
+unread_label: Sin leer
+
+recipients_label: Destinatarios
+recipient_label: Destinatario
+optional: Opcional
+images_label: Imágenes
+images_help: "Puedes adjuntar hasta 5 imágenes (pantallazos de error)"
+send_message: Enviar mensaje
+
+conversation_title: Conversación
+message_load_error: No se pudo cargar el mensaje.
+message_thread_default_title: Hilo de mensajes
+reply_label: Responder
+images_help_reply: "Puedes adjuntar hasta 5 imágenes"
+send_reply: Enviar respuesta
+attached_image_alt: imagen adjunta
+
+fab_button_title: Enviar mensaje o reportar error
+fab_modal_title: Nuevo mensaje / Reportar error
+fab_recipients_multi_hint: (puede seleccionar varios)
+fab_message_placeholder: "Describe el error o escribe tu mensaje..."
+fab_images_optional_label: "Imágenes (opcional — hasta 5 pantallazos)"
+fab_attach_images: Adjuntar imágenes
+fab_max_hint: máx. 5
+fab_send: Enviar
+fab_sending: Enviando...
+fab_select_superadmin_placeholder: -- Seleccionar superadministrador --
+fab_remove_thumb_title: Quitar
+fab_message_empty_error: El mensaje no puede estar vacío.
+fab_select_at_least_one_recipient: Selecciona al menos un destinatario.
+fab_select_recipient: Selecciona un destinatario.
+fab_message_sent_default: Mensaje enviado.
+fab_send_error_default: Error al enviar.
+fab_connection_error: Error de conexión. Intente nuevamente.

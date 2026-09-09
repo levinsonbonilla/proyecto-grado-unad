@@ -1,0 +1,30 @@
+id: Id
+actions: Actions
+name: Name
+active: Active
+slide: slide
+info: Slide information
+image: Image
+type: Type
+notification_email: Notification email
+support_email: Support email
+create_slide: Create slide
+list_slides: List slides
+existing_slide: Existing slides
+slide_created_successfully: slide created successfully
+edit_slide: Edit slide
+add_slide: Add slide
+logo: Logo
+drop_here: Drop here
+remove_file: "Remove file"
+cancel_upload: "Cancel upload"
+slide_edited_success: slide edited successfully
+yes: Yes
+no: No
+position: Position
+description: Description
+change_status: Change status
+change_status_modal_title: Change slide status
+change_status_modal_body: "Are you sure you want to change the status of this slide?"
+change_status_modal_confirm: Confirm change
+change_status_error: An error occurred while changing the slide status.

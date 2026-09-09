@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  {{ 'tenant_signup_title'|trans({}, 'login') }}
+{% endblock %}
+
+{% block body %}
+  <body class="login">
+    <div>
+      <div class="login_wrapper">
+        <div class="animate form login_form">
+          <section class="login_content">
+            {% import 'macros/alert.html.twig' as alert %}
+            {{ alert.alert_success() }}
+            {{ alert.alert_error() }}
+
+            {{ form_start(form, {'attr': {'id': 'register_tenant_form', 'action': path('tenant_signup'), 'method': 'POST'}}) }}
+
+            <h1>{{ 'tenant_signup_title'|trans({}, 'login') }}</h1>
+            <p>{{ 'tenant_signup_subtitle'|trans({}, 'login') }}</p>
+
+            <div>
+              {{ form_widget(form.businessName, {'attr': {'class': 'form-control', 'placeholder': 'business_name_label'|trans({}, 'login') ~ '*'}}) }}
+              {{ form_errors(form.businessName, {'attr': {'class': 'parsley-required'}}) }}
+            </div>
+            <div>
+              <div class="input-group">
+                {{ form_widget(form.slug, {'attr': {'class': 'form-control', 'placeholder': 'subdomain_label'|trans({}, 'login') ~ '*'}}) }}
+                <span class="input-group-addon">.{{ platform_base_domain }}</span>
+              </div>
+              {{ form_errors(form.slug, {'attr': {'class': 'parsley-required'}}) }}
+            </div>
+            <div>
+              {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'email_label'|trans({}, 'login') ~ '*'}}) }}
+              {{ form_errors(form.email, {'attr': {'class': 'parsley-required'}}) }}
+            </div>
+            <div>
+              {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder': 'name_label'|trans({}, 'login') ~ '*'}}) }}
+              {{ form_errors(form.name, {'attr': {'class': 'parsley-required'}}) }}
+            </div>
+            <div>
+              {{ form_widget(form.lastName, {'attr': {'class': 'form-control', 'placeholder': 'last_name_label'|trans({}, 'login') ~ '*'}}) }}
+              {{ form_errors(form.lastName, {'attr': {'class': 'parsley-required'}}) }}
+            </div>
+            <div>
+              {{ form_widget(form.password, {'attr': {'class': 'form-control', 'placeholder': 'password_label'|trans({}, 'login') ~ '*'}}) }}
+              {{ form_errors(form.password, {'attr': {'class': 'parsley-required'}}) }}
+            </div>
+            <div>
+              {{ form_widget(form.confirm_password, {'attr': {'class': 'form-control', 'placeholder': 'confirm_password_label'|trans({}, 'login') ~ '*'}}) }}
+              {{ form_errors(form.confirm_password, {'attr': {'class': 'parsley-required'}}) }}
+            </div>
+
+            <div>
+              <button type="submit" id="btn_register_tenant" class="btn btn-default">{{ 'tenant_signup_button'|trans({}, 'login') }}</button>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <div class="separator">
+              <p class="change_link">
+                {{ 'already_a_member_question'|trans({}, 'login') }}
+                <a href="{{ path('security_login') }}">{{ 'log_in_action'|trans({}, 'login') }}</a>
+              </p>
+            </div>
+
+            {{ form_end(form) }}
+          </section>
+        </div>
+      </div>
+    </div>
+  </body>
+{% endblock %}

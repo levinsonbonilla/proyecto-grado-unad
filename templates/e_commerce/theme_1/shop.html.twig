@@ -1,0 +1,89 @@
+{% extends 'e_commerce/theme_1/base_theme_1.html.twig' %}
+
+{% block title %}
+    {% if activeCategory is defined %}{{ activeCategory.name }}
+    {% elseif searchQuery is defined and searchQuery %}{{ 'search_results' | trans({}, 'store') | default('Resultados') }}: {{ searchQuery }}
+    {% else %}{{ 'shop' | trans({}, 'store') | default('Tienda') }}{% endif %}
+{% endblock %}
+
+{% block body %}
+
+<div class="bg0 m-t-23 p-b-140">
+    <div class="container">
+
+        <div class="flex-w flex-sb-m p-b-35">
+            <form method="GET" action="{{ path('store_search', {_locale: app.request.locale}) }}" class="flex-w flex-c-m">
+                <input class="stext-103 cl3 plh4 size-116 p-lr-28 bor8 m-r-10" type="text"
+                       name="q" placeholder="{{ 'search' | trans({}, 'store') | default('Buscar...') }}"
+                       value="{{ searchQuery | default(app.request.query.get('q', '')) }}">
+                <button class="flex-c-m size-116 bg1 bor8 hov-btn3 trans-04" type="submit">
+                    <i class="zmdi zmdi-search"></i>
+                </button>
+            </form>
+        </div>
+
+        {% if categories is not empty %}
+        <div class="flex-w flex-l-m filter-tope-group m-tb-10 p-b-35">
+            <a href="{{ path('store_shop', {_locale: app.request.locale}) }}"
+               class="stext-106 cl6 hov1 bor3 trans-04 m-r-20 m-tb-5 {% if activeCategory is not defined %}how-active1{% endif %}">
+                {{ 'all' | trans({}, 'store') | default('Todos') }}
+            </a>
+            {% for category in categories %}
+            <a href="{{ path('store_category', {_locale: app.request.locale, id: category.id}) }}"
+               class="stext-106 cl6 hov1 bor3 trans-04 m-r-20 m-tb-5 {% if activeCategory is defined and (activeCategory.getId() ~ '') == category.id %}how-active1{% endif %}">
+                {{ category.name }}
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if items is not empty %}
+        <div class="row isotope-grid">
+            {% for product in items %}
+                {% include 'e_commerce/theme_1/partials/_product_card.html.twig' with {product: product} %}
+            {% endfor %}
+        </div>
+
+        {% if totalPages is defined and totalPages > 1 %}
+        {% set baseUrl = app.request.uri | split('?')[0] %}
+        {% set qParams = [] %}
+        {% for key, val in app.request.query.all %}
+            {% if key != 'page' %}{% set qParams = qParams | merge([key ~ '=' ~ val]) %}{% endif %}
+        {% endfor %}
+        {% set qBase = qParams | join('&') %}
+        <div class="flex-c-m flex-w w-full p-t-45">
+            {% if page > 1 %}
+            <a href="{{ baseUrl }}?page={{ page - 1 }}{% if qBase %}&{{ qBase }}{% endif %}"
+               class="flex-c-m size-104 stext-106 cl2 bor3 hov-btn3 trans-04 m-lr-5">&laquo;</a>
+            {% endif %}
+
+            {% for p in 1..totalPages %}
+            <a href="{{ baseUrl }}?page={{ p }}{% if qBase %}&{{ qBase }}{% endif %}"
+               class="flex-c-m size-104 stext-106 cl2 bor3 hov-btn3 trans-04 m-lr-5 {% if p == page %}how-active1{% endif %}">
+                {{ p }}
+            </a>
+            {% endfor %}
+
+            {% if page < totalPages %}
+            <a href="{{ baseUrl }}?page={{ page + 1 }}{% if qBase %}&{{ qBase }}{% endif %}"
+               class="flex-c-m size-104 stext-106 cl2 bor3 hov-btn3 trans-04 m-lr-5">&raquo;</a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="txt-center p-t-100 p-b-100">
+            <p class="stext-107 cl6">
+                {{ 'no_products_found' | trans({}, 'store') | default('No se encontraron productos.') }}
+            </p>
+            <a href="{{ path('store_shop', {_locale: app.request.locale}) }}"
+               class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04 m-t-20">
+                {{ 'view_all' | trans({}, 'store') | default('Ver todos') }}
+            </a>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,22 @@
+id: Identificación
+actions: Acciones
+name: Nombre
+tenant: Inquilino
+active: Activo
+domain: Dominio
+notification_email: Correo de notificación
+support_email: Correo de soporte
+create_domain: Crear dominio
+list_domains: Listado de dominios
+existing_domain: Dominio existente
+domain_created_successfully: El dominio ha sido creado con éxito.
+edit_domain: Domain edition
+add_domain: Creación de dominio
+logo: Logotipo
+drop_here: Suelta aquí
+remove_file: "Eliminar archivo"
+cancel_upload: "Cancelar carga"
+domain_edited_success: Dominio editado exitosamente
+facebook_url: URL de Facebook
+instagram_url: URL de Instagram
+pinterest_url: URL de Pinterest

@@ -1,0 +1,164 @@
+{% block footer %}
+	<!-- Footer -->
+	<footer class="bg3 p-t-75 p-b-32">
+		<div class="container">
+			<div class="row">
+
+				<div class="col-sm-6 col-lg-3 p-b-50">
+					<h4 class="stext-301 cl0 p-b-30">
+						{{ 'categories' | trans({}, 'store') | default('Categories') }}
+					</h4>
+
+					<ul>
+						{% set footerCategories = store_footer_categories() %}
+						{% if footerCategories is not empty %}
+							{% for category in footerCategories|slice(0, 4) %}
+								<li class="p-b-10">
+									<a href="{{ path('store_category', {_locale: app.request.locale, id: category.id}) }}" class="stext-107 cl7 hov-cl1 trans-04">
+										{{ category.name }}
+									</a>
+								</li>
+							{% endfor %}
+						{% else %}
+							<li class="p-b-10">
+								<a href="{{ path('store_shop', {_locale: app.request.locale}) }}" class="stext-107 cl7 hov-cl1 trans-04">
+									{{ 'all' | trans({}, 'store') | default('All products') }}
+								</a>
+							</li>
+						{% endif %}
+					</ul>
+				</div>
+
+				<div class="col-sm-6 col-lg-3 p-b-50">
+					<h4 class="stext-301 cl0 p-b-30">
+						{{ 'footer_help_title' | trans({}, 'store') | default('Help') }}
+					</h4>
+
+					<ul>
+						<li class="p-b-10">
+							<a href="{{ path('store_orders', {_locale: app.request.locale}) }}" class="stext-107 cl7 hov-cl1 trans-04">
+								{{ 'track_order' | trans({}, 'store') | default('Track Order') }}
+							</a>
+						</li>
+
+						<li class="p-b-10">
+							<a href="{{ path('store_contact', {_locale: app.request.locale}) }}" class="stext-107 cl7 hov-cl1 trans-04">
+								{{ 'returns' | trans({}, 'store') | default('Returns') }}
+							</a>
+						</li>
+
+						<li class="p-b-10">
+							<a href="{{ path('store_contact', {_locale: app.request.locale}) }}" class="stext-107 cl7 hov-cl1 trans-04">
+								{{ 'shipping' | trans({}, 'store') | default('Shipping') }}
+							</a>
+						</li>
+
+						<li class="p-b-10">
+							<a href="{{ path('store_contact', {_locale: app.request.locale}) }}" class="stext-107 cl7 hov-cl1 trans-04">
+								{{ 'faqs' | trans({}, 'store') | default('FAQs') }}
+							</a>
+						</li>
+					</ul>
+				</div>
+
+				<div class="col-sm-6 col-lg-3 p-b-50">
+					<h4 class="stext-301 cl0 p-b-30">
+						{{ 'get_in_touch' | trans({}, 'store') | default('Get In Touch') }}
+					</h4>
+
+					<p class="stext-107 cl7 size-201">
+						{{ 'footer_contact_text' | trans({}, 'store') | default('Any questions? Let us know in store at 8th floor, 379 Hudson St, New York, NY 10018 or call us on (+1) 96 716 6879') }}
+					</p>
+
+					{% set footerDomain = store_current_domain() %}
+					<div class="p-t-27">
+						{% if footerDomain and footerDomain.facebookUrl %}
+							<a href="{{ footerDomain.facebookUrl }}" target="_blank" rel="noopener" class="fs-18 cl7 hov-cl1 trans-04 m-r-16">
+								<i class="fa fa-facebook"></i>
+							</a>
+						{% endif %}
+
+						{% if footerDomain and footerDomain.instagramUrl %}
+							<a href="{{ footerDomain.instagramUrl }}" target="_blank" rel="noopener" class="fs-18 cl7 hov-cl1 trans-04 m-r-16">
+								<i class="fa fa-instagram"></i>
+							</a>
+						{% endif %}
+
+						{% if footerDomain and footerDomain.pinterestUrl %}
+							<a href="{{ footerDomain.pinterestUrl }}" target="_blank" rel="noopener" class="fs-18 cl7 hov-cl1 trans-04 m-r-16">
+								<i class="fa fa-pinterest-p"></i>
+							</a>
+						{% endif %}
+					</div>
+				</div>
+
+				<div class="col-sm-6 col-lg-3 p-b-50">
+					<h4 class="stext-301 cl0 p-b-30">
+						{{ 'footer_newsletter_title' | trans({}, 'store') | default('Newsletter') }}
+					</h4>
+
+					<form>
+						<div class="wrap-input1 w-full p-b-4">
+							<input class="input1 bg-none plh1 stext-107 cl7" type="text" name="email" placeholder="email@example.com">
+							<div class="focus-input1 trans-04"></div>
+						</div>
+
+						<div class="p-t-18">
+							<button class="flex-c-m stext-101 cl0 size-103 bg1 bor1 hov-btn2 p-lr-15 trans-04">
+								{{ 'subscribe_button' | trans({}, 'store') | default('Subscribe') }}
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+
+			<div class="p-t-40">
+
+				<div class="flex-c-m flex-w p-b-18">
+					<span class="m-all-1">
+						<img src="{{ asset('theme_1/images/icons/icon-pay-01.png') }}" alt="ICON-PAY">
+					</span>
+
+					<span class="m-all-1">
+						<img src="{{ asset('theme_1/images/icons/icon-pay-02.png') }}" alt="ICON-PAY">
+					</span>
+
+					<span class="m-all-1">
+						<img src="{{ asset('theme_1/images/icons/icon-pay-03.png') }}" alt="ICON-PAY">
+					</span>
+
+					<span class="m-all-1">
+						<img src="{{ asset('theme_1/images/icons/icon-pay-04.png') }}" alt="ICON-PAY">
+					</span>
+
+					<span class="m-all-1">
+						<img src="{{ asset('theme_1/images/icons/icon-pay-05.png') }}" alt="ICON-PAY">
+					</span>
+				</div>
+
+				<p
+					class="stext-107 cl6 txt-center">
+					<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+					Copyright &copy;<script>
+						document.write(new Date().getFullYear());
+					</script>
+					{{ 'rights_reserved' | trans({}, 'store') | default('All rights reserved') }} | {{ 'made_with' | trans({}, 'store') | default('Made with') }}
+					<i class="fa fa-heart-o" aria-hidden="true"></i>
+					{{ 'by_word' | trans({}, 'store') | default('by') }}
+					<a href="https://colorlib.com" target="_blank">Colorlib</a>
+					{{ 'distributed_by' | trans({}, 'store') | default('& distributed by') }}
+					<a href="https://themewagon.com" target="_blank">ThemeWagon</a>
+					<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+
+				</p>
+			</div>
+		</div>
+	</footer>
+
+		<!-- Back to top -->
+	<div class="btn-back-to-top" id="myBtn">
+		<span class="symbol-btn-back-to-top">
+			<i class="zmdi zmdi-chevron-up"></i>
+		</span>
+	</div>
+{% endblock footer %}

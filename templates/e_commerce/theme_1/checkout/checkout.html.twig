@@ -1,0 +1,310 @@
+{% extends 'e_commerce/theme_1/base_theme_1.html.twig' %}
+
+{% block title %}{{ 'checkout' | trans({}, 'store') | default('Finalizar compra') }}{% endblock %}
+
+{% block body %}
+<div class="bg0 p-t-75 p-b-85">
+    <div class="container">
+        <div class="bread-crumb flex-w p-b-32">
+            <a href="{{ path('store', {_locale: app.request.locale}) }}" class="stext-109 cl8 hov-cl1 trans-04">
+                {{ 'home' | trans({}, 'store') | default('Inicio') }}
+                <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+            </a>
+            <a href="{{ path('store_cart', {_locale: app.request.locale}) }}" class="stext-109 cl8 hov-cl1 trans-04">
+                {{ 'cart' | trans({}, 'store') | default('Carrito') }}
+                <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+            </a>
+            <span class="stext-109 cl4">{{ 'checkout' | trans({}, 'store') | default('Finalizar compra') }}</span>
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-7 m-b-50">
+                <div class="bor10 p-lr-40 p-t-30 p-b-40 m-r-40 m-lr-0-xl p-lr-15-sm">
+                    <h4 class="mtext-109 cl2 p-b-30">{{ 'shipping_info' | trans({}, 'store') | default('Información de envío') }}</h4>
+
+                    <div class="p-b-20">
+                        <label class="stext-110 cl3 p-b-5 p-t-5">{{ 'address' | trans({}, 'store') | default('Dirección') }} *</label>
+                        <textarea id="address" rows="3" class="stext-111 cl8 plh3 size-111 p-lr-15 p-tb-10 bor8 w-full"
+                                  placeholder="{{ 'address_placeholder' | trans({}, 'store') | default('Calle, número, piso...') }}">{{ prefill.address }}</textarea>
+                    </div>
+
+                    <div class="p-b-20">
+                        <label class="stext-110 cl3 p-b-5 p-t-5">{{ 'country' | trans({}, 'store') | default('País') }} *</label>
+                        <div class="bo3 of-hidden b-rad-5">
+                            <select id="countrySelect" class="da2 p-lr-20 size-104">
+                                <option value="">{{ 'select_country_option' | trans({}, 'store') | default('-- Selecciona un país --') }}</option>
+                                {% for country in countries %}
+                                <option value="{{ country.id }}"
+                                    {{ prefill.countryId == country.id ? 'selected' : '' }}>
+                                    {{ country.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="p-b-20">
+                        <label class="stext-110 cl3 p-b-5 p-t-5">{{ 'region' | trans({}, 'store') | default('Departamento/Estado') }} *</label>
+                        <div class="bo3 of-hidden b-rad-5">
+                            <select id="regionSelect" class="da2 p-lr-20 size-104">
+                                <option value="">{{ 'select_country_first_option' | trans({}, 'store') | default('-- Selecciona primero el país --') }}</option>
+                                {% if prefill.regionId %}
+                                <option value="{{ prefill.regionId }}" selected>{{ prefill.regionName }}</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="p-b-20">
+                        <label class="stext-110 cl3 p-b-5 p-t-5">{{ 'city' | trans({}, 'store') | default('Ciudad') }} *</label>
+                        <div class="bo3 of-hidden b-rad-5">
+                            <select id="citySelect" class="da2 p-lr-20 size-104">
+                                <option value="">{{ 'select_region_first_option' | trans({}, 'store') | default('-- Selecciona primero el departamento --') }}</option>
+                                {% if prefill.cityId %}
+                                <option value="{{ prefill.cityId }}" selected>{{ prefill.cityName }}</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="p-b-20">
+                        <label class="stext-110 cl3 p-b-5 p-t-5">{{ 'payment_method' | trans({}, 'store') | default('Método de pago') }}</label>
+                        <div class="bo3 of-hidden b-rad-5">
+
+                            <select id="paymentMethodSelect" class="da2 p-lr-20 size-104">
+                                <option value="">-- {{ 'select_payment_method' | trans({}, 'store') | default('Selecciona un método de pago') }} --</option>
+                                {% for pm in paymentMethods %}
+                                <option value="{{ pm.id }}" data-instructions="{{ pm.instructions|default('') }}">{{ pm.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div id="paymentInstructions" class="stext-109 cl6 p-t-8" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-10 col-lg-5 m-b-50">
+                <div class="bor10 p-lr-40 p-t-30 p-b-40 m-lr-0-xl p-lr-15-sm">
+                    <h4 class="mtext-109 cl2 p-b-30">{{ 'order_summary' | trans({}, 'store') | default('Resumen del pedido') }}</h4>
+
+                    {% for item in cart.items %}
+                    <div class="flex-w flex-sb-m bor12 p-b-13 p-t-13">
+                        <div class="size-208">
+                            <span class="stext-110 cl2">{{ item.name }}</span>
+                            {% if item.colorName or item.medidaName %}
+                            <br><span class="stext-109 cl6">{{ [item.colorName, item.medidaName]|filter(v => v is not empty)|join(' - ') }}</span>
+                            {% endif %}
+                            <br><span class="stext-109 cl6">x{{ item.quantity }}</span>
+                        </div>
+                        <div class="size-209">
+                            <span class="stext-110 cl2">{{ item.itemTotal | price }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    <div class="flex-w flex-t p-t-27 p-b-13 bor12">
+                        <div class="size-208">
+                            <span class="stext-110 cl2">{{ 'subtotal' | trans({}, 'store') | default('Subtotal') }}:</span>
+                        </div>
+                        <div class="size-209">
+                            <span class="mtext-110 cl2">{{ cart.subtotal | price }}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex-w flex-t p-t-13 p-b-33">
+                        <div class="size-208">
+                            <span class="stext-110 cl2">{{ 'total' | trans({}, 'store') | default('Total') }}:</span>
+                        </div>
+                        <div class="size-209 p-t-1">
+                            <span class="mtext-110 cl2" id="orderTotal">{{ cart.subtotal | price }}</span>
+                        </div>
+                    </div>
+
+                    <button id="confirmOrderBtn"
+                            class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 trans-04">
+                        {{ 'confirm_order' | trans({}, 'store') | default('Confirmar pedido') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const locale     = '{{ app.request.locale }}';
+    const prefillRegionId = '{{ prefill.regionId }}';
+    const prefillCityId   = '{{ prefill.cityId }}';
+
+    const i18n = {
+        loading: '{{ 'loading' | trans({}, 'store') | default('Cargando...') | e('js') }}',
+        selectCountryFirst: '{{ 'select_country_first_option' | trans({}, 'store') | default('-- Selecciona primero el país --') | e('js') }}',
+        selectRegionFirst: '{{ 'select_region_first_option' | trans({}, 'store') | default('-- Selecciona primero el departamento --') | e('js') }}',
+        selectOption: '{{ 'select_option' | trans({}, 'store') | default('-- Selecciona --') | e('js') }}',
+        selectPaymentMethod: '{{ 'select_payment_method' | trans({}, 'store') | default('Selecciona un método de pago') | e('js') }}',
+        shippingFieldsRequired: '{{ 'shipping_fields_required' | trans({}, 'store') | default('Por favor completa todos los campos de envío obligatorios.') | e('js') }}',
+        processingOrder: '{{ 'processing_order' | trans({}, 'store') | default('Procesando...') | e('js') }}',
+        orderProcessingError: '{{ 'order_processing_error' | trans({}, 'store') | default('Error al procesar el pedido.') | e('js') }}',
+        confirmOrder: '{{ 'confirm_order' | trans({}, 'store') | default('Confirmar pedido') | e('js') }}',
+    };
+
+    const paymentMethodSelect = document.getElementById('paymentMethodSelect');
+    if (paymentMethodSelect) {
+        paymentMethodSelect.addEventListener('change', function () {
+            const box = document.getElementById('paymentInstructions');
+            const selected = this.options[this.selectedIndex];
+            const instructions = selected ? selected.getAttribute('data-instructions') : '';
+            if (instructions) {
+                box.textContent = instructions;
+                box.style.display = 'block';
+            } else {
+                box.style.display = 'none';
+            }
+        });
+    }
+
+    function refreshPaymentMethods() {
+        if (!paymentMethodSelect) return;
+        const countryId = document.getElementById('countrySelect').value;
+        const regionId  = document.getElementById('regionSelect').value;
+        const cityId    = document.getElementById('citySelect').value;
+        const previousValue = paymentMethodSelect.value;
+
+        const params = new URLSearchParams();
+        if (countryId) params.set('countryId', countryId);
+        if (regionId)  params.set('regionId', regionId);
+        if (cityId)    params.set('cityId', cityId);
+
+        fetch(`/${locale}/checkout/api/payment-methods?${params.toString()}`)
+            .then(r => r.json())
+            .then(data => {
+                paymentMethodSelect.innerHTML = '<option value="">-- ' + i18n.selectPaymentMethod + ' --</option>';
+                data.forEach(pm => {
+                    const opt = document.createElement('option');
+                    opt.value = pm.id;
+                    opt.textContent = pm.name;
+                    opt.setAttribute('data-instructions', pm.instructions || '');
+                    paymentMethodSelect.appendChild(opt);
+                });
+                const stillAvailable = Array.from(paymentMethodSelect.options).some(o => o.value === previousValue);
+                if (previousValue && stillAvailable) {
+                    paymentMethodSelect.value = previousValue;
+                } else {
+                    document.getElementById('paymentInstructions').style.display = 'none';
+                }
+            });
+    }
+
+    const regionSelect = document.getElementById('regionSelect');
+    const citySelect   = document.getElementById('citySelect');
+
+    function loadRegions(countryId, preselectId) {
+        regionSelect.innerHTML = '<option value="">' + i18n.loading + '</option>';
+        if (!countryId) {
+            regionSelect.innerHTML = '<option value="">' + i18n.selectCountryFirst + '</option>';
+            return Promise.resolve();
+        }
+        return fetch(`/${locale}/checkout/api/regions?countryId=${countryId}`)
+            .then(r => r.json())
+            .then(data => {
+                regionSelect.innerHTML = '<option value="">' + i18n.selectOption + '</option>';
+                data.forEach(r => {
+                    regionSelect.innerHTML += `<option value="${r.id}">${r.name}</option>`;
+                });
+                if (preselectId && data.some(r => r.id === preselectId)) {
+                    regionSelect.value = preselectId;
+                }
+            });
+    }
+
+    function loadCities(regionId, preselectId) {
+        citySelect.innerHTML = '<option value="">' + i18n.loading + '</option>';
+        if (!regionId) {
+            citySelect.innerHTML = '<option value="">' + i18n.selectRegionFirst + '</option>';
+            return Promise.resolve();
+        }
+        return fetch(`/${locale}/checkout/api/cities?regionId=${regionId}`)
+            .then(r => r.json())
+            .then(data => {
+                citySelect.innerHTML = '<option value="">' + i18n.selectOption + '</option>';
+                data.forEach(c => {
+                    citySelect.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+                });
+                if (preselectId && data.some(c => c.id === preselectId)) {
+                    citySelect.value = preselectId;
+                }
+            });
+    }
+
+    document.getElementById('countrySelect').addEventListener('change', function () {
+        refreshPaymentMethods();
+        loadRegions(this.value, null);
+    });
+
+    regionSelect.addEventListener('change', function () {
+        refreshPaymentMethods();
+        loadCities(this.value, null);
+    });
+
+    citySelect.addEventListener('change', refreshPaymentMethods);
+
+    const initialCountryId = document.getElementById('countrySelect').value;
+    if (initialCountryId) {
+        loadRegions(initialCountryId, prefillRegionId).then(function () {
+            if (regionSelect.value) {
+                loadCities(regionSelect.value, prefillCityId);
+            }
+        });
+    }
+
+    document.getElementById('confirmOrderBtn').addEventListener('click', function () {
+        const btn     = this;
+        const address = document.getElementById('address').value.trim();
+        const countryId = document.getElementById('countrySelect').value;
+        const regionId  = document.getElementById('regionSelect').value;
+        const cityId    = document.getElementById('citySelect').value;
+        const paymentMethodId = document.getElementById('paymentMethodSelect')?.value || '';
+
+        if (!address || !countryId || !regionId || !cityId) {
+            alert(i18n.shippingFieldsRequired);
+            return;
+        }
+
+        btn.disabled   = true;
+        btn.textContent = i18n.processingOrder;
+
+        fetch(`/${locale}/checkout/confirm`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                address,
+                countryId,
+                regionId,
+                cityId,
+                paymentMethodId,
+            })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success && data.requiresPayment) {
+                window.location.href = data.redirectUrl;
+            } else if (data.success) {
+                window.location.href = `/${locale}/orders/${data.orderId}`;
+            } else {
+                alert(data.message || i18n.orderProcessingError);
+                btn.disabled    = false;
+                btn.textContent = i18n.confirmOrder;
+            }
+        })
+        .catch(() => {
+            btn.disabled    = false;
+            btn.textContent = i18n.confirmOrder;
+        });
+    });
+});
+</script>
+{% endblock %}

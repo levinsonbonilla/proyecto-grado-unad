@@ -1,0 +1,19 @@
+create_tenant: Create tenant
+id: Id
+actions: Actions
+name: Name
+tax_id: Tax ID
+phone: Phone
+description: Description
+existing_tenant: Existing tenant
+edit_tenant: Tenant edition
+info: Information
+add_tenant: Tenant creation
+invalid_phone_number: The phone number is not valid.
+tenant_created_successfully: Tenant created successfully
+tenant_edited_success: Tenant edited successfully
+tenant_list: Tenant list
+active: Active
+enter_tenant: Enter tenant
+is_principal: Is a principal (platform) tenant?
+create_domain_for_tenant: Create domain for this tenant

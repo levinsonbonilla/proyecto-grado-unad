@@ -1,0 +1,53 @@
+and: and
+profile: Profile
+logout: Log out
+cancel: Cancel
+submit: Submit
+upload_image: Upload image
+required_data: Required data
+created_successfully: Created successfully
+updated_successfully: Updated successfully
+yes: Yes
+no: No
+active: Active
+actions: Actions
+name: Name
+id: ID
+edit: Edit
+save: Save
+back: Back
+new: New
+change_status: Change status
+change_status_modal_title: Change record status
+change_status_modal_body: "Are you sure you want to change the status of this record?"
+change_status_modal_confirm: Confirm change
+change_status_error: An error occurred while changing the status.
+countries: Countries
+regions: Regions
+cities: Cities
+geo_hold_ctrl: "Hold Ctrl (or Cmd) to select multiple"
+geo_select_country_first: Select a country first to see regions
+geo_select_region_first: Select a region first to see cities
+
+add: Add
+prices: Prices
+by_country: By country
+by_region: By region
+by_city: By city
+country: Country
+region: Region
+city: City
+price: Price
+status: Status
+enabled: Enabled
+disabled: Disabled
+
+new_message_subject: "New message from %name%"
+new_message_body: "Hello,
+
+You have a new message from %senderName%:
+
+\"%preview%\"
+
+Log in to read the full message.
+"

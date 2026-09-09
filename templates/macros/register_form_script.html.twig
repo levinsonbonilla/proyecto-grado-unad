@@ -1,0 +1,108 @@
+{% macro register_form_script(formId,passwordId) %}
+<script>
+	document.addEventListener('DOMContentLoaded', function() { 
+
+		var messages = {
+			strength: [
+				"{{ 'zxcvbn.very_weak' | trans({}, 'login') }}", 
+				"{{ 'zxcvbn.weak' | trans({}, 'login') }}", 
+				"{{ 'zxcvbn.moderate' | trans({}, 'login') }}", 
+				"{{ 'zxcvbn.strong' | trans({}, 'login') }}", 
+				"{{ 'zxcvbn.very_strong' | trans({}, 'login') }}"
+				],
+			feedback: {
+				default: "{{ 'zxcvbn.adequate_strength' | trans({}, 'login') }}",
+				suggestions: {
+					'Add another word or two. Uncommon words are better.': "{{ 'zxcvbn.add_another_word_or_two_message' | trans({}, 'login') }}",
+					'Use a few words, avoid common phrases.': "{{ 'zxcvbn.additional_verbiage_request' | trans({}, 'login') }}",
+					'No need for symbols, digits, or uppercase letters.': "{{ 'zxcvbn.no_need_for_symbols_digits_or_uppercase' | trans({}, 'login') }}",
+					'This is a top-10 common password.': "{{ 'zxcvbn.top_10_common_password_message' | trans({}, 'login') }}",
+					'This is a top-100 common password.': "{{ 'zxcvbn.top_100_common_password_message' | trans({}, 'login') }}",
+					'Predictable substitutions like "@" instead of "a" don\'t help very much.': "{{ 'zxcvbn.predictable_substitutions_message' | trans({}, 'login') }}",
+					'This is a very common password.': "{{ 'zxcvbn.very_common_password_message' | trans({}, 'login') }}",
+					'Avoid repeated words and characters': "{{ 'zxcvbn.avoid_repetitions_message' | trans({}, 'login') }}",
+					'Use a longer keyboard pattern with more turns': "{{ 'zxcvbn.longer_keyboard_pattern_message' | trans({}, 'login') }}"
+				}
+			}
+		};
+
+		var passwordStrength = document.getElementById('password-strength');
+
+		var passwordInput = document.getElementById('{{passwordId}}');
+		passwordInput.addEventListener('input', function() {
+			var container = document.getElementById('password-strength-container');
+			var value = passwordInput.value;
+
+			if (!document.getElementById('password-strength-bar')) {
+				container.innerHTML = `
+					<div id="password-strength-bar" style="width: 100%; height: 20px; background-color: #e9ecef; border-radius: 4px; margin-top: 5px;">
+						<div id="password-strength-fill" style="height: 100%; width: 0%; background-color: #dc3545; border-radius: 4px;"></div>
+					</div>
+				`;
+			}
+
+			var strengthBar = document.getElementById('password-strength-fill');
+
+			if (value) {
+				var result = zxcvbn(value);
+				var score = result.score;
+
+				var feedback = result.feedback.suggestions.map(function(suggestion) {
+					return messages.feedback.suggestions[suggestion] || suggestion;
+				}).join(' ') || messages.feedback.default;
+
+
+				var strengthLabels = messages.strength[score];
+       			strengthBar.style.width = (score + 1) * 20 + '%';
+
+				passwordStrength.innerHTML = `${feedback}<br><br>`;
+				strengthBar.style.backgroundColor = [
+					'#dc3545',
+					'#fd7e14',
+					'#ffc107',
+					'#28a745',
+					'#20c997'
+				][score];
+
+			} else {
+				passwordStrength.innerHTML = '';
+			}
+		});
+
+		window.Parsley.addValidator('passwordStrength', {
+			requirementType: 'string',
+			validateString: function(value, requirement) {
+				var minScore = 3; 
+				var strength = zxcvbn(value);
+				return strength.score >= minScore;
+			},
+			messages: {
+				en: "{{ 'password_weak_message' | trans({}, 'login') }}",
+				es: "{{ 'password_weak_message' | trans({}, 'login') }}"
+			}
+		});
+
+		window.Parsley.addValidator('passwordConfirm', {
+			requirementType: 'string',
+			validateString: function(value, requirement) {
+				return value === $("#{{passwordId}}").val();
+			},
+			messages: {
+				en: "{{ 'confirmation_does_not_match_message' | trans({}, 'login') }}",
+				es: "{{ 'confirmation_does_not_match_message' | trans({}, 'login') }}"
+			}
+		});
+
+		$('#{{formId}}').parsley();
+	});
+</script>
+{% endmacro %}
+
+
+{% macro form_script_validations(formId) %}
+<script>
+	document.addEventListener('DOMContentLoaded', function() { 
+		$('#{{formId}}').parsley();
+	});
+</script>
+{% endmacro %}

@@ -1,0 +1,76 @@
+{% macro form_intl_tel_input(phoneId, prefixId, formId) %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var input = document.querySelector("#{{ phoneId }}");
+        var prefixInput = document.querySelector("#{{ prefixId }}");
+        var form = document.querySelector("#{{ formId }}");
+        var errorMsg = document.createElement("div");
+        errorMsg.id = "phone-error";
+        errorMsg.style.color = "red";
+        errorMsg.style.marginTop = "5px";
+        input.parentNode.appendChild(errorMsg);
+
+        var initialCountry = "auto";
+
+
+        if (prefixInput.value) {
+            var dialCode = prefixInput.value.replace('+', '');
+            var countryData = window.intlTelInputGlobals.getCountryData();
+            var matchedCountry = countryData.find(function(country) {
+                return country.dialCode === dialCode;
+            });
+            if (matchedCountry) {
+                initialCountry = matchedCountry.iso2;
+            }
+        }
+
+        var iti = window.intlTelInput(input, {
+            initialCountry: initialCountry,
+            preferredCountries: ["us", "co"],
+            geoIpLookup: function(callback) {
+                fetch('https://ipinfo.io?token=d66dcd9803377c')
+                    .then(function(response) {
+                        return response.json();
+                    })
+                    .then(function(data) {
+                        var countryCode = (data && data.country) ? data.country : "co";
+                        callback(countryCode);
+                        var selectedCountryData = iti.getSelectedCountryData();
+                        prefixInput.value = selectedCountryData.dialCode;
+                    })
+                    .catch(function() {
+                        callback("co");
+                        prefixInput.value = "57";
+                    });
+            },
+            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
+        });
+
+        function validatePhoneNumber() {
+            if (!iti.isValidNumber()) {
+                errorMsg.innerHTML = "{{ 'invalid_phone_number'|trans({}, 'tenants') }}";
+                input.classList.add('parsley-error');
+                input.classList.remove('parsley-success');
+                return false;
+            } else {
+                errorMsg.innerHTML = "";
+                input.classList.remove('parsley-error');
+                input.classList.add('parsley-success');
+                return true;
+            }
+        }
+
+        form.addEventListener('submit', function(event) {
+            if (!validatePhoneNumber()) {
+                event.preventDefault();
+            } else {
+                var dialCode = iti.getSelectedCountryData().dialCode;
+                prefixInput.value = dialCode;
+            }
+        });
+
+        input.addEventListener('blur', validatePhoneNumber);
+        input.addEventListener('input', validatePhoneNumber);
+    });
+</script>
+{% endmacro %}

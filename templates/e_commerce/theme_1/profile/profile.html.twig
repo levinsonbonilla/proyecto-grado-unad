@@ -1,0 +1,245 @@
+{% extends 'e_commerce/theme_1/base_theme_1.html.twig' %}
+
+{% block title %}{{ 'my_profile' | trans({}, 'store') | default('Mi perfil') }}{% endblock %}
+
+{% block body %}
+<div class="bg0 p-t-75 p-b-85">
+    <div class="container">
+        <div class="bread-crumb flex-w p-b-32">
+            <a href="{{ path('store', {_locale: app.request.locale}) }}" class="stext-109 cl8 hov-cl1 trans-04">
+                {{ 'home' | trans({}, 'store') | default('Inicio') }}
+                <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+            </a>
+            <span class="stext-109 cl4">{{ 'my_profile' | trans({}, 'store') | default('Mi perfil') }}</span>
+        </div>
+
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label == 'error' ? 'danger' : label }} p-lr-40 p-tb-20 m-b-20">{{ message }}</div>
+            {% endfor %}
+        {% endfor %}
+
+        <div class="row">
+            <div class="col-lg-8 m-b-50 m-lr-auto">
+                <div class="bor10 p-lr-40 p-t-30 p-b-40 p-lr-15-sm">
+                    <h4 class="mtext-109 cl2 p-b-30">{{ 'personal_info' | trans({}, 'store') | default('Información personal') }}</h4>
+
+                    <div class="row">
+                        <div class="col-sm-6 p-b-20">
+                            <label class="stext-110 cl3 p-b-5 p-t-5">{{ 'name' | trans({}, 'store') | default('Nombre') }} *</label>
+                            <input id="profileName" type="text"
+                                   class="stext-111 cl8 plh3 size-111 p-lr-15 p-tb-10 bor8 w-full"
+                                   value="{{ profile.name }}">
+                        </div>
+                        <div class="col-sm-6 p-b-20">
+                            <label class="stext-110 cl3 p-b-5 p-t-5">{{ 'last_name' | trans({}, 'store') | default('Apellido') }} *</label>
+                            <input id="profileLastName" type="text"
+                                   class="stext-111 cl8 plh3 size-111 p-lr-15 p-tb-10 bor8 w-full"
+                                   value="{{ profile.lastName }}">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6 p-b-20">
+                            <label class="stext-110 cl3 p-b-5 p-t-5">{{ 'email' | trans({}, 'store') | default('Email') }}</label>
+                            <input type="email" class="stext-111 cl8 size-111 p-lr-15 p-tb-10 bor8 w-full"
+                                   value="{{ profile.email }}" disabled>
+                        </div>
+                        <div class="col-sm-6 p-b-20">
+                            <label class="stext-110 cl3 p-b-5 p-t-5">{{ 'phone' | trans({}, 'store') | default('Teléfono') }}</label>
+                            <input id="profilePhone" type="text"
+                                   class="stext-111 cl8 plh3 size-111 p-lr-15 p-tb-10 bor8 w-full"
+                                   value="{{ profile.phone }}">
+                        </div>
+                    </div>
+
+                    <div class="p-b-20">
+                        <label class="stext-110 cl3 p-b-5 p-t-5">{{ 'address' | trans({}, 'store') | default('Dirección') }}</label>
+                        <textarea id="profileAddress" rows="2"
+                                  class="stext-111 cl8 plh3 size-111 p-lr-15 p-tb-10 bor8 w-full">{{ profile.address }}</textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6 p-b-20">
+                            <label class="stext-110 cl3 p-b-5 p-t-5">{{ 'neighborhood' | trans({}, 'store') | default('Barrio') }}</label>
+                            <input id="profileNeighborhood" type="text"
+                                   class="stext-111 cl8 plh3 size-111 p-lr-15 p-tb-10 bor8 w-full"
+                                   value="{{ profile.neighborhood }}">
+                        </div>
+                        <div class="col-sm-6 p-b-20">
+                            <label class="stext-110 cl3 p-b-5 p-t-5">{{ 'date_of_birth' | trans({}, 'store') | default('Fecha de nacimiento') }}</label>
+                            <input id="profileDateOfBirth" type="date"
+                                   class="stext-111 cl8 size-111 p-lr-15 p-tb-10 bor8 w-full"
+                                   value="{{ profile.dateOfBirth }}">
+                        </div>
+                    </div>
+
+                    <div class="p-b-20">
+                        <label class="stext-110 cl3 p-b-5 p-t-5">{{ 'country' | trans({}, 'store') | default('País') }}</label>
+                        <div class="bo3 of-hidden b-rad-5">
+                            <select id="profileCountry" class="da2 p-lr-20 size-104">
+                                <option value="">{{ 'select_option' | trans({}, 'store') | default('-- Selecciona --') }}</option>
+                                {% for country in countries %}
+                                <option value="{{ country.id }}"
+                                    {{ profile.countryId == country.id ? 'selected' : '' }}>
+                                    {{ country.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="p-b-20">
+                        <label class="stext-110 cl3 p-b-5 p-t-5">{{ 'region' | trans({}, 'store') | default('Departamento') }}</label>
+                        <div class="bo3 of-hidden b-rad-5">
+                            <select id="profileRegion" class="da2 p-lr-20 size-104">
+                                <option value="">{{ 'select_country_first_option' | trans({}, 'store') | default('-- Selecciona primero el país --') }}</option>
+                                {% if profile.regionId %}
+                                <option value="{{ profile.regionId }}" selected>{{ profile.regionName }}</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="p-b-20">
+                        <label class="stext-110 cl3 p-b-5 p-t-5">{{ 'city' | trans({}, 'store') | default('Ciudad') }}</label>
+                        <div class="bo3 of-hidden b-rad-5">
+                            <select id="profileCity" class="da2 p-lr-20 size-104">
+                                <option value="">{{ 'select_region_first_option' | trans({}, 'store') | default('-- Selecciona primero el departamento --') }}</option>
+                                {% if profile.cityId %}
+                                <option value="{{ profile.cityId }}" selected>{{ profile.cityName }}</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="profileMessage" class="p-b-13"></div>
+
+                    <button id="saveProfileBtn"
+                            class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 trans-04">
+                        {{ 'save_changes' | trans({}, 'store') | default('Guardar cambios') }}
+                    </button>
+
+                    <div class="p-t-20">
+                        <a href="{{ path('store_orders', {_locale: app.request.locale}) }}"
+                           class="stext-101 cl5 hov-cl1 trans-04">
+                            <i class="zmdi zmdi-shopping-cart m-r-5"></i>
+                            {{ 'my_orders' | trans({}, 'store') | default('Mis pedidos') }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const locale = '{{ app.request.locale }}';
+    const prefillRegionId = '{{ profile.regionId }}';
+    const prefillCityId   = '{{ profile.cityId }}';
+
+    const i18n = {
+        loading: '{{ 'loading' | trans({}, 'store') | default('Cargando...') | e('js') }}',
+        selectOption: '{{ 'select_option' | trans({}, 'store') | default('-- Selecciona --') | e('js') }}',
+        selectRegionFirst: '{{ 'select_region_first_option' | trans({}, 'store') | default('-- Selecciona primero el departamento --') | e('js') }}',
+        saving: '{{ 'saving' | trans({}, 'store') | default('Guardando...') | e('js') }}',
+        saveChanges: '{{ 'save_changes' | trans({}, 'store') | default('Guardar cambios') | e('js') }}',
+        profileSavedSuccess: '{{ 'profile_saved_success' | trans({}, 'store') | default('Guardado correctamente.') | e('js') }}',
+        profileSaveError: '{{ 'profile_save_error' | trans({}, 'store') | default('Error al guardar.') | e('js') }}',
+    };
+
+    const regionSel = document.getElementById('profileRegion');
+    const citySel   = document.getElementById('profileCity');
+
+    function loadRegions(countryId, preselectId) {
+        regionSel.innerHTML = '<option value="">' + i18n.loading + '</option>';
+        if (!countryId) {
+            regionSel.innerHTML = '<option value="">' + i18n.selectOption + '</option>';
+            return Promise.resolve();
+        }
+        return fetch(`/${locale}/profile/api/regions?countryId=${countryId}`)
+            .then(r => r.json())
+            .then(data => {
+                regionSel.innerHTML = '<option value="">' + i18n.selectOption + '</option>';
+                data.forEach(r => regionSel.innerHTML += `<option value="${r.id}">${r.name}</option>`);
+                if (preselectId && data.some(r => r.id === preselectId)) {
+                    regionSel.value = preselectId;
+                }
+            });
+    }
+
+    function loadCities(regionId, preselectId) {
+        citySel.innerHTML = '<option value="">' + i18n.loading + '</option>';
+        if (!regionId) {
+            citySel.innerHTML = '<option value="">' + i18n.selectRegionFirst + '</option>';
+            return Promise.resolve();
+        }
+        return fetch(`/${locale}/profile/api/cities?regionId=${regionId}`)
+            .then(r => r.json())
+            .then(data => {
+                citySel.innerHTML = '<option value="">' + i18n.selectOption + '</option>';
+                data.forEach(c => citySel.innerHTML += `<option value="${c.id}">${c.name}</option>`);
+                if (preselectId && data.some(c => c.id === preselectId)) {
+                    citySel.value = preselectId;
+                }
+            });
+    }
+
+    document.getElementById('profileCountry').addEventListener('change', function () {
+        loadRegions(this.value, null);
+    });
+
+    regionSel.addEventListener('change', function () {
+        loadCities(this.value, null);
+    });
+
+    const initialCountryId = document.getElementById('profileCountry').value;
+    if (initialCountryId) {
+        loadRegions(initialCountryId, prefillRegionId).then(function () {
+            if (regionSel.value) {
+                loadCities(regionSel.value, prefillCityId);
+            }
+        });
+    }
+
+    document.getElementById('saveProfileBtn').addEventListener('click', function () {
+        const btn  = this;
+        const msg  = document.getElementById('profileMessage');
+        btn.disabled    = true;
+        btn.textContent = i18n.saving;
+
+        fetch(`/${locale}/profile/edit`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                name:         document.getElementById('profileName').value.trim(),
+                lastName:     document.getElementById('profileLastName').value.trim(),
+                phone:        document.getElementById('profilePhone').value.trim(),
+                address:      document.getElementById('profileAddress').value.trim(),
+                neighborhood: document.getElementById('profileNeighborhood').value.trim(),
+                dateOfBirth:  document.getElementById('profileDateOfBirth').value,
+                countryId:    document.getElementById('profileCountry').value,
+                regionId:     document.getElementById('profileRegion').value,
+                cityId:       document.getElementById('profileCity').value,
+            })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                msg.innerHTML = '<span class="cl5">✓ ' + (data.message || i18n.profileSavedSuccess) + '</span>';
+            } else {
+                msg.innerHTML = '<span class="cl1">✗ ' + (data.message || i18n.profileSaveError) + '</span>';
+            }
+        })
+        .finally(() => {
+            btn.disabled    = false;
+            btn.textContent = i18n.saveChanges;
+        });
+    });
+});
+</script>
+{% endblock %}

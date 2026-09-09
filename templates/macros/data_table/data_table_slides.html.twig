@@ -1,0 +1,77 @@
+{% macro data_table_slides() %}
+    <script>
+
+        var ajaxPath = "{{ path('dashboard_configurations_slides_list') }}";
+        var pathEdit = "{{ path('dashboard_configurations_slides_edit', {'id': 'CHANGE'}) }}";
+        var pathDelete = "{{ path('dashboard_configurations_slides_delete', {'id': 'CHANGE'}) }}";
+
+        var columnDefs = [
+            { data: "active", render: function(data) { return data ? "<span class='label label-success'>{{ 'yes'|trans({}, 'slides') }}</span>" :  "<span class='label label-danger'>{{ 'no'|trans({}, 'slides') }}</span>"; }, targets: 0 },
+            {
+                data: null,
+                render: function(data, type, row) {
+                    return `<li class="text-center" style="list-style-type: none; ">
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-bars fa-1x pull-center"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="dropdownMenuButton">
+                                <li>
+                                    <a class="dropdown-item" href="${pathEdit.replace('CHANGE', row.id)}">
+                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{ 'edit'|trans({}, 'users') }}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-warning" href="#" onclick="openStatusModal('${row.id}'); return false;">
+                                        <i class="fa fa-refresh" aria-hidden="true"></i> {{ 'change_status'|trans({}, 'slides') }}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>`;
+                },
+                targets: 1
+            },
+            { data: "name", targets: 2 },
+            { data: "position", targets: 3 },
+            { data: "description", targets: 4 },
+            { data: "id", visible: false, targets: 5 },
+        ];
+
+        var pendingStatusSlideId = null;
+
+        function openStatusModal(id) {
+            pendingStatusSlideId = id;
+            $('#slideStatusModalError').hide();
+            $('#slideStatusModal').modal('show');
+        }
+
+        $('#slideStatusModalConfirmBtn').on('click', function() {
+            if (!pendingStatusSlideId) return;
+            var id = pendingStatusSlideId;
+            pendingStatusSlideId = null;
+            $('#slideStatusModalError').hide();
+
+            fetch(pathDelete.replace('CHANGE', id), {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    $('#slideStatusModal').modal('hide');
+                    $('#datatable-slides-loading').show();
+                    $('#datatable-slides').DataTable().ajax.reload(function() {
+                        $('#datatable-slides-loading').hide();
+                    }, false);
+                } else {
+                    $('#slideStatusModalError').show();
+                }
+            })
+            .catch(function() {
+                $('#slideStatusModalError').show();
+            });
+        });
+
+    </script>
+{% endmacro %}

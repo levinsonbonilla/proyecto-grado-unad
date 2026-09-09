@@ -1,0 +1,1 @@
+/Subscribing to onSchemaCreateTable events is deprecated/

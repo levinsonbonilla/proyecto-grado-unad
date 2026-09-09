@@ -1,0 +1,65 @@
+{% import 'macros/dashboard.html.twig' as macros %}
+{% import 'macros/alert.html.twig' as alert %}
+{% import 'macros/register_form_script.html.twig' as registerScript %}
+
+{{ alert.alert_success() }}
+{{ alert.alert_error() }}
+
+<section class="login_content">
+	{{ form_start(form, {'attr': {'id': 'register_form', "action" : path('security_register'), "method":"POST" }}) }}
+
+	<h1>{{ 'create_account'|trans({}, 'login') }}</h1>
+	{% if form.businessName is defined %}
+	<div>
+		{{ form_widget(form.businessName, {'attr': {'class': 'form-control', 'placeholder': 'business_name_label'|trans({}, 'login') ~ "*" }}) }}
+		{{ form_errors(form.businessName,{'attr':{'class': 'parsley-required'} }) }}
+	</div>
+	<div>
+		{{ form_widget(form.phone, {'attr': {'class': 'form-control', 'placeholder': 'phone_label'|trans({}, 'login') ~ "*" }}) }}
+		{{ form_errors(form.phone,{'attr':{'class': 'parsley-required'} }) }}
+	</div>
+	{% endif %}
+	<div>
+		{{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'email_label'|trans({}, 'login') ~ "*" }}) }}
+		{{ form_errors(form.email,{'attr':{'class': 'parsley-required'} }) }}
+	</div>
+	<div>
+		{{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder': 'name_label'|trans({}, 'login') ~ "*" }}) }}
+		{{ form_errors(form.name,{'attr':{'class': 'parsley-required'} }) }}
+	</div>
+	<div>
+		{{ form_widget(form.lastName, {'attr': {'class': 'form-control', 'placeholder': 'last_name_label'|trans({}, 'login') ~ "*" }}) }}
+		{{ form_errors(form.lastName,{'attr':{'class': 'parsley-required'} }) }}
+	</div>
+	<div>
+		{{ form_widget(form.password, {'attr': {'class': 'form-control', 'placeholder': 'password_label'|trans({}, 'login') ~ "*", 'data-parsley-password-strength': '3', 'data-parsley-trigger': 'change'}}) }}
+		{{ form_errors(form.password,{'attr':{'class': 'parsley-required'} }) }}
+	</div>
+	<div>
+		{{ form_widget(form.confirm_password, {'attr': {'class': 'form-control', 'placeholder': 'confirm_password_label'|trans({}, 'login') ~ "*", 'data-parsley-password-confirm': '8', 'data-parsley-trigger': 'change' }}) }}
+		{{ form_errors(form.confirm_password,{'attr':{'class': 'parsley-required'} }) }}
+		<div id="password-strength-container"></div>
+		<div id="password-strength"></div>
+	</div>
+
+	<div style="display:flex; align-items:center; gap:10px;">
+		<button type="submit" id="btn_register" class="btn btn-default" style="margin:0;">{{ 'accept_button'|trans({}, 'login') }}</button>
+		<a href="{{ path('store', {_locale: app.request.locale}) }}" class="btn btn-default" style="margin:0;">{{ 'back_to_store'|trans({}, 'login') }}</a>
+	</div>
+
+	<div class="clearfix"></div>
+
+	<div class="separator">
+		<p class="change_link">
+			{{ 'already_a_member_question'|trans({}, 'login') }}
+			<a href="#signin" class="to_register">{{ 'log_in_action'|trans({}, 'login') }}</a>
+		</p>
+
+		<div class="clearfix"></div>
+		<br/>
+
+		{{ macros.term_and_conditions() }}
+	</div>
+	{{ form_end(form) }}
+</section>
+{{ registerScript.register_form_script("register_form","register_password") }}

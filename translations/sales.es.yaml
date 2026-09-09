@@ -1,0 +1,30 @@
+view_detail: Ver detalle
+kpi_total_sales: Total ventas
+kpi_pending_payment: Pendientes de pago
+kpi_pending_shipment: Por enviar
+kpi_average_ticket: Ticket promedio
+order_list: Listado de pedidos
+status: Estado
+customer: Cliente
+email: Correo
+total: Total
+purchase_date: Fecha de compra
+tracking_number: Número de guía
+tracking_carrier: Transportadora
+order_detail: Detalle del pedido
+shipping_info: Información de envío
+address: Dirección
+location: Ubicación
+product: Producto
+quantity: Cantidad
+unit_price: Precio unitario
+payment: Pago
+payment_method: Método de pago
+payment_status: Estado del pago
+gateway_reference: Referencia de la pasarela
+no_payment_transaction: Este pedido no tiene una transacción de pago asociada.
+change_order_status: Cambiar estado del pedido
+current_status: Estado actual
+new_status: Nuevo estado
+no_transitions_available: No hay transiciones disponibles desde este estado
+update_status_error: No se pudo actualizar el estado del pedido.

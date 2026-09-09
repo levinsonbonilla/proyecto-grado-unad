@@ -1,0 +1,426 @@
+{% import 'macros/money_type.html.twig' as money %}
+{% import 'macros/preview_image.html.twig' as image %}
+{% import 'macros/ckeditor.html.twig' as ckeditor %}
+{% import _self as variantMacros %}
+
+{% macro variantImageCard(imageForm) %}
+    <div class="col-xs-6 variant-image-item" data-index="{{ imageForm.vars.name }}">
+        <div class="panel panel-default" style="position:relative;">
+            <div class="panel-body" style="padding:8px;">
+                <button type="button" class="btn btn-danger btn-xs remove-photo-card" title="{{ 'remove_image'|trans({}, 'modules') }}" style="position:absolute; top:4px; right:4px; z-index:5; padding:2px 6px; border-radius:50%; font-size:10px; line-height:1;">×</button>
+                {{ image.products(imageForm, 'products') }}
+                <div class="form-group" style="margin-top:6px; margin-bottom:0;">
+                    <label style="font-size:11px; margin-bottom:2px;">{{ 'position'|trans({}, 'modules') }}</label>
+                    {{ form_widget(imageForm.position, {'attr': {'class': 'form-control input-sm', 'placeholder': ('position'|trans({}, 'modules'))}}) }}
+                    {{ form_widget(imageForm.currentImage) }}
+                    {{ form_widget(imageForm.id) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro variantMedidaRow(medidaForm, medidas) %}
+    <div class="variant-medida-row" style="margin-bottom:6px; display:flex; align-items:flex-start; gap:6px; flex-wrap:wrap;" data-index="{{ medidaForm.vars.name }}">
+        {{ form_widget(medidaForm.rowId) }}
+        <div style="flex:1; min-width:140px;">
+            <select class="form-control input-sm js-medida-select">
+                <option value="">{{ 'select_medida_placeholder'|trans({}, 'modules') }}</option>
+                {% for medida in medidas %}
+                    <option value="{{ medida.id }}" data-name="{{ medida.name|e('html_attr') }}">{{ medida.name }}</option>
+                {% endfor %}
+                <option value="__new__">{{ 'new_medida_option'|trans({}, 'modules') }}</option>
+            </select>
+            <div class="js-medida-manual-input" style="display:none; margin-top:4px;">
+                {{ form_widget(medidaForm.medidaName, {'attr': {'class': 'form-control input-sm js-medida-name-input', 'placeholder': ('medida_name_placeholder'|trans({}, 'modules'))}}) }}
+            </div>
+        </div>
+        {{ form_widget(medidaForm.stock, {'attr': {'class': 'form-control input-sm js-variant-stock', 'placeholder': ('variant_stock_placeholder'|trans({}, 'modules')), 'style': 'width:90px;'}}) }}
+        <button type="button" class="btn btn-danger btn-xs remove-medida-row" title="{{ 'remove_image'|trans({}, 'modules') }}">×</button>
+    </div>
+{% endmacro %}
+
+{% macro variantBlockInner(variantForm, colors, medidas) %}
+    <div class="panel panel-default" style="position:relative;">
+        <div class="panel-body">
+            <button type="button" class="btn btn-danger btn-xs remove-variant-card" title="{{ 'remove_image'|trans({}, 'modules') }}" style="position:absolute; top:8px; right:8px; z-index:5; padding:4px 7px; border-radius:50%;">×</button>
+
+            {{ form_widget(variantForm.rowId) }}
+
+            <div class="form-group">
+                <label class="control-label" style="font-size:12px;">{{ 'block_order_label'|trans({}, 'modules') }}</label>
+                {{ form_widget(variantForm.order, {'attr': {'class': 'form-control input-sm', 'style': 'max-width:120px;', 'placeholder': ('block_order_placeholder'|trans({}, 'modules'))}}) }}
+                <p class="text-muted" style="margin:2px 0 0; font-size:11px;">{{ 'block_order_help'|trans({}, 'modules') }}</p>
+            </div>
+
+            <div class="form-group">
+                <label style="font-weight:normal;">
+                    <input type="checkbox" class="js-has-color-checkbox"> {{ 'has_color_label'|trans({}, 'modules') }}
+                </label>
+                <label style="font-weight:normal; margin-left:20px;">
+                    <input type="checkbox" class="js-has-medida-checkbox"> {{ 'has_medida_label'|trans({}, 'modules') }}
+                </label>
+            </div>
+
+            <div class="variant-color-fields" style="display:none;">
+                <div class="form-group">
+                    <select class="form-control input-sm js-color-select">
+                        <option value="">{{ 'select_color_placeholder'|trans({}, 'modules') }}</option>
+                        {% for color in colors %}
+                            <option value="{{ color.id }}" data-name="{{ color.name|e('html_attr') }}" data-hex="{{ color.hexCode }}">{{ color.name }}</option>
+                        {% endfor %}
+                        <option value="__new__">{{ 'new_color_option'|trans({}, 'modules') }}</option>
+                    </select>
+                </div>
+                <div class="js-color-manual-inputs form-group" style="display:none;">
+                    {{ form_widget(variantForm.colorName, {'attr': {'class': 'form-control input-sm js-color-name-input', 'placeholder': ('color_name_placeholder'|trans({}, 'modules'))}}) }}
+                    <div style="margin-top:6px;">
+                        {{ form_widget(variantForm.colorHex, {'attr': {'class': 'form-control input-sm js-color-hex-input', 'style': 'height:38px;padding:2px;'}}) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="variant-medida-fields form-group" style="display:none;">
+                <div class="variant-medida-rows" data-prototype="{{ variantMacros.variantMedidaRow(variantForm.medidas.vars.prototype, medidas)|e('html_attr') }}">
+                    {% for medidaForm in variantForm.medidas %}
+                        {{ variantMacros.variantMedidaRow(medidaForm, medidas) }}
+                    {% endfor %}
+                </div>
+                <button type="button" class="btn btn-default btn-xs add-medida-row" style="margin-top:4px;">
+                    <i class="fa fa-plus"></i> {{ 'add_medida_row'|trans({}, 'modules') }}
+                </button>
+            </div>
+
+            {% do variantForm.medidas.setRendered() %}
+
+            <div class="variant-block-stock-fields form-group">
+                <label>{{ 'stock'|trans({}, 'modules') }}</label>
+                {{ form_widget(variantForm.stock, {'attr': {'class': 'form-control input-sm js-variant-stock', 'placeholder': ('variant_stock_placeholder'|trans({}, 'modules'))}}) }}
+            </div>
+
+            <div class="text-danger js-variant-stock-error" style="display:none; margin-top:4px; font-size:12px;"></div>
+
+            <hr>
+
+            <div class="variant-images row" data-prototype="{{ variantMacros.variantImageCard(variantForm.images.vars.prototype)|e('html_attr') }}">
+                {% for imageForm in variantForm.images %}
+                    {{ variantMacros.variantImageCard(imageForm) }}
+                {% endfor %}
+            </div>
+
+            {% do variantForm.images.setRendered() %}
+            <button type="button" class="btn btn-default btn-xs btn-block add-photo-to-block" style="margin-top:8px;">
+                <i class="fa fa-plus"></i> {{ 'add_photo_to_block'|trans({}, 'modules') }}
+            </button>
+            <input type="file" multiple accept="image/*" class="js-multi-photo-input" style="display:none;">
+        </div>
+    </div>
+{% endmacro %}
+
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2>{{ 'information'|trans({}, 'modules') }}</h2>
+                <ul class="nav navbar-right panel_toolbox">
+                    <li>
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ path('dashboard') }}" class="dropdown">
+                            <i class="fa fa-home" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" onclick="history.back();" class="dropdown">
+                            <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                {{ form_start(form, {'attr': {'class': 'form-horizontal form-label-left', "method":"POST"}}) }}
+
+                <div class="row">
+                    <div class="col-md-4 col-sm-12 col-xs-12 form-group">
+                        <label class="control-label" for="products_name">{{ 'name'|trans({}, 'modules') }} <span class="required">*</span></label>
+                        {{ form_widget(form.name, {'attr': {'class': 'form-control', 'id': 'products_name'}}) }}
+                    </div>
+
+                    <div class="col-md-4 col-sm-12 col-xs-12 form-group">
+                        <label class="control-label" for="products_basePrice">{{ 'base_price'|trans({}, 'modules') }} <span class="required">*</span></label>
+                        <div>
+                            {{ money.money(form.basePrice, "managers_basePrice") }}
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-12 col-xs-12 form-group">
+                        <label class="control-label" for="products_publicPrice">{{ 'public_price'|trans({}, 'modules') }} <span class="required">*</span></label>
+                        <div>
+                            {{ money.money(form.publicPrice, "managers_publicPrice") }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 col-sm-12 col-xs-12 form-group">
+                        <label class="control-label" for="managers_stock">{{ 'stock'|trans({}, 'modules') }}</label>
+                        {{ form_widget(form.stock, {'attr': {'class': 'form-control', 'id': 'managers_stock'}}) }}
+                        <small class="text-muted">{{ 'stock_help'|trans({}, 'modules') }}</small>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12 form-group">
+                        <label class="control-label" for="managers_productsCategories">{{ 'categories'|trans({}, 'modules') }}</label>
+                        {{ form_widget(form.productsCategories, {'attr': {'class': 'form-control', 'id': 'managers_productsCategories'}}) }}
+                    </div>
+                </div>
+
+                {% if isEdit | default(false) %}
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12 col-xs-12 form-group">
+                            <label class="control-label" for="managers_activated">{{ 'active'|trans({}, 'users') }} <span class="required">*</span></label>
+                            {{ form_widget(form.activated, {'attr': {'class': 'form-control', 'id': 'managers_activated'}}) }}
+                        </div>
+                    </div>
+				{% endif %}
+
+                {{ ckeditor.ckeditor(form, "products_description") }}
+
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <label class="control-label" for="images">{{ 'Imágenes'|trans({}, 'modules') }}</label>
+                        <p class="text-muted" style="margin-top:-5px;">{{ 'product_colors_help'|trans({}, 'modules') }}</p>
+
+                        <div id="stock-summary-bar" class="alert alert-info" style="margin-bottom:15px;">
+                            <strong>{{ 'stock_summary_total'|trans({}, 'modules') }}:</strong>
+                            <span id="stock-summary-total">-</span>
+                            &nbsp;|&nbsp;
+                            <strong>{{ 'stock_summary_assigned'|trans({}, 'modules') }}:</strong>
+                            <span id="stock-summary-assigned">0</span>
+                            &nbsp;|&nbsp;
+                            <strong>{{ 'stock_summary_available'|trans({}, 'modules') }}:</strong>
+                            <span id="stock-summary-available">-</span>
+                        </div>
+
+                        {% set variantPrototype %}
+                            <div class="col-lg-6 col-md-6 col-xs-12 variant-block-item" data-index="__name__">
+                                {{ variantMacros.variantBlockInner(form.variants.vars.prototype, colors|default([]), medidas|default([])) }}
+                            </div>
+                        {% endset %}
+
+                        <div id="variants-wrapper" data-prototype="{{ variantPrototype|e('html_attr') }}" class="row" style="margin-top:8px;"
+                             data-msg-exceeds="{{ 'stock_exceeds_available'|trans({}, 'modules') }}"
+                             data-msg-unlimited="{{ 'stock_summary_unlimited'|trans({}, 'modules') }}">
+                            {% for variantForm in form.variants %}
+                                <div class="col-lg-6 col-md-6 col-xs-12 variant-block-item" data-index="{{ loop.index0 }}">
+                                    {{ variantMacros.variantBlockInner(variantForm, colors|default([]), medidas|default([])) }}
+                                </div>
+                            {% endfor %}
+
+                            <div class="variant-add-column col-lg-6 col-md-6 col-xs-12">
+                                <div class="panel panel-default" style="height: 100%; min-height: 120px;">
+                                    <div class="panel-body" style="display: flex; align-items: center; justify-content: center; height: 100%;">
+                                        <button type="button" id="add-variant" class="btn btn-primary" style="border: 2px dashed #ccc; background: transparent; color: #333; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                            <i class="fa fa-plus" style="font-size: 24px; margin-bottom: 10px;"></i>
+                                            <span>{{ 'add_variant_button'|trans({}, 'modules') }}</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="ln_solid"></div>
+                <div class="form-group">
+                    <div class="col-md-6 col-md-offset-3">
+                        <a href="javascript:void(0);" onclick="history.back();" class="btn btn-primary">{{ 'cancel'|trans({}, 'modules') }}</a>
+                        <button id="send" type="submit" class="btn btn-success">{{ 'acepted'|trans({}, 'modules') }}</button>
+                    </div>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+(function () {
+  var wrapper = document.getElementById('variants-wrapper');
+  if (!wrapper) return;
+  wrapper.querySelectorAll('.variant-image-item').forEach(function (item, i) {
+    var cont = item.querySelector('.improved-image-container') || item;
+    if (cont && typeof initImagePreview === 'function') initImagePreview(cont, i);
+  });
+})();
+
+(function () {
+  var generalStockInput = document.getElementById('managers_stock');
+  var wrapper = document.getElementById('variants-wrapper');
+  if (!generalStockInput || !wrapper) return;
+
+  var summaryBar = document.getElementById('stock-summary-bar');
+  var summaryTotal = document.getElementById('stock-summary-total');
+  var summaryAssigned = document.getElementById('stock-summary-assigned');
+  var summaryAvailable = document.getElementById('stock-summary-available');
+  var submitButton = document.getElementById('send');
+
+  var MSG_EXCEEDS = wrapper.dataset.msgExceeds || 'Excede el stock disponible, máximo permitido: %max%';
+  var MSG_UNLIMITED = wrapper.dataset.msgUnlimited || '';
+
+  var stockObserver = null;
+
+  function observeWrapper() {
+    if (stockObserver) stockObserver.observe(wrapper, { childList: true, subtree: true });
+  }
+
+  function parseStock(raw) {
+    var value = (raw || '').toString().trim();
+    if (value === '') return null;
+    var n = parseInt(value, 10);
+    return isNaN(n) ? null : n;
+  }
+
+  function getBlocks() {
+    return Array.from(wrapper.querySelectorAll('.variant-block-item')).filter(function (item) {
+      return !item.classList.contains('variant-add-column');
+    });
+  }
+
+  function equalizeVariantBlockHeights() {
+    var panels = Array.prototype.slice.call(
+      wrapper.querySelectorAll('.variant-block-item > .panel, .variant-add-column > .panel')
+    );
+    if (panels.length < 2) return;
+
+    panels.forEach(function (panel) {
+      panel.style.height = '';
+      panel.style.minHeight = '';
+    });
+    var maxHeight = panels.reduce(function (max, panel) {
+      return Math.max(max, panel.getBoundingClientRect().height);
+    }, 0);
+
+    panels.forEach(function (panel) { panel.style.minHeight = maxHeight + 'px'; });
+  }
+
+  window.recalculateVariantStock = function recalculate() {
+    if (stockObserver) stockObserver.disconnect();
+    try {
+      return recalculateInternal();
+    } finally {
+
+      observeWrapper();
+    }
+  };
+
+  function recalculateInternal() {
+    var generalStock = parseStock(generalStockInput.value);
+    var blockEntries = [];
+    var assigned = 0;
+
+    getBlocks().forEach(function (block) {
+      var errorEl = block.querySelector('.js-variant-stock-error');
+
+      var stockInputs = Array.prototype.filter.call(
+        block.querySelectorAll('.js-variant-stock'),
+        function (el) { return el.offsetParent !== null; }
+      );
+      if (stockInputs.length === 0) return;
+
+      var hasPhotos = block.querySelectorAll('.variant-image-item').length > 0;
+      if (!hasPhotos) {
+        if (errorEl) { errorEl.style.display = 'none'; errorEl.textContent = ''; }
+        stockInputs.forEach(function (stockInput) { stockInput.classList.remove('is-invalid'); });
+        return;
+      }
+
+      stockInputs.forEach(function (stockInput) {
+        var stockValue = parseStock(stockInput.value);
+        if (stockValue === null) {
+
+          stockInput.classList.remove('is-invalid');
+          return;
+        }
+
+        assigned += stockValue;
+        blockEntries.push({ stockInput: stockInput, errorEl: errorEl, stockValue: stockValue });
+      });
+    });
+
+    var hasError = false;
+
+    if (generalStock !== null) {
+
+      var invalidErrorEls = new Set();
+      blockEntries.forEach(function (entry) {
+        var maxAllowed = generalStock - (assigned - entry.stockValue);
+        if (entry.stockValue > maxAllowed) {
+          hasError = true;
+          entry.stockInput.classList.add('is-invalid');
+          if (entry.errorEl) {
+            entry.errorEl.textContent = MSG_EXCEEDS.replace('%max%', Math.max(maxAllowed, 0));
+            entry.errorEl.style.display = 'block';
+            invalidErrorEls.add(entry.errorEl);
+          }
+        } else {
+          entry.stockInput.classList.remove('is-invalid');
+        }
+      });
+      blockEntries.forEach(function (entry) {
+        if (entry.errorEl && !invalidErrorEls.has(entry.errorEl)) {
+          entry.errorEl.style.display = 'none';
+          entry.errorEl.textContent = '';
+        }
+      });
+    } else {
+      blockEntries.forEach(function (entry) {
+        entry.stockInput.classList.remove('is-invalid');
+        if (entry.errorEl) { entry.errorEl.style.display = 'none'; entry.errorEl.textContent = ''; }
+      });
+    }
+
+    if (summaryBar) {
+      var available = generalStock === null ? null : (generalStock - assigned);
+      summaryTotal.textContent = generalStock === null ? MSG_UNLIMITED : generalStock;
+      summaryAssigned.textContent = assigned;
+      summaryAvailable.textContent = available === null ? MSG_UNLIMITED : available;
+      summaryBar.classList.toggle('stock-summary-negative', available !== null && available < 0);
+    }
+
+    if (submitButton) submitButton.disabled = hasError;
+
+    equalizeVariantBlockHeights();
+
+    return hasError;
+  }
+
+  var resizeTimeout;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(equalizeVariantBlockHeights, 150);
+  });
+
+  generalStockInput.addEventListener('input', window.recalculateVariantStock);
+  wrapper.addEventListener('input', function (e) {
+    if (e.target.classList.contains('js-variant-stock')) {
+      window.recalculateVariantStock();
+    }
+  });
+
+  if (typeof MutationObserver !== 'undefined') {
+    stockObserver = new MutationObserver(window.recalculateVariantStock);
+  }
+  observeWrapper();
+
+  window.recalculateVariantStock();
+})();
+</script>

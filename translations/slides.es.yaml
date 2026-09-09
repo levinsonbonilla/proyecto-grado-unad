@@ -1,0 +1,30 @@
+id: Identificación
+actions: Acciones
+name: Nombre
+active: Activo
+slide: Carrusel
+info: Información del carrusel
+image: Imagen
+type: Tipo
+notification_email: Correo de notificación
+support_email: Correo de soporte
+create_slide: Crear carrusel
+list_slides: Listado de carruseles
+existing_slide: Carrusel existente
+slide_created_successfully: El carrusel ha sido creado con éxito.
+edit_slide: Edición de carrusel
+add_slide: Creación de carrusel
+logo: Logotipo
+drop_here: Suelta aquí
+remove_file: "Eliminar archivo"
+cancel_upload: "Cancelar carga"
+slide_edited_success: Carrusel editado exitosamente
+yes: Sí
+no: No
+position: Posición
+description: Descripción
+change_status: Cambiar estado
+change_status_modal_title: Cambiar estado del carrusel
+change_status_modal_body: "¿Estás seguro de que deseas cambiar el estado de este carrusel?"
+change_status_modal_confirm: Confirmar cambio
+change_status_error: Ocurrió un error al cambiar el estado del carrusel.

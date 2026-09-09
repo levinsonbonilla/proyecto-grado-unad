@@ -1,0 +1,31 @@
+{% macro confirm_status(modalId, title, body, confirmText, errorText, cancelText) %}
+	<div class="modal fade" id="{{ modalId }}" tabindex="-1" role="dialog" aria-labelledby="{{ modalId }}Label">
+		<div class="modal-dialog modal-sm" role="document">
+			<div class="modal-content">
+				<div class="modal-header" style="background: #f39c12; color: #fff; border-radius: 4px 4px 0 0;">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:#fff; opacity:1;">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title" id="{{ modalId }}Label">
+						<i class="fa fa-refresh"></i>&nbsp;{{ title }}
+					</h4>
+				</div>
+				<div class="modal-body text-center" style="padding: 30px 20px;">
+					<i class="fa fa-question-circle fa-3x" style="color: #f39c12; margin-bottom: 15px; display: block;"></i>
+					<p style="font-size: 15px; margin: 0;">{{ body }}</p>
+					<div id="{{ modalId }}Error" class="alert alert-danger" style="display:none; margin-top: 15px; margin-bottom: 0;">
+						{{ errorText }}
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">
+						<i class="fa fa-times"></i>&nbsp;{{ cancelText }}
+					</button>
+					<button type="button" class="btn btn-warning" id="{{ modalId }}ConfirmBtn">
+						<i class="fa fa-refresh"></i>&nbsp;{{ confirmText }}
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endmacro %}

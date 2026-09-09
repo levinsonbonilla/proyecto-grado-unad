@@ -1,0 +1,75 @@
+{% extends 'e_commerce/theme_1/base_theme_1.html.twig' %}
+
+{% block title %}{{ 'confirming_payment_title' | trans({}, 'store') | default('Confirmando tu pago') }}{% endblock %}
+
+{% block body %}
+<div class="container p-t-80 p-b-80">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6 txt-center">
+
+            <div class="p-b-30">
+                <i class="fa fa-spinner fa-spin" aria-hidden="true" style="font-size:64px;color:#333;"></i>
+            </div>
+
+            <h2 class="ltext-101 cl2 p-b-20" id="pendingTitle">{{ 'confirming_payment_title' | trans({}, 'store') | default('Confirmando tu pago…') }}</h2>
+
+            <p class="stext-113 cl6 p-b-10">
+                {{ 'confirming_payment_wait' | trans({}, 'store') | default('Estamos esperando la confirmación de la pasarela de pago. Esto normalmente toma unos segundos.') }}
+            </p>
+
+            <p class="stext-113 cl6 p-b-30">
+                {{ 'order_reference' | trans({}, 'store') | default('Referencia del pedido:') }}
+                <strong class="cl2">{{ order.id | slice(0, 8) | upper }}</strong>
+            </p>
+
+            <p class="stext-113 cl6 p-b-40" id="pendingFallback" style="display:none;">
+                {{ 'confirming_payment_fallback' | trans({}, 'store') | default('Seguimos confirmando tu pago. Te avisaremos por correo en cuanto se confirme — también puedes revisar el estado en') }}
+                <a href="{{ path('store_orders_detail', {_locale: app.request.locale, id: order.id}) }}">{{ 'your_order_link_text' | trans({}, 'store') | default('tu pedido') }}</a>.
+            </p>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        var orderId = {{ order.id | json_encode | raw }};
+        var statusUrl = "{{ path('store_checkout_status', {_locale: app.request.locale, id: order.id}) }}";
+        var successUrl = "{{ path('store_checkout_success', {_locale: app.request.locale, id: order.id}) }}";
+        var checkoutUrl = "{{ path('store_checkout', {_locale: app.request.locale}) }}";
+
+        var attempts = 0;
+        var maxAttempts = 15;
+
+        function poll() {
+            attempts++;
+            fetch(statusUrl)
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    if (data.statusName === 'Procesando') {
+                        window.location.href = successUrl;
+                        return;
+                    }
+                    if (data.statusName === 'Cancelado') {
+                        window.location.href = checkoutUrl;
+                        return;
+                    }
+                    if (attempts >= maxAttempts) {
+                        document.getElementById('pendingFallback').style.display = 'block';
+                        return;
+                    }
+                    setTimeout(poll, 2000);
+                })
+                .catch(function () {
+                    if (attempts < maxAttempts) {
+                        setTimeout(poll, 2000);
+                    } else {
+                        document.getElementById('pendingFallback').style.display = 'block';
+                    }
+                });
+        }
+
+        setTimeout(poll, 2000);
+    })();
+</script>
+{% endblock %}

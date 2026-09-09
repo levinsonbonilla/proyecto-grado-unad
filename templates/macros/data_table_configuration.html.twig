@@ -1,0 +1,82 @@
+{% macro data_table_configuration_general(tableName) %}
+  <script>
+    function init_DataTables() {
+      if (typeof $.fn.DataTable === 'undefined') {
+        return
+      }
+      var handleDataTableButtons = function () {
+        if ($('{{tableName}}').length) {
+          let table = $('{{tableName}}').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+              { extend: 'copy', className: 'btn-sm' },
+              { extend: 'csv', className: 'btn-sm' },
+              { extend: 'excel', className: 'btn-sm' },
+              { extend: 'pdfHtml5', className: 'btn-sm' },
+              { extend: 'print', className: 'btn-sm' }
+            ],
+            columnDefs: columnDefs,
+            serverSide: true,
+            paging: true,
+            info: true,
+            searching: true,
+            ajax: ajaxPath,
+            language: {
+              lengthMenu: "{{ 'datatable.lengthMenu'|trans({}, 'dashboard') }}",
+              zeroRecords: "{{ 'datatable.zeroRecords'|trans({}, 'dashboard') }}",
+              info: "{{ 'datatable.info'|trans({}, 'dashboard') }}",
+              infoEmpty: "{{ 'datatable.infoEmpty'|trans({}, 'dashboard') }}",
+              emptyTable: "{{ 'datatable.emptyTable'|trans({}, 'dashboard') }}",
+              loadingRecords: "{{ 'datatable.loadingRecords'|trans({}, 'dashboard') }}",
+              processing: "{{ 'datatable.processing'|trans({}, 'dashboard') }}",
+              search: "{{ 'datatable.search'|trans({}, 'dashboard') }}",
+              infoFiltered: "{{ 'datatable.infoFiltered'|trans({}, 'dashboard') }}",
+              paginate: {
+                next: "{{ 'datatable.paginate.next'|trans({}, 'dashboard') }}",
+                previous: "{{ 'datatable.paginate.previous'|trans({}, 'dashboard') }}"
+              },
+              buttons: {
+                copy: "{{ 'datatable.buttons.copy'|trans({}, 'dashboard') }}",
+                csv: "{{ 'datatable.buttons.csv'|trans({}, 'dashboard') }}",
+                print: "{{ 'datatable.buttons.print'|trans({}, 'dashboard') }}",
+                copyTitle: "{{ 'datatable.buttons.copyTitle'|trans({}, 'dashboard') }}",
+                copySuccess: {
+                  _: "{{ 'datatable.buttons.copySuccess.multiple'|trans({}, 'dashboard') }}",
+                  1: "{{ 'datatable.buttons.copySuccess.single'|trans({}, 'dashboard') }}"
+                }
+              }
+            },
+            responsive: true
+          })
+        }
+      }
+
+      TableManageButtons = (function () {
+        'use strict'
+        return {
+          init: function () {
+            handleDataTableButtons()
+          }
+        }
+      })()
+
+      TableManageButtons.init()
+    }
+
+    function reloadTable() {
+      if (table) {
+        table.ajax.reload(null, false)
+      } else {
+        console.error('La tabla no está inicializada.')
+      }
+    }
+
+    function changeUrl(url) {
+      if (table) {
+        table.ajax.url(url).load()
+      } else {
+        console.error('La tabla no está inicializada.')
+      }
+    }
+  </script>
+{% endmacro %}

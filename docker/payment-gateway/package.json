@@ -1,0 +1,17 @@
+{
+  "name": "proyecto-grado-unad-mock-payment-gateway",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pasarela de pago simulada para desarrollo/demo del proyecto. NO usar en producción con dinero real — no procesa tarjetas, solo emula el flujo (crear intent, página de pago, webhook).",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

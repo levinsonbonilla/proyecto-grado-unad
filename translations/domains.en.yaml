@@ -1,0 +1,22 @@
+id: Id
+actions: Actions
+name: Name
+tenant: Tenant
+active: Active
+domain: Domain
+notification_email: Notification email
+support_email: Support email
+create_domain: Crear dominio
+list_domains: List domains
+existing_domain: Existing domains
+domain_created_successfully: Domain created successfully
+edit_domain: Edición de dominio
+add_domain: Domain creation
+logo: Logo
+drop_here: Drop here
+remove_file: "Remove file"
+cancel_upload: "Cancel upload"
+domain_edited_success: Domain edited successfully
+facebook_url: Facebook URL
+instagram_url: Instagram URL
+pinterest_url: Pinterest URL

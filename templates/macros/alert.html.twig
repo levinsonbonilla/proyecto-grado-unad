@@ -1,0 +1,152 @@
+
+
+{% macro alert_success() %}
+	{{ _self.render_toasts(app.session.flashbag.get('success'), 'success', 'fa-check-circle') }}
+{% endmacro %}
+
+{% macro alert_warning() %}
+
+	{{ _self.render_toasts(app.session.flashbag.get('warning'), 'warning', 'fa-exclamation-circle') }}
+{% endmacro %}
+
+{% macro alert_error() %}
+
+	{{ _self.alert_warning() }}
+	{{ _self.render_toasts(app.session.flashbag.get('error'), 'danger', 'fa-exclamation-triangle') }}
+{% endmacro %}
+
+{% macro render_toasts(messages, type, icon) %}
+	{% if messages|length > 0 %}
+		<div class="app-toast-overlay" data-app-toast-overlay>
+			<div class="app-toast-stack">
+				{% for flashMessage in messages %}
+					<div class="app-toast app-toast-{{ type }}" role="alert">
+						<i class="fa {{ icon }} app-toast-icon"></i>
+						<span class="small app-toast-message">{{ flashMessage }}</span>
+						<button type="button" class="app-toast-close" data-app-toast-close aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+				{% endfor %}
+			</div>
+		</div>
+		{{ _self.toast_assets() }}
+	{% endif %}
+{% endmacro %}
+
+{% macro toast_assets() %}
+<style>
+	.app-toast-overlay {
+		position: fixed;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(0, 0, 0, 0.35);
+		z-index: 2000;
+		opacity: 1;
+		transition: opacity 0.25s ease;
+	}
+	.app-toast-overlay.app-toast-hide {
+		opacity: 0;
+	}
+	.app-toast-stack {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		max-width: 90vw;
+	}
+	.app-toast {
+		position: relative;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		min-width: 280px;
+		max-width: 480px;
+		padding: 16px 40px 16px 18px;
+		border-radius: 8px;
+		background: #fff;
+		border-left: 5px solid #ccc;
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+		animation: app-toast-in 0.2s ease;
+	}
+	@keyframes app-toast-in {
+		from { opacity: 0; transform: scale(0.92); }
+		to   { opacity: 1; transform: scale(1); }
+	}
+	.app-toast-success { border-left-color: #4caf50; }
+	.app-toast-success .app-toast-icon { color: #4caf50; }
+	.app-toast-warning { border-left-color: #ff9800; }
+	.app-toast-warning .app-toast-icon { color: #ff9800; }
+	.app-toast-danger { border-left-color: #f44336; }
+	.app-toast-danger .app-toast-icon { color: #f44336; }
+	.app-toast-icon { font-size: 20px; flex-shrink: 0; }
+	.app-toast-message { color: #333; }
+	.app-toast-close {
+		position: absolute;
+		top: 6px;
+		right: 8px;
+		border: 0;
+		background: transparent;
+		font-size: 20px;
+		line-height: 1;
+		color: #999;
+		cursor: pointer;
+		padding: 4px;
+	}
+	.app-toast-close:hover { color: #333; }
+</style>
+
+<script>
+	(function () {
+		if (!window.appInitToasts) {
+			window.appInitToasts = function (autoCloseMs) {
+				autoCloseMs = autoCloseMs || 4000;
+
+				var closeOverlay = function (overlay) {
+					if (!overlay || overlay.dataset.appClosing) {
+						return;
+					}
+					overlay.dataset.appClosing = '1';
+					overlay.classList.add('app-toast-hide');
+					setTimeout(function () {
+						if (overlay.parentNode) {
+							overlay.parentNode.removeChild(overlay);
+						}
+					}, 250);
+				};
+
+				var removeToast = function (toast) {
+					var overlay = toast.closest('[data-app-toast-overlay]');
+					toast.parentNode.removeChild(toast);
+					if (overlay && !overlay.querySelector('.app-toast')) {
+						closeOverlay(overlay);
+					}
+				};
+
+				document.querySelectorAll('[data-app-toast-overlay]:not([data-app-init])').forEach(function (overlay) {
+					overlay.setAttribute('data-app-init', '1');
+
+					overlay.addEventListener('click', function (event) {
+						if (event.target === overlay) {
+							closeOverlay(overlay);
+						}
+					});
+
+					overlay.querySelectorAll('[data-app-toast-close]').forEach(function (btn) {
+						btn.addEventListener('click', function () {
+							removeToast(btn.closest('.app-toast'));
+						});
+					});
+
+					setTimeout(function () {
+						closeOverlay(overlay);
+					}, autoCloseMs);
+				});
+			};
+		}
+
+		window.appInitToasts();
+	})();
+</script>
+{% endmacro %}

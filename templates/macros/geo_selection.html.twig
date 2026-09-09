@@ -1,0 +1,167 @@
+{% macro geo_selector(formPrefix, allCountries, selectedCountryIds, selectedRegionIds, selectedCityIds, regionsUrl, citiesUrl, locale) %}
+{% set wrapperId = 'geo_wrapper_' ~ formPrefix %}
+<div class="geo-selector-wrapper"
+     id="{{ wrapperId }}"
+     data-form-prefix="{{ formPrefix }}"
+     data-regions-url="{{ regionsUrl }}"
+     data-cities-url="{{ citiesUrl }}"
+     data-selected-countries="{{ selectedCountryIds }}"
+     data-selected-regions="{{ selectedRegionIds }}"
+     data-selected-cities="{{ selectedCityIds }}">
+
+    <div class="item form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">
+            {{ 'countries'|trans({}, 'messages') }}
+        </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <select name="{{ formPrefix }}[countries][]"
+                    id="{{ formPrefix }}_countries"
+                    class="form-control geo-countries"
+                    multiple>
+                {% for country in allCountries %}
+                    <option value="{{ country.id }}">
+                        {{ country.getName(locale) }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="item form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">
+            {{ 'regions'|trans({}, 'messages') }}
+        </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <select name="{{ formPrefix }}[regions][]"
+                    id="{{ formPrefix }}_regions"
+                    class="form-control geo-regions"
+                    multiple>
+            </select>
+            <small class="text-muted">{{ 'geo_select_country_first'|trans({}, 'messages') }}</small>
+        </div>
+    </div>
+
+    <div class="item form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">
+            {{ 'cities'|trans({}, 'messages') }}
+        </label>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <select name="{{ formPrefix }}[cities][]"
+                    id="{{ formPrefix }}_cities"
+                    class="form-control geo-cities"
+                    multiple>
+            </select>
+            <small class="text-muted">{{ 'geo_select_region_first'|trans({}, 'messages') }}</small>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    var wrapperId  = '{{ wrapperId }}';
+    var prefix     = '{{ formPrefix }}';
+    var wrapper    = document.getElementById(wrapperId);
+    if (!wrapper) return;
+
+    var regionsUrl = wrapper.dataset.regionsUrl;
+    var citiesUrl  = wrapper.dataset.citiesUrl;
+
+    var initCountryIds = JSON.parse(wrapper.dataset.selectedCountries || '[]');
+    var initRegionIds  = JSON.parse(wrapper.dataset.selectedRegions   || '[]');
+    var initCityIds    = JSON.parse(wrapper.dataset.selectedCities    || '[]');
+
+    window.addEventListener('load', function () {
+        if (typeof $ === 'undefined') return;
+
+        var $country = $('#' + prefix + '_countries');
+        var $region  = $('#' + prefix + '_regions');
+        var $city    = $('#' + prefix + '_cities');
+
+        var updating = false;
+
+        $country.select2({ width: '100%' });
+        $region.select2({ width: '100%' });
+        $city.select2({ width: '100%' });
+
+        function vals($sel) {
+            return $sel.val() || [];
+        }
+
+        function clear($sel) {
+            updating = true;
+            $sel.empty().trigger('change');
+            updating = false;
+        }
+
+        function populate($sel, items, keepIds) {
+            updating = true;
+            $sel.empty();
+            $.each(items, function (_, item) {
+                var selected = keepIds.indexOf(item.id) !== -1;
+                $sel.append(new Option(item.name, item.id, false, selected));
+            });
+            $sel.trigger('change');
+            updating = false;
+        }
+
+        function fetchRegions(keepRegionIds, done) {
+            var countryIds = vals($country);
+            if (!countryIds.length) {
+                clear($region);
+                clear($city);
+                if (done) done([]);
+                return;
+            }
+            var qs = countryIds.map(function (id) { return 'country[]=' + id; }).join('&');
+            fetch(regionsUrl + '?' + qs)
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    populate($region, data, keepRegionIds);
+                    if (done) done(data);
+                })
+                .catch(function () { clear($region); });
+        }
+
+        function fetchCities(keepCityIds, done) {
+            var regionIds = vals($region);
+            if (!regionIds.length) {
+                clear($city);
+                if (done) done([]);
+                return;
+            }
+            var qs = regionIds.map(function (id) { return 'region[]=' + id; }).join('&');
+            fetch(citiesUrl + '?' + qs)
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    populate($city, data, keepCityIds);
+                    if (done) done(data);
+                })
+                .catch(function () { clear($city); });
+        }
+
+        $country.on('change', function () {
+            if (updating) return;
+            fetchRegions(vals($region), function () {
+                fetchCities(vals($city));
+            });
+        });
+
+        $region.on('change', function () {
+            if (updating) return;
+            fetchCities(vals($city));
+        });
+
+        if (initCountryIds.length > 0) {
+            updating = true;
+            $country.val(initCountryIds).trigger('change.select2');
+            updating = false;
+            fetchRegions(initRegionIds, function () {
+                if (initRegionIds.length > 0) {
+                    fetchCities(initCityIds);
+                }
+            });
+        }
+    });
+})();
+</script>
+{% endmacro %}

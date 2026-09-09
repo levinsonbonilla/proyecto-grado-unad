@@ -1,0 +1,7 @@
+framework:
+    cache:
+
+when@test:
+    framework:
+        cache:
+            app: cache.adapter.array

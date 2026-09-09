@@ -1,0 +1,15 @@
+access_denied: Access denied
+internal_server_error: Internal server error
+not_found: Not found
+copyright: ©%year% All Rights Reserved.  and
+privacy: Privacy
+terms: Terms
+
+error_500_message: "We track these errors automatically, but if the problem persists feel free to contact us. In the meantime, try refreshing."
+error_403_message: Full authentication is required to access this resource.
+error_404_heading: Sorry but we couldn't find this page
+error_404_message: This page you are looking for does not exist
+report_this: Report this?
+search_label: Search
+search_placeholder: "Search for..."
+go_button: "Go!"

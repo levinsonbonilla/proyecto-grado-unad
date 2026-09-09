@@ -1,0 +1,203 @@
+{% extends 'dashboard/base_dashboard.html.twig' %}
+{% import 'macros/alert.html.twig' as alert %}
+
+{% set d = detail.order %}
+
+{% block title %}{{ 'order_detail'|trans({}, 'sales') }}{% endblock %}
+
+{% block body %}
+    <div class="right_col" role="main">
+        <div class="">
+            <div class="page-title">
+                {{ alert.alert_success() }}
+                {{ alert.alert_error() }}
+                <div class="title_left">
+                    <h3>{{ 'order_detail'|trans({}, 'sales') }} #{{ order.id|slice(0, 8) }}</h3>
+                </div>
+                <div class="title_right">
+                    <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                        <a href="{{ path('dashboard_sales_orders') }}" class="btn btn-default form-control">
+                            <i class="fa fa-arrow-left"></i>&nbsp;&nbsp;{{ 'back'|trans({}, 'messages') }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+
+            <div class="row">
+                <div class="col-md-7 col-sm-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>{{ 'shipping_info'|trans({}, 'sales') }}</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <p><strong>{{ 'customer'|trans({}, 'sales') }}:</strong> {{ d.customerName }} ({{ d.customerEmail }})</p>
+                            <p><strong>{{ 'address'|trans({}, 'sales') }}:</strong> {{ d.shippingAddress }}</p>
+                            <p><strong>{{ 'location'|trans({}, 'sales') }}:</strong> {{ d.cityNames }}, {{ d.regionName }}, {{ d.countryName }}</p>
+                            <p><strong>{{ 'purchase_date'|trans({}, 'sales') }}:</strong> {{ d.createdAt ? d.createdAt|date('Y-m-d H:i') : '' }}</p>
+                            {% if d.trackingNumber %}
+                                <p><strong>{{ 'tracking_number'|trans({}, 'sales') }}:</strong> {{ d.trackingNumber }} ({{ d.trackingCarrier }})</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>{{ 'products'|trans({}, 'dashboard') }}</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>{{ 'product'|trans({}, 'sales') }}</th>
+                                        <th>{{ 'quantity'|trans({}, 'sales') }}</th>
+                                        <th>{{ 'unit_price'|trans({}, 'sales') }}</th>
+                                        <th>{{ 'total'|trans({}, 'sales') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in detail.items %}
+                                    <tr>
+                                        <td>
+                                            {{ item.productName }}
+                                            {% if item.colorName or item.medidaName %}
+                                            <br><small style="color:#999;">
+                                                {% if item.colorName %}<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:{{ item.colorHexCode }};margin-right:4px;"></span>{{ item.colorName }}{% endif %}
+                                                {% if item.colorName and item.medidaName %} - {% endif %}
+                                                {% if item.medidaName %}{{ item.medidaName }}{% endif %}
+                                            </small>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ item.quantity }}</td>
+                                        <td>{{ item.unitPrice | price }}</td>
+                                        <td>{{ item.totalPrice | price }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="3" class="text-right"><strong>{{ 'total'|trans({}, 'sales') }}</strong></td>
+                                        <td><strong>{{ d.totalAmount | price }}</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-5 col-sm-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>{{ 'payment'|trans({}, 'sales') }}</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            {% if detail.transaction %}
+                                <p><strong>{{ 'payment_method'|trans({}, 'sales') }}:</strong> {{ detail.transaction.paymentMethodName ?: '—' }}</p>
+                                <p><strong>{{ 'payment_status'|trans({}, 'sales') }}:</strong> {{ detail.transaction.statusName }}</p>
+                                {% if detail.transaction.gatewayReference %}
+                                    <p><strong>{{ 'gateway_reference'|trans({}, 'sales') }}:</strong> <code>{{ detail.transaction.gatewayReference }}</code></p>
+                                {% endif %}
+                            {% else %}
+                                <p>{{ 'no_payment_transaction'|trans({}, 'sales') }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>{{ 'change_order_status'|trans({}, 'sales') }}</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <p>{{ 'current_status'|trans({}, 'sales') }}: <span class="label label-info">{{ d.statusName }}</span></p>
+
+                            <div class="form-group">
+                                <label>{{ 'new_status'|trans({}, 'sales') }}</label>
+                                <select id="newStatusSelect" class="form-control"></select>
+                            </div>
+
+                            <div class="form-group" id="trackingFields" style="display:none;">
+                                <label>{{ 'tracking_number'|trans({}, 'sales') }}</label>
+                                <input type="text" id="trackingNumberInput" class="form-control" value="{{ d.trackingNumber }}">
+                                <label style="margin-top:10px;">{{ 'tracking_carrier'|trans({}, 'sales') }}</label>
+                                <input type="text" id="trackingCarrierInput" class="form-control" value="{{ d.trackingCarrier }}">
+                            </div>
+
+                            <button id="btnUpdateStatus" class="btn btn-success" style="margin-top:10px;">
+                                {{ 'save'|trans({}, 'messages') }}
+                            </button>
+                            <div id="updateStatusError" class="alert alert-danger" style="display:none; margin-top:10px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+
+        var TRANSITIONS = {
+            'Pendiente': ['Procesando', 'Cancelado'],
+            'Procesando': ['Enviado', 'Cancelado'],
+            'Enviado': ['Entregado'],
+            'Retracto Solicitado': ['Retracto Aprobado'],
+        };
+
+        var currentStatus = {{ d.statusName|json_encode|raw }};
+        var allowed = TRANSITIONS[currentStatus] || [];
+        var select = document.getElementById('newStatusSelect');
+
+        if (allowed.length === 0) {
+            select.innerHTML = '<option value="">{{ 'no_transitions_available'|trans({}, 'sales') }}</option>';
+            select.disabled = true;
+            document.getElementById('btnUpdateStatus').disabled = true;
+        } else {
+            allowed.forEach(function(status) {
+                var opt = document.createElement('option');
+                opt.value = status;
+                opt.textContent = status;
+                select.appendChild(opt);
+            });
+        }
+
+        function toggleTrackingFields() {
+            document.getElementById('trackingFields').style.display = select.value === 'Enviado' ? 'block' : 'none';
+        }
+        select.addEventListener('change', toggleTrackingFields);
+        toggleTrackingFields();
+
+        document.getElementById('btnUpdateStatus').addEventListener('click', function() {
+            var errorBox = document.getElementById('updateStatusError');
+            errorBox.style.display = 'none';
+
+            fetch("{{ path('dashboard_sales_orders_update_status', {id: order.id}) }}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    status: select.value,
+                    trackingNumber: document.getElementById('trackingNumberInput').value,
+                    trackingCarrier: document.getElementById('trackingCarrierInput').value,
+                })
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    errorBox.textContent = data.message || '{{ 'update_status_error'|trans({}, 'sales') }}';
+                    errorBox.style.display = 'block';
+                }
+            })
+            .catch(function() {
+                errorBox.textContent = '{{ 'update_status_error'|trans({}, 'sales') }}';
+                errorBox.style.display = 'block';
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,71 @@
+information: Información
+acepted: Aceptar
+cancel: Cancelar
+position: Orden
+remove_image: Quitar foto
+coming_soon: próximamente
+
+category_created_successfully: La categoria ha sido creado con éxito.
+create_category: Crear categoria
+categorie_edited_success: Categoria editada exitosamente
+add_categorie: Creación de categoria
+edit_categorie: Edición de categoria
+
+medida_created_successfully: La medida ha sido creada con éxito
+create_medida: Crear medida
+medida_edited_success: Medida editada exitosamente
+add_medida: Creación de medida
+edit_medida: Edición de medida
+medidas_list: Lista de medidas
+medida_name_placeholder: "Ej: S, M, L, 32'', 50 cm..."
+
+color_created_successfully: El color ha sido creado con éxito
+create_color: Crear color
+color_edited_success: Color editado exitosamente
+add_color: Creación de color
+edit_color: Edición de color
+colors_list: Lista de colores
+hex_code: Código de color
+color_name_placeholder: "Ej: Rojo, Negro, Azul marino..."
+optional: opcional
+product_colors: Colores
+product_colors_help: Agrupá las fotos en bloques con "Agregar producto" -- cada bloque puede tener 1 o más fotos, un color opcional (elegido de la lista o creado al vuelo) y su propio stock. El cliente deberá elegir un color antes de agregar al carrito si el producto tiene alguno. El stock de cada bloque se descuenta aparte del stock general de arriba, pero cuenta contra ese mismo total.
+color_stock_placeholder: Stock (vacío = sin límite)
+add_color_variant: Agregar color
+remove_color_variant: Quitar
+product_color_stock_exceeds_general: "El stock asignado a los bloques (%assigned%) supera el stock general del producto (%general%)."
+duplicate_medida_in_block: "La medida \"%medida%\" está repetida dentro del mismo bloque -- cada medida solo puede aparecer una vez por color."
+stock_exceeds_available: "Excede el stock disponible, máximo permitido: %max%"
+stock_summary_total: Stock total
+stock_summary_assigned: Asignado a bloques
+stock_summary_available: Disponible
+stock_summary_unlimited: Sin límite
+
+add_variant_button: Agregar producto
+block_order_label: "Orden del bloque"
+block_order_placeholder: "Ej: 1"
+block_order_help: "Controla en qué orden aparece este bloque (y sus fotos) frente al cliente. Menor número va primero -- si dejás huecos (ej. 1 y 3, sin 2) no importa, igual respeta el orden. Vacío = sin orden fijado, se ordena por nombre."
+has_color_label: Color
+has_medida_label: Medida
+select_color_placeholder: "Elige un color..."
+new_color_option: "+ Nuevo color..."
+select_medida_placeholder: "Elige una medida..."
+new_medida_option: "+ Nueva medida..."
+add_photo_to_block: Agregar otra foto
+variant_stock_placeholder: "Stock (vacío = sin límite)"
+add_medida_row: "+ Agregar otra medida"
+
+name: Nombre
+description: Descripción
+categories: Categorías
+base_price: Precio base
+public_price: Precio publico
+stock: Stock
+stock_help: Opcional. Déjalo vacío si no llevas control de inventario para este producto — se mostrará y podrá comprarse sin límite, igual que hoy. Si lo defines, cuando llegue a 0 el producto deja de aparecer en la tienda.
+create_product: Crear producto
+product_list: Lista de productos
+add_product: Creación de producto
+edit_product: Edición de producto
+product_created_successfully: El producto ha sido creado con éxito.
+product_edited_success: Producto editado exitosamente
+category_image: Imagen de categoria

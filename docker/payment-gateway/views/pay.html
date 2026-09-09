@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pasarela de pago simulada — Proyecto de Grado</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-6 col-lg-5">
+
+      <div class="alert alert-warning text-center fw-bold mb-4">
+        ⚠️ SIMULACIÓN — esto no es una pasarela de pago real. No hay cobro real ni se piden datos de tarjeta.
+      </div>
+
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+          <h4 class="card-title text-center mb-1">Confirmar pago</h4>
+          <p class="text-muted text-center small mb-4">Pedido {{ORDER_ID}}</p>
+
+          <div class="d-flex justify-content-between border-top border-bottom py-3 mb-4">
+            <span>Total a pagar</span>
+            <strong id="amount">{{AMOUNT_FORMATTED}}</strong>
+          </div>
+
+          <div id="resultBox" class="alert d-none" role="alert"></div>
+
+          <div id="actions" class="d-grid gap-2">
+            <button id="btnPay" class="btn btn-success btn-lg">✅ Pagar (simular éxito)</button>
+            <button id="btnFail" class="btn btn-outline-danger">❌ Rechazar (simular fallo)</button>
+            <button id="btnTimeout" class="btn btn-outline-secondary btn-sm" title="No hace nada — simula que el usuario abandona el pago">
+              ⏱️ Simular timeout / abandonar
+            </button>
+          </div>
+
+          <p class="text-center text-muted small mt-4 mb-0">Intent: <code>{{INTENT_ID}}</code></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var intentId = {{INTENT_ID_JSON}};
+
+  function resolve(outcome) {
+    document.getElementById('actions').classList.add('d-none');
+    var box = document.getElementById('resultBox');
+    box.classList.remove('d-none', 'alert-success', 'alert-danger');
+    box.classList.add(outcome === 'succeeded' ? 'alert-success' : 'alert-danger');
+    box.textContent = outcome === 'succeeded'
+      ? 'Pago aprobado. Redirigiendo…'
+      : 'Pago rechazado. Redirigiendo…';
+
+    fetch('/pay/' + intentId + '/resolve', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ outcome: outcome }),
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        window.location.href = data.returnUrl || ('/pay/' + intentId + '?resolved=1');
+      })
+      .catch(function () {
+        box.textContent = 'No se pudo comunicar el resultado. Intenta de nuevo.';
+      });
+  }
+
+  document.getElementById('btnPay').addEventListener('click', function () { resolve('succeeded'); });
+  document.getElementById('btnFail').addEventListener('click', function () { resolve('failed'); });
+  // btnTimeout deliberadamente no hace nada — simula que el usuario cierra la pestaña.
+</script>
+</body>
+</html>

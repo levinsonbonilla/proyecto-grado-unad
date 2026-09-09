@@ -1,0 +1,30 @@
+view_detail: View detail
+kpi_total_sales: Total sales
+kpi_pending_payment: Pending payment
+kpi_pending_shipment: Pending shipment
+kpi_average_ticket: Average ticket
+order_list: Order list
+status: Status
+customer: Customer
+email: Email
+total: Total
+purchase_date: Purchase date
+tracking_number: Tracking number
+tracking_carrier: Carrier
+order_detail: Order detail
+shipping_info: Shipping info
+address: Address
+location: Location
+product: Product
+quantity: Quantity
+unit_price: Unit price
+payment: Payment
+payment_method: Payment method
+payment_status: Payment status
+gateway_reference: Gateway reference
+no_payment_transaction: This order has no associated payment transaction.
+change_order_status: Change order status
+current_status: Current status
+new_status: New status
+no_transitions_available: No transitions available from this status
+update_status_error: Could not update the order status.

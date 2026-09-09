@@ -1,0 +1,174 @@
+about: Nosotros
+add_to_cart: Agregar al carrito
+address: Dirección
+all: Todos
+buy_now: Comprar ahora
+cart: Carrito
+cart_empty: Tu carrito está vacío.
+categories: Categorías
+categories_kicker: Explora nuestra tienda
+checkout: Finalizar compra
+city: Ciudad
+close: Cerrar
+confirm_order: Confirmar pedido
+contact: Contacto
+continue_shopping: Continuar comprando
+country: País
+date_of_birth: Fecha de nacimiento
+email: Email
+explore_products: Explorar productos
+favorites: Favoritos
+change_language: Cambiar idioma
+lang_es: Español
+lang_en: Inglés
+featured_products: Productos destacados
+home: Inicio
+last_name: Apellido
+login: Iniciar sesión
+login_to_checkout: Inicia sesión para pagar
+logout: Cerrar sesión
+my_account: Mi cuenta
+my_orders: Mis pedidos
+register: Regístrate
+my_profile: Mi perfil
+name: Nombre
+neighborhood: Barrio
+no_favorites: Aún no tienes productos favoritos.
+no_orders: Aún no tienes pedidos.
+no_products_found: No se encontraron productos.
+order_detail: Detalle del pedido
+order_summary: Resumen del pedido
+payment_method: Método de pago
+select_payment_method: Selecciona un método de pago
+personal_info: Información personal
+phone: Teléfono
+price: Precio
+proceed_checkout: Ir al pago
+product: Producto
+quantity: Cantidad
+region: Departamento
+save_changes: Guardar cambios
+search: Buscar
+search_placeholder: Buscar productos...
+search_results: Resultados
+shipping_info: Información de envío
+shop: Tienda
+shop_now: Ver productos
+stock_available: "%count% disponibles"
+subtotal: Subtotal
+total: Total
+choose_color: Color
+choose_medida: Medida
+please_select_color: Elige un color antes de continuar
+out_of_stock: Agotado
+color: Color
+view_all: Ver todos
+view_cart: Ver carrito
+
+select_option: -- Selecciona --
+select_country_option: -- Selecciona un país --
+select_country_first_option: -- Selecciona primero el país --
+select_region_first_option: -- Selecciona primero el departamento --
+loading: Cargando...
+processing_order: Procesando...
+saving: Guardando...
+address_placeholder: "Calle, número, piso..."
+shipping_fields_required: Por favor completa todos los campos de envío obligatorios.
+order_processing_error: Hubo un error al procesar tu pedido.
+profile_saved_success: Guardado correctamente.
+profile_save_error: Ocurrió un error al guardar.
+
+order_confirmed_title: ¡Pedido confirmado!
+order_confirmed_thanks: Gracias por tu compra. Hemos recibido tu pedido y lo estamos procesando.
+order_reference: "Referencia del pedido:"
+order_confirmation_email_notice: Recibirás un correo de confirmación con los detalles de tu pedido.
+view_my_order: Ver mi pedido
+confirming_payment_title: Confirmando tu pago…
+confirming_payment_wait: Estamos esperando la confirmación de la pasarela de pago. Esto normalmente toma unos segundos.
+confirming_payment_fallback: Seguimos confirmando tu pago. Te avisaremos por correo en cuanto se confirme — también puedes revisar el estado en
+your_order_link_text: tu pedido
+
+about_title: Nosotros
+about_our_story_title: Nuestra historia
+about_our_story_p1: Acá va la historia de tu tienda. Cada negocio detrás de esta tienda tiene su propio comienzo — reemplaza este párrafo con cómo empezó la tuya, qué te propusiste vender y qué la hace valer la pena contar.
+about_our_story_p2: Usa este segundo párrafo para lo que cambió desde entonces — cómo creció el catálogo, a quién le vendes hoy y qué distingue a tu tienda del resto.
+about_our_story_p3: ¿Alguna pregunta? Contáctanos en la tienda o a través de la página de contacto.
+about_our_mission_title: Nuestra misión
+about_our_mission_p1: Acá va la misión de tu tienda — qué quieres que sientan los clientes al comprarte, y el estándar al que sometes tus productos y servicio. Reemplaza este párrafo con eso.
+about_mission_quote: La creatividad es solo conectar cosas. Cuando le preguntas a gente creativa cómo hicieron algo, se sienten un poco culpables porque en realidad no lo hicieron, solo vieron algo. Les pareció obvio después de un tiempo.
+
+contact_title: Contacto
+contact_send_message: Envíanos un mensaje
+contact_email_placeholder: Tu correo electrónico
+contact_message_placeholder: ¿En qué podemos ayudarte?
+contact_submit: Enviar
+contact_address_label: Dirección
+contact_lets_talk_label: Hablemos
+contact_sale_support_label: Soporte de ventas
+
+order_products_title: Productos
+column_image: Imagen
+column_product: Producto
+column_unit_price: "Precio unit."
+order_total_label: "Total del pedido:"
+order_info_title: Información del pedido
+status_label: "Estado:"
+date_label: "Fecha:"
+shipping_to_label: "Envío a:"
+tracking_number_label: "Número de guía:"
+confirm_cancel_order: ¿Deseas cancelar este pedido?
+cancel_order: Cancelar pedido
+confirm_request_retraction: "¿Deseas solicitar el retracto de compra? (Ley 1480/2011)"
+request_retraction: Solicitar retracto
+back_to_my_orders: Volver a mis pedidos
+
+quick_view: Vista rápida
+
+footer_help_title: Ayuda
+track_order: Rastrear pedido
+returns: Devoluciones
+shipping: Envíos
+faqs: Preguntas frecuentes
+get_in_touch: Contáctanos
+footer_contact_text: "¿Alguna pregunta? Cuéntanos en tienda, en 8th floor, 379 Hudson St, New York, NY 10018, o llámanos al (+1) 96 716 6879"
+footer_newsletter_title: Boletín
+subscribe_button: Suscribirse
+rights_reserved: Todos los derechos reservados
+made_with: Hecho con
+by_word: por
+distributed_by: "y distribuido por"
+
+order_column: Pedido
+date_column: Fecha
+destination_column: Destino
+status_column: Estado
+view_link: Ver
+
+add_to_wishlist: Agregar a favoritos
+remove_from_wishlist: Quitar de favoritos
+
+product_id_missing: No se pudo identificar el producto
+added_to_wishlist: "¡se agregó a favoritos!"
+removed_from_wishlist: "¡se quitó de favoritos!"
+favorites_update_error: No se pudo actualizar favoritos
+added_to_cart_message: "¡se agregó al carrito!"
+cart_add_error: No se pudo agregar el producto al carrito
+buy_now_error: No se pudo procesar la compra
+
+order_email_subject: "Confirmación de tu pedido #%orderId%"
+order_email_thanks_heading: "¡Gracias por tu pedido!"
+order_email_greeting: "Hola %name%, recibimos tu pedido #%orderId%."
+order_email_col_product: Producto
+order_email_col_quantity: Cantidad
+order_email_col_price: Precio
+order_email_shipping_address: "Dirección de envío:"
+order_email_status: "Estado:"
+order_email_footer: Pronto recibirás una actualización del estado de tu pedido.
+
+not_authenticated: No autenticado.
+invalid_shipping_location: Ubicación de envío inválida.
+pending_status_not_found: 'Estado "Pendiente" no encontrado.'
+payment_method_not_available_for_location: El método de pago seleccionado no está disponible para tu ubicación de envío.
+order_processing_error_ref: "Error al procesar el pedido. Ref: %ref%"
+
+remove_item: Eliminar

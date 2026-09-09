@@ -1,0 +1,12 @@
+create_payment_method: Create payment method
+list_payment_methods: Payment methods list
+add_payment_method: Payment method creation
+edit_payment_method: Payment method edition
+payment_method_created_successfully: Payment method created successfully.
+payment_method_edited_success: Payment method edited successfully
+change_status_modal_body: "Are you sure you want to change the status of this payment method?"
+payment_provider: Payment type
+payment_provider_manual: Manual (cash on delivery, bank transfer...)
+payment_provider_mock_gateway: Payment gateway (simulated)
+payment_instructions: Instructions for the customer
+payment_instructions_help: "Only applies to manual methods. E.g.: bank account details. Shown at checkout."

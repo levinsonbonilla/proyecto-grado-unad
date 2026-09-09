@@ -1,0 +1,56 @@
+help: Help
+log_out: Log out
+fullscreen: FullScreen
+lock: Lock
+welcome: Welcome
+lang_es: Spanish
+lang_en: English
+general: General
+users: Users
+profile: Profile
+home: Home
+user_list: User list
+datatable:
+    lengthMenu: "Show _MENU_ entries per page"
+    zeroRecords: "No results found"
+    info: "Showing page _PAGE_ of _PAGES_"
+    infoEmpty: "No records available"
+    emptyTable: "No data available in table"
+    loadingRecords: "Loading..."
+    processing: "Processing..."
+    search: "Search:"
+    infoFiltered: "(filtered from _MAX_ total records)"
+    paginate:
+        next: "Next"
+        previous: "Previous"
+    buttons:
+        copy: Copy
+        csv: CSV
+        print: Print
+        copyTitle: Copied to clipboard
+        copySuccess: 
+            multiple: Copied %d rows to clipboard
+            single: 1 row copied to clipboard
+business: Business
+tenants: Tenants
+tenant_management: Tenant management
+settings: Settings
+domains: Domains
+slides: Slides
+payment_methods: Payment Methods
+products: Products
+categories: Categories
+colors: Colors
+medidas: Measurements
+categories_list: Categories list
+colors_list: Colors list
+medidas_list: Measurements list
+sales: Sales
+products_config_section: Configuration
+products_management_section: Management
+
+select_active_domain_title: Choose your working domain
+select_active_domain_subtitle: You have access to more than one domain. Choose which one to work with now — you can switch anytime.
+active_domain_label: Active domain
+
+auto_refresh_label: Auto-refresh

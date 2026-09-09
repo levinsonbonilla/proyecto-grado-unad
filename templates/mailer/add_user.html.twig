@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="{{ app.request.locale }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ 'confirm_email' | trans({}, 'login') | raw }}</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            background-color: #4caf50;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            color: #ffffff;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .content {
+            padding: 20px;
+        }
+        .content p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333333;
+        }
+        .content .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .content .button-container a {
+            background-color: #4caf50;
+            color: #ffffff;
+            padding: 15px 25px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .content .button-container a:hover {
+            background-color: #45a049;
+        }
+        .footer {
+            padding: 20px;
+            text-align: center;
+            color: #999999;
+            font-size: 14px;
+        }
+        .footer a {
+            color: #4caf50;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>{{ 'welcome_to' | trans({}, 'login') | raw }} {{ app_name }}!</h1>
+        </div>
+        <div class="content">
+            <p>{{ 'hello' | trans({}, 'login') | raw }} {{ user_name }},</p>
+            <p>{{ 'admin_registered_account' | trans({}, 'users') | raw }} <strong>{{ app_name }}, </strong>{{ (type ~ '_invitation') | trans({}, 'users') | raw }}</p>
+            <br>
+            <div class="button-container">
+                <a href="{{ confirmation_link }}" target="_blank">{{ 'confirm_my_email' | trans({}, 'login') | raw }}</a>
+            </div>
+            <br>
+            <p>{{ 'copy_paste_link' | trans({}, 'login') | raw }} </p>
+            <p><a href="{{ confirmation_link }}" target="_blank">{{ confirmation_link }}</a></p>
+            <p><strong>{{ 'credentials' | trans({}, 'users') | raw }}</strong></p>
+            <p>
+            <ul>
+                <li>{{ 'user' | trans({}, 'users') | raw }} {{ user }}</li>
+                <li>{{ 'password' | trans({}, 'users') | raw }} {{ password }}</li>
+            </ul>
+            </p>
+            <p>{{ 'enjoy_experience' | trans({}, 'login') | raw }}</p>
+            <p>{{ 'regards_team' | trans({}, 'login') | raw }} {{ app_name }}</p>
+        </div>
+        <div class="footer">
+            <p>{{ 'ignore_message' | trans({}, 'users') | raw }} {{ 'if_you_have_questions' | trans({}, 'login') | raw }} <a href="mailto:{{ support_email }}">{{ 'contact_support' | trans({}, 'login') | raw }}</a>. </p>
+        </div>
+    </div>
+</body>
+</html>

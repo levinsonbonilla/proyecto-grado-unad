@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+{% import 'macros/dashboard.html.twig' as macros %}
+
+{% block title %}
+	{{ 'name'|currentTenant }}
+{% endblock %}
+
+{% block body %}
+	{% set isLogin = true %}
+	<body class="login">
+		<div class="animate form login_form">
+			<div class="">
+
+				<div class="clearfix"></div>
+				<br/>
+			</div>
+			
+			<div class="container">
+				<div class="row">
+					<div class="col-md-9 col-md-offset-2">
+						<div class="panel panel-default">
+							<div class="panel-heading text-center">
+								<h1>🎉
+									{{ 'welcome_to_name'|trans({ '%name%': 'name'|currentTenant }, 'login') | raw }}
+									🎉</h1>
+							</div>
+							<div class="panel-body">
+								<h2 class="text-center">{{ 'email_confirmed_successfully'|trans({}, 'login') | raw }}</h2>
+								<p>{{ 'hello_user'|trans({ '%name%': user.name }, 'login') | raw }}</p>
+								<p>{{ 'email_confirmation_success_message'|trans({ '%name%' : "name" | currentTenant  }, 'login') | raw }}</p>
+								<h3>{{ 'what_can_you_do_now'|trans({}, 'login') | raw }}</h3>
+								<ul>
+									<li>
+										{{ 'explore_our_products'|trans({}, 'login') | raw }}
+									</li>
+									<li>
+										{{ 'configure_your_account'|trans({}, 'login') | raw }}
+									</li>
+									<li>
+										{{ 'login_prompt'|trans({ '%link%' : path("security_login") }, 'login') | raw }}
+									</li>
+								</ul>
+								<p class="mt-4">
+									{{ 'contact_support_help_page'|trans(
+                                        {'%soporteEmail%' : "supportEmail" | currentTenant,  
+                                        '%linkHelp%' : path("security_login") }, 
+                                        'login') | raw 
+                                    }}
+								</p>
+								<p class="mt-4">
+									{{ 'thank_you_for_joining'|trans({'%name%' : "name" | currentTenant }, 'login') | raw }}
+								</p>
+							</div>
+						</div>
+						<div class="clearfix"></div>
+
+						<div class="separator text-center">
+
+							<div class="clearfix"></div>
+							<br/>
+
+							{{ macros.term_and_conditions() }}
+						</div>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+	</body>
+{% endblock %}

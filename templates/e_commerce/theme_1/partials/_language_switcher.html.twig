@@ -1,0 +1,19 @@
+{% import 'macros/language_switcher.html.twig' as language_switcher %}
+
+<style>
+	.store-lang-switcher { font-size: 14px; }
+	.store-lang-switcher img { width: 26px; height: 26px; }
+
+	.store-lang-switcher .dropdown-toggle::after { display: none; }
+	.store-lang-switcher .fa-angle-down { margin-left: 6px; }
+</style>
+<div class="dropdown icon-header-item cl2 p-l-22 p-r-11 store-lang-switcher" aria-label="{{ 'change_language' | trans({}, 'store') | default('Cambiar idioma') }}">
+	{{ language_switcher.render(
+		app.request.locale,
+		'store',
+		'd-flex align-items-center cl2 hov-cl1 trans-04 dropdown-toggle',
+		'dropdown-menu dropdown-menu-right',
+		'dropdown-item d-flex align-items-center',
+		'border-radius:50%; object-fit:cover; margin-right:6px;'
+	) }}
+</div>

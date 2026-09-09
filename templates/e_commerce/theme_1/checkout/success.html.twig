@@ -1,0 +1,43 @@
+{% extends 'e_commerce/theme_1/base_theme_1.html.twig' %}
+
+{% block title %}{{ 'order_confirmed_title' | trans({}, 'store') | default('Pedido confirmado') }}{% endblock %}
+
+{% block body %}
+<div class="container p-t-80 p-b-80">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6 txt-center">
+
+            <div class="p-b-30">
+                <i class="fa fa-check-circle" aria-hidden="true" style="font-size:64px;color:#5cb85c;"></i>
+            </div>
+
+            <h2 class="ltext-101 cl2 p-b-20">{{ 'order_confirmed_title' | trans({}, 'store') | default('¡Pedido confirmado!') }}</h2>
+
+            <p class="stext-113 cl6 p-b-10">
+                {{ 'order_confirmed_thanks' | trans({}, 'store') | default('Gracias por tu compra. Hemos recibido tu pedido y lo estamos procesando.') }}
+            </p>
+
+            <p class="stext-113 cl6 p-b-30">
+                {{ 'order_reference' | trans({}, 'store') | default('Referencia del pedido:') }}
+                <strong class="cl2">{{ order.id | slice(0, 8) | upper }}</strong>
+            </p>
+
+            <p class="stext-113 cl6 p-b-40">
+                {{ 'order_confirmation_email_notice' | trans({}, 'store') | default('Recibirás un correo de confirmación con los detalles de tu pedido.') }}
+            </p>
+
+            <div class="flex-w flex-c-m p-b-20" style="gap:16px;">
+                <a href="{{ path('store_orders_detail', {_locale: app.request.locale, id: order.id}) }}"
+                   class="flex-c-m stext-101 cl0 size-116 bg3 bor2 hov-btn3 p-lr-15 trans-04">
+                    {{ 'view_my_order' | trans({}, 'store') | default('Ver mi pedido') }}
+                </a>
+                <a href="{{ path('store_shop', {_locale: app.request.locale}) }}"
+                   class="flex-c-m stext-101 cl2 size-116 bg8 bor8 hov-btn7 p-lr-15 trans-04">
+                    {{ 'continue_shopping' | trans({}, 'store') | default('Continuar comprando') }}
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

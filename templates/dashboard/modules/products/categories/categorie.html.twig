@@ -1,0 +1,74 @@
+{% extends 'dashboard/base_dashboard.html.twig' %}
+{% import 'macros/register_form_script.html.twig' as registerScript %}
+{% import 'macros/alert.html.twig' as alert %}
+{% import 'macros/preview_image.html.twig' as image %}
+
+{% set type = isEdit | default(false) ? "edit" : "add" %}
+
+{% block title %}{{ (type ~ '_categorie')|trans({}, 'modules') }}
+{% endblock %}
+
+{% block body %}
+	<!-- page content -->
+	<div class="right_col" role="main">
+		<div class="">
+			<div class="page-title">
+				{{ alert.alert_success() }}
+				{{ alert.alert_error() }}
+				<div class="title_left">
+					<h3>{{ (type ~ '_categorie')|trans({}, 'modules') }}</h3>
+				</div>
+
+				<div class="title_right">
+					<div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+						<div class="input-group">
+							<a href="{{ path('dashboard_products_categories') }}" class="btn btn-default form-control">
+								<i class="fa fa-arrow-left" aria-hidden="true"></i>&nbsp;&nbsp;{{ 'back'|trans({}, 'users') }}</a>
+							<span class="input-group-btn">
+								<button class="btn btn-default" type="button" onclick="window.location.href='{{ path('dashboard') }}'">
+									<i class="fa fa-home" aria-hidden="true"></i>
+								</button>
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="clearfix"></div>
+			{{ include('dashboard/modules/products/categories/categories_form.html.twig') }}
+
+		</div>
+	</div>
+	<!-- /page content -->
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+	{{ registerScript.form_script_validations("add_user_form") }}
+	<script>
+		$(document).ready(function () {
+			$("#users_roles").select2();
+			$("#users_domain").select2();
+			$("#users_tenant").select2();
+
+			$('#users_tenant').on('select2:select', function(e) {
+				var tenantId = this.value;
+				let url = "{{ path('dashboard_users_domains',{'tenant':'CHANGE'}) }}";
+				fetch(url.replace('CHANGE', tenantId))
+					.then(response => response.json())
+					.then(data => {
+						var domainSelect = document.getElementById('users_domain');
+						domainSelect.innerHTML = '';
+
+						data.forEach(function (domain) {
+							var option = document.createElement('option');
+							option.value = domain.id;
+							option.text = domain.domain;
+							domainSelect.appendChild(option);
+						});
+					});
+			});
+
+		});
+
+	</script>
+{% endblock %}

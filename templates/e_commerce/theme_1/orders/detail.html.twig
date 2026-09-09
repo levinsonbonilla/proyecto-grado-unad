@@ -1,0 +1,142 @@
+{% extends 'e_commerce/theme_1/base_theme_1.html.twig' %}
+
+{% block title %}{{ 'order_detail' | trans({}, 'store') | default('Detalle del pedido') }}{% endblock %}
+
+{% block body %}
+<div class="bg0 p-t-75 p-b-85">
+    <div class="container">
+        <div class="bread-crumb flex-w p-b-32">
+            <a href="{{ path('store', {_locale: app.request.locale}) }}" class="stext-109 cl8 hov-cl1 trans-04">
+                {{ 'home' | trans({}, 'store') | default('Inicio') }}
+                <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+            </a>
+            <a href="{{ path('store_orders', {_locale: app.request.locale}) }}" class="stext-109 cl8 hov-cl1 trans-04">
+                {{ 'my_orders' | trans({}, 'store') | default('Mis pedidos') }}
+                <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+            </a>
+            <span class="stext-109 cl4">#{{ order.id | slice(0, 8) | upper }}</span>
+        </div>
+
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label == 'error' ? 'danger' : label }} p-lr-40 p-tb-20 m-b-20">{{ message }}</div>
+            {% endfor %}
+        {% endfor %}
+
+        <div class="row">
+
+            <div class="col-lg-8 m-b-50">
+                <div class="bor10 p-lr-40 p-t-30 p-b-40 m-r-20 m-lr-0-xl p-lr-15-sm">
+                    <h4 class="mtext-109 cl2 p-b-30">{{ 'order_products_title' | trans({}, 'store') | default('Productos') }}</h4>
+                    <div class="wrap-table-shopping-cart">
+                        <table class="table-shopping-cart">
+                            <tr class="table_head">
+                                <th class="column-1">{{ 'column_image' | trans({}, 'store') | default('Imagen') }}</th>
+                                <th class="column-2">{{ 'column_product' | trans({}, 'store') | default('Producto') }}</th>
+                                <th class="column-3">{{ 'column_unit_price' | trans({}, 'store') | default('Precio unit.') }}</th>
+                                <th class="column-4">{{ 'quantity' | trans({}, 'store') | default('Cantidad') }}</th>
+                                <th class="column-5">{{ 'total' | trans({}, 'store') | default('Total') }}</th>
+                            </tr>
+                            {% for item in items %}
+                            <tr class="table_row">
+                                <td class="column-1">
+                                    <div class="how-itemcart1">
+                                        {% if item.image %}
+                                        <img src="{{ asset(item.image) }}" alt="{{ item.productName }}">
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td class="column-2">
+                                    {{ item.productName }}
+                                    {% if item.colorName or item.medidaName %}
+                                    <br><span class="stext-109 cl6">
+                                        {% if item.colorName %}<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:{{ item.colorHexCode }};margin-right:4px;vertical-align:middle;"></span>{{ item.colorName }}{% endif %}
+                                        {% if item.colorName and item.medidaName %} - {% endif %}
+                                        {% if item.medidaName %}{{ item.medidaName }}{% endif %}
+                                    </span>
+                                    {% endif %}
+                                </td>
+                                <td class="column-3">{{ item.unitPrice | price }}</td>
+                                <td class="column-4">{{ item.quantity }}</td>
+                                <td class="column-5">{{ item.totalPrice | price }}</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+
+                    <div class="flex-w flex-sb-m p-t-27">
+                        <span class="stext-110 cl2 mtext-109">{{ 'order_total_label' | trans({}, 'store') | default('Total del pedido:') }}</span>
+                        <span class="mtext-110 cl2">{{ order.totalAmount | price }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-10 col-lg-4 m-b-50">
+                <div class="bor10 p-lr-40 p-t-30 p-b-40 m-lr-0-xl p-lr-15-sm">
+                    <h4 class="mtext-109 cl2 p-b-30">{{ 'order_info_title' | trans({}, 'store') | default('Información del pedido') }}</h4>
+
+                    <div class="flex-w flex-t bor12 p-b-13">
+                        <div class="size-208"><span class="stext-110 cl6">{{ 'status_label' | trans({}, 'store') | default('Estado:') }}</span></div>
+                        <div class="size-209"><span class="stext-110 cl5">{{ order.statusName }}</span></div>
+                    </div>
+                    <div class="flex-w flex-t bor12 p-t-13 p-b-13">
+                        <div class="size-208"><span class="stext-110 cl6">{{ 'date_label' | trans({}, 'store') | default('Fecha:') }}</span></div>
+                        <div class="size-209">
+                            <span class="stext-110 cl2">
+                                {% if order.createdAt is not null %}
+                                    {{ order.createdAt | date('d/m/Y H:i') }}
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex-w flex-t bor12 p-t-13 p-b-13">
+                        <div class="size-208"><span class="stext-110 cl6">{{ 'shipping_to_label' | trans({}, 'store') | default('Envío a:') }}</span></div>
+                        <div class="size-209">
+                            <span class="stext-110 cl2">{{ order.countryName }}, {{ order.regionName }}</span>
+                            <br><span class="stext-109 cl6">{{ order.shippingAddress }}</span>
+                        </div>
+                    </div>
+                    {% if order.trackingNumber %}
+                    <div class="flex-w flex-t bor12 p-t-13 p-b-13">
+                        <div class="size-208"><span class="stext-110 cl6">{{ 'tracking_number_label' | trans({}, 'store') | default('Número de guía:') }}</span></div>
+                        <div class="size-209">
+                            <span class="stext-110 cl2">{{ order.trackingNumber }}</span>
+                            {% if order.trackingCarrier %}
+                            <br><span class="stext-109 cl6">{{ order.trackingCarrier }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if order.statusName in ['Pendiente', 'Procesando'] %}
+                    <form method="post"
+                          action="{{ path('store_orders_cancel', {_locale: app.request.locale, id: order.id}) }}"
+                          class="p-t-20"
+                          onsubmit="return confirm('{{ 'confirm_cancel_order' | trans({}, 'store') | default('¿Deseas cancelar este pedido?') | e('js') }}')">
+                        <button type="submit"
+                                class="flex-c-m stext-101 cl0 size-116 bg1 bor1 hov-btn1 trans-04">
+                            {{ 'cancel_order' | trans({}, 'store') | default('Cancelar pedido') }}
+                        </button>
+                    </form>
+                    {% elseif order.statusName == 'Entregado' %}
+                    <form method="post"
+                          action="{{ path('store_orders_retraction', {_locale: app.request.locale, id: order.id}) }}"
+                          class="p-t-20"
+                          onsubmit="return confirm('{{ 'confirm_request_retraction' | trans({}, 'store') | default('¿Deseas solicitar el retracto de compra? (Ley 1480/2011)') | e('js') }}')">
+                        <button type="submit"
+                                class="flex-c-m stext-101 cl0 size-116 bg8 bor13 hov-btn3 trans-04">
+                            {{ 'request_retraction' | trans({}, 'store') | default('Solicitar retracto') }}
+                        </button>
+                    </form>
+                    {% endif %}
+
+                    <a href="{{ path('store_orders', {_locale: app.request.locale}) }}"
+                       class="flex-c-m stext-101 cl5 size-105 bg0 bor12 hov-cl1 trans-04 m-t-20">
+                        <i class="fa fa-angle-left m-r-8"></i> {{ 'back_to_my_orders' | trans({}, 'store') | default('Volver a mis pedidos') }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

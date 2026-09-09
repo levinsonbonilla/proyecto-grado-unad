@@ -1,0 +1,15 @@
+{% import 'macros/dashboard.html.twig' as macros %}
+
+{% block footer %}
+	<!-- footer content -->
+	<footer>
+		<div class="pull-right">
+			{{ 'copyright'|trans({ '%year%': 'now'|date('Y') }, 'public') }}
+			<a href="{{ path('public_privacy') }}">{{ 'privacy'|trans({}, 'public') }}</a>
+			{{ 'and'|trans({}) }}
+			<a href="{{ path('public_terms') }}">{{ 'terms'|trans({}, 'public') }}</a>
+		</div>
+		<div class="clearfix"></div>
+	</footer>
+	<!-- /footer content -->
+{% endblock %}

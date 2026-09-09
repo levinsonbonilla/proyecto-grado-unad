@@ -1,0 +1,174 @@
+about: About
+add_to_cart: Add to Cart
+address: Address
+all: All
+buy_now: Buy Now
+cart: Cart
+cart_empty: Your cart is empty.
+categories: Categories
+categories_kicker: Explore our store
+checkout: Checkout
+city: City
+close: Close
+confirm_order: Confirm Order
+contact: Contact
+continue_shopping: Continue Shopping
+country: Country
+date_of_birth: Date of Birth
+email: Email
+explore_products: Explore Products
+favorites: Favorites
+change_language: Change language
+lang_es: Spanish
+lang_en: English
+featured_products: Featured Products
+home: Home
+last_name: Last Name
+login: Log In
+login_to_checkout: Log in to checkout
+logout: Log Out
+my_account: My Account
+my_orders: My Orders
+register: Sign Up
+my_profile: My Profile
+name: Name
+neighborhood: Neighborhood
+no_favorites: You don't have any favorite products yet.
+no_orders: You don't have any orders yet.
+no_products_found: No products found.
+order_detail: Order Detail
+order_summary: Order Summary
+payment_method: Payment Method
+select_payment_method: Select a payment method
+personal_info: Personal Information
+phone: Phone
+price: Price
+proceed_checkout: Proceed to Checkout
+product: Product
+quantity: Quantity
+region: State/Region
+save_changes: Save Changes
+search: Search
+search_placeholder: Search products...
+search_results: Search Results
+shipping_info: Shipping Information
+shop: Shop
+shop_now: Shop Now
+stock_available: "%count% available"
+subtotal: Subtotal
+total: Total
+choose_color: Color
+choose_medida: Measurement
+please_select_color: Choose a color before continuing
+out_of_stock: Out of stock
+color: Color
+view_all: View All
+view_cart: View Cart
+
+select_option: -- Select --
+select_country_option: -- Select a country --
+select_country_first_option: -- Select a country first --
+select_region_first_option: -- Select a state/region first --
+loading: Loading...
+processing_order: Processing...
+saving: Saving...
+address_placeholder: "Street, number, floor..."
+shipping_fields_required: Please complete all required shipping fields.
+order_processing_error: There was an error processing your order.
+profile_saved_success: Saved successfully.
+profile_save_error: An error occurred while saving.
+
+order_confirmed_title: Order confirmed!
+order_confirmed_thanks: Thank you for your purchase. We've received your order and are processing it.
+order_reference: "Order reference:"
+order_confirmation_email_notice: You will receive a confirmation email with your order details.
+view_my_order: View my order
+confirming_payment_title: Confirming your payment…
+confirming_payment_wait: We are waiting for the payment gateway to confirm. This usually takes a few seconds.
+confirming_payment_fallback: We're still confirming your payment. We'll email you as soon as it's confirmed — you can also check the status on
+your_order_link_text: your order
+
+about_title: About
+about_our_story_title: Our Story
+about_our_story_p1: This is where your store's story goes. Every business behind this storefront has its own beginning — replace this paragraph with how yours started, what you set out to sell, and what makes it worth telling.
+about_our_story_p2: Use this second paragraph for what's changed since then — how the catalog has grown, who you serve today, and anything that sets your store apart from the rest.
+about_our_story_p3: Any questions? Let us know in store or reach out through the contact page.
+about_our_mission_title: Our Mission
+about_our_mission_p1: This is where your store's mission goes — what you want customers to feel when they shop with you, and the standard you hold your products and service to. Replace this paragraph with that.
+about_mission_quote: Creativity is just connecting things. When you ask creative people how they did something, they feel a little guilty because they didn't really do it, they just saw something. It seemed obvious to them after a while.
+
+contact_title: Contact
+contact_send_message: Send Us A Message
+contact_email_placeholder: Your Email Address
+contact_message_placeholder: How Can We Help?
+contact_submit: Submit
+contact_address_label: Address
+contact_lets_talk_label: Lets Talk
+contact_sale_support_label: Sale Support
+
+order_products_title: Products
+column_image: Image
+column_product: Product
+column_unit_price: "Unit price"
+order_total_label: "Order total:"
+order_info_title: Order Information
+status_label: "Status:"
+date_label: "Date:"
+shipping_to_label: "Ship to:"
+tracking_number_label: "Tracking number:"
+confirm_cancel_order: Do you want to cancel this order?
+cancel_order: Cancel order
+confirm_request_retraction: "Do you want to request a purchase withdrawal? (Law 1480/2011)"
+request_retraction: Request withdrawal
+back_to_my_orders: Back to my orders
+
+quick_view: Quick View
+
+footer_help_title: Help
+track_order: Track Order
+returns: Returns
+shipping: Shipping
+faqs: FAQs
+get_in_touch: Get In Touch
+footer_contact_text: "Any questions? Let us know in store at 8th floor, 379 Hudson St, New York, NY 10018 or call us on (+1) 96 716 6879"
+footer_newsletter_title: Newsletter
+subscribe_button: Subscribe
+rights_reserved: All rights reserved
+made_with: Made with
+by_word: by
+distributed_by: "& distributed by"
+
+order_column: Order
+date_column: Date
+destination_column: Destination
+status_column: Status
+view_link: View
+
+add_to_wishlist: Add to Wishlist
+remove_from_wishlist: Remove from Wishlist
+
+product_id_missing: Could not identify the product
+added_to_wishlist: is added to wishlist!
+removed_from_wishlist: is removed from wishlist!
+favorites_update_error: Could not update favorites
+added_to_cart_message: is added to cart!
+cart_add_error: Could not add the product to cart
+buy_now_error: Could not process the purchase
+
+order_email_subject: "Order confirmation #%orderId%"
+order_email_thanks_heading: Thank you for your order!
+order_email_greeting: "Hello %name%, we received your order #%orderId%."
+order_email_col_product: Product
+order_email_col_quantity: Quantity
+order_email_col_price: Price
+order_email_shipping_address: "Shipping address:"
+order_email_status: "Status:"
+order_email_footer: You will soon receive an update on your order status.
+
+not_authenticated: Not authenticated.
+invalid_shipping_location: Invalid shipping location.
+pending_status_not_found: 'Pending status not found.'
+payment_method_not_available_for_location: The selected payment method is not available for your shipping location.
+order_processing_error_ref: "Error processing the order. Ref: %ref%"
+
+remove_item: Remove

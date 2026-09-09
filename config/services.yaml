@@ -1,0 +1,244 @@
+
+parameters:
+    locale: 'es'
+    supported_locales: 'es|en|br'
+    environment: '%env(string:APP_ENV)%'
+
+    app.platform_base_domain: '%env(string:PLATFORM_BASE_DOMAIN)%'
+    app.platform_scheme: '%env(string:PLATFORM_SCHEME)%'
+
+    number_of_days_of_log_permanence: 30
+
+    dev_simulated_ip: '%env(string:DEV_SIMULATED_IP)%'
+    ip2_archive_database: '/geolocalization/'
+    ip2_url_download_file: 'https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&license_key=%env(string:URL_TOKEN_DOWNLOAD)%&suffix=tar.gz'
+    ip2_location_file_download: '/geolocalization/ip2Location.tar.gz'
+    ip2_download_fail: 'File downloading failed.'
+    ip2_file_geolite_city: 'GeoLite2-City.mmdb'
+    ip2_process_sucess: "successful process"
+    timezone: 'UTC'
+
+    aws_access_key: '%env(string:AWS_ACCESS_KEY_ID)%'
+    aws_secret_access_key: '%env(string:AWS_SECRET_ACCESS_KEY)%'
+    aws_region: '%env(string:AWS_REGION)%'
+    aws_bucket_name: '%env(string:BUCKET_NAME)%'
+    aws_endpoint: '%env(string:AWS_ENDPOINT)%'
+
+    cdn_base_url: '%env(string:CDN_BASE_URL)%'
+    upload_domains: 'uploads/domains/'
+    upload_users: 'uploads/users/'
+    upload_products: 'uploads/products/'
+    upload_categories: 'uploads/categories/'
+    upload_slides: 'uploads/slides/'
+    upload_messages: 'uploads/messages/'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        bind:
+            $locale: '%locale%'
+            $timezone: '%timezone%'
+            $senderEmail: '%env(string:MAILER_SENDER_EMAIL)%'
+            $senderName: '%env(string:MAILER_SENDER_NAME)%'
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    App\EventListener\DomainListener:
+        arguments:
+            - '@App\Interface\Configuration\GetDomainDataInterface'
+            - '@router'
+            - '@twig'
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+
+    App\EventListener\ActiveDomainGuardListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: -10 }
+
+    App\Interface\UseCase\Messages\ComposeMessageInterface:
+        class: App\Handler\UseCase\Messages\ComposeMessageUseCase
+
+    App\Interface\UseCase\Messages\ReplyMessageInterface:
+        class: App\Handler\UseCase\Messages\ReplyMessageUseCase
+
+    App\Interface\UseCase\Messages\InboxMessagesInterface:
+        class: App\Handler\UseCase\Messages\InboxMessagesUseCase
+
+    App\Interface\UseCase\Messages\SentMessagesInterface:
+        class: App\Handler\UseCase\Messages\SentMessagesUseCase
+
+    App\Interface\UseCase\Messages\ViewThreadInterface:
+        class: App\Handler\UseCase\Messages\ViewThreadUseCase
+
+    App\Interface\UseCase\Messages\MarkReadMessageInterface:
+        class: App\Handler\UseCase\Messages\MarkReadMessageUseCase
+
+    App\Interface\UseCase\Messages\QuickComposeMessageInterface:
+        class: App\Handler\UseCase\Messages\QuickComposeMessageUseCase
+
+    App\Interface\UseCase\Messages\UnreadCountInterface:
+        class: App\Handler\UseCase\Messages\UnreadCountUseCase
+
+    App\Interface\UseCase\Messages\AvailableUsersInterface:
+        class: App\Handler\UseCase\Messages\AvailableUsersUseCase
+
+    App\Interface\UseCase\Messages\MessageNotificationInterface:
+        class: App\Handler\UseCase\Messages\MessageNotificationService
+
+    App\Interface\Service\Statistics\UserAgentParserInterface:
+        class: App\Service\Statistics\UserAgentParserService
+
+    App\Interface\UseCase\Store\Cart\AddToCartInterface:
+        class: App\Handler\UseCase\Store\Cart\AddToCartUseCase
+
+    App\Interface\UseCase\Store\Cart\RemoveFromCartInterface:
+        class: App\Handler\UseCase\Store\Cart\RemoveFromCartUseCase
+
+    App\Interface\UseCase\Store\Cart\UpdateCartQuantityInterface:
+        class: App\Handler\UseCase\Store\Cart\UpdateCartQuantityUseCase
+
+    App\Interface\UseCase\Store\Cart\GetCartInterface:
+        class: App\Handler\UseCase\Store\Cart\GetCartUseCase
+
+    App\Interface\UseCase\Store\Cart\ClearCartInterface:
+        class: App\Handler\UseCase\Store\Cart\ClearCartUseCase
+
+    App\Interface\UseCase\Store\Favorites\ToggleFavoriteInterface:
+        class: App\Handler\UseCase\Store\Favorites\ToggleFavoriteUseCase
+
+    App\Interface\UseCase\Store\Favorites\GetFavoritesInterface:
+        class: App\Handler\UseCase\Store\Favorites\GetFavoritesUseCase
+
+    App\EventListener\MigrateSessionDataListener:
+        tags:
+            - { name: kernel.event_subscriber }
+
+    App\Interface\UseCase\Store\Products\GetPublicSlidesInterface:
+        class: App\Handler\UseCase\Store\Products\GetPublicSlidesUseCase
+
+    App\Interface\UseCase\Store\Products\GetPublicCategoriesInterface:
+        class: App\Handler\UseCase\Store\Products\GetPublicCategoriesUseCase
+
+    App\Interface\UseCase\Store\Products\GetPublicProductsInterface:
+        class: App\Handler\UseCase\Store\Products\GetPublicProductsUseCase
+
+    App\Interface\UseCase\Store\Products\GetPublicProductDetailInterface:
+        class: App\Handler\UseCase\Store\Products\GetPublicProductDetailUseCase
+
+    App\Interface\UseCase\Store\Products\GetPublicHomeInterface:
+        class: App\Handler\UseCase\Store\Products\GetPublicHomeUseCase
+
+    App\Service\Geo\GeoDetectionInterface:
+        class: App\Service\Geo\GeoDetectionService
+
+    App\Service\Geo\GeoCascadeResolverInterface:
+        class: App\Service\Geo\GeoCascadeResolverService
+
+    App\Service\Geo\GeoNamesCountryImporterInterface:
+        class: App\Service\Geo\GeoNamesCountryImporterService
+
+    App\Service\Products\FavoriteProductIdsResolverInterface:
+        class: App\Service\Products\FavoriteProductIdsResolver
+
+    App\Service\Products\ProductVariantStockValidatorInterface:
+        class: App\Service\Products\ProductVariantStockValidatorService
+
+    App\Service\Products\MedidaResolverInterface:
+        class: App\Service\Products\MedidaResolverService
+
+    App\Service\Products\ProductVariantBlockRowResolverInterface:
+        class: App\Service\Products\ProductVariantBlockRowResolverService
+
+    App\Service\Products\VariantLabelFormatterInterface:
+        class: App\Service\Products\VariantLabelFormatterService
+
+    App\Service\Products\GalleryImageGrouperInterface:
+        class: App\Service\Products\GalleryImageGrouperService
+
+    App\Service\Products\LowStockAlertInterface:
+        class: App\Service\Products\LowStockAlertService
+
+    App\Interface\UseCase\Store\Checkout\PrepareCheckoutInterface:
+        class: App\Handler\UseCase\Store\Checkout\PrepareCheckoutUseCase
+
+    App\Interface\UseCase\Store\Checkout\ConfirmOrderInterface:
+        class: App\Handler\UseCase\Store\Checkout\ConfirmOrderUseCase
+
+    App\Interface\UseCase\Store\Orders\GetUserOrdersInterface:
+        class: App\Handler\UseCase\Store\Orders\GetUserOrdersUseCase
+
+    App\Interface\UseCase\Store\Orders\GetOrderDetailInterface:
+        class: App\Handler\UseCase\Store\Orders\GetOrderDetailUseCase
+
+    App\Interface\UseCase\Store\Orders\CancelOrderInterface:
+        class: App\Handler\UseCase\Store\Orders\CancelOrderUseCase
+
+    App\Interface\UseCase\Store\Orders\RetractionOrderInterface:
+        class: App\Handler\UseCase\Store\Orders\RetractionOrderUseCase
+
+    App\Interface\UseCase\Store\Profile\GetUserProfileInterface:
+        class: App\Handler\UseCase\Store\Profile\GetUserProfileUseCase
+
+    App\Interface\UseCase\Store\Profile\EditUserProfileInterface:
+        class: App\Handler\UseCase\Store\Profile\EditUserProfileUseCase
+
+    App\Interface\Service\Currency\CurrentCurrencyResolverInterface:
+        class: App\Service\Currency\CurrentCurrencyResolver
+
+    App\Interface\UseCase\Modules\Sales\Orders\ListSalesInterface:
+        class: App\Handler\UseCase\Modules\Sales\Orders\ListSalesUseCase
+
+    App\Interface\UseCase\Modules\Sales\Orders\GetSaleDetailInterface:
+        class: App\Handler\UseCase\Modules\Sales\Orders\GetSaleDetailUseCase
+
+    App\Interface\UseCase\Modules\Sales\Orders\UpdateSaleStatusInterface:
+        class: App\Handler\UseCase\Modules\Sales\Orders\UpdateSaleStatusUseCase
+
+    App\Interface\UseCase\Store\Checkout\HandlePaymentWebhookInterface:
+        class: App\Handler\UseCase\Store\Checkout\HandlePaymentWebhookUseCase
+        arguments:
+            $gatewaySecret: '%env(string:PAYMENT_GATEWAY_SECRET)%'
+
+    App\Interface\Service\Payments\PaymentGatewayClientInterface:
+        class: App\Service\Payments\MockPaymentGatewayClient
+        arguments:
+            $paymentGatewayInternalUrl: '%env(string:PAYMENT_GATEWAY_INTERNAL_URL)%'
+
+    App\Service\Payments\PaymentMethodAvailabilityResolverInterface:
+        class: App\Service\Payments\PaymentMethodAvailabilityResolverService
+
+    App\Interface\Configuration\PrincipalDomainAdminAccessInterface:
+        class: App\Handler\Configuration\PrincipalDomainAdminAccess
+
+    App\EventListener\RememberMeCookieGateListener:
+        arguments:
+            $sessionCookieDomain: '%env(string:SESSION_COOKIE_DOMAIN)%'
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 100 }
+
+    App\EventListener\RememberMeWitnessCookieListener:
+        arguments:
+            $sessionCookieDomain: '%env(string:SESSION_COOKIE_DOMAIN)%'
+        tags:
+            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse, priority: -10 }
+
+    App\Session\Storage\DomainAwareSessionStorageFactory:
+        decorates: session.storage.factory.native
+        arguments:
+            $decorated: '@.inner'
+            $sessionCookieDomain: '%env(string:SESSION_COOKIE_DOMAIN)%'
+
+    App\Handler\UseCase\Security\RegisterTenantUseCase:
+        arguments:
+            $platformBaseDomain: '%app.platform_base_domain%'
+            $platformScheme: '%app.platform_scheme%'
+
+when@test:
+    services:
+        Doctrine\Bundle\FixturesBundle\Loader\SymfonyFixturesLoader:
+            public: true

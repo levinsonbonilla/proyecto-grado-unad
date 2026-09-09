@@ -1,0 +1,10 @@
+0:
+    name: "Tarjeta de crédito"
+    provider: "mock_gateway"
+1:
+    name: "Efectivo"
+    provider: "manual"
+2:
+    name: "Transferencia bancaria"
+    provider: "manual"
+    instructions: "Banco Ejemplo — Cuenta de ahorros 123-456789-00, a nombre de Proyecto de Grado S.A.S. Envía el comprobante por WhatsApp para confirmar tu pedido."

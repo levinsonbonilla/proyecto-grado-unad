@@ -1,0 +1,200 @@
+{% extends 'dashboard/base_dashboard.html.twig' %}
+{% import 'macros/x_title.html.twig' as title %}
+
+{% block title %}
+	{{ 'show_user'|trans({}, 'users') }}
+{% endblock %}
+
+{% block body %}
+	<!-- page content -->
+	<div class="right_col" role="main">
+		<div class="">
+			<div class="page-title">
+				<div class="title_left">
+					<h3>
+						{{ 'show_user'|trans({}, 'users') }}
+					</h3>
+				</div>
+
+				<div class="title_right">
+					<div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+						<div class="input-group">
+							<a href="{{ path('dashboard_users_edit',{'id':user.id}) }}" class="btn btn-default form-control">
+								<i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+								&nbsp;&nbsp;
+								{{ 'edit'|trans({}, 'users') }}
+							</a>
+							<span class="input-group-btn">
+								<button class="btn btn-default" type="button" onclick="window.location.href='{{ path('dashboard_users') }}'">
+									{{ 'back'|trans({}, 'users') }} <i class="fa fa-arrow-right" aria-hidden="true"></i>
+								</button>
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="clearfix"></div>
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+					<div class="col-md-6 col-sm-12 col-xs-12">
+						<div class="x_panel">
+							{{ title.title_users("profile_image"|trans({}, 'users')) }}
+							<div class="x_content">
+								<div class="row">
+									<div class="col-md-12 col-sm-12 col-xs-12 text-center">
+										<div class="col-md-12 col-sm-12 col-xs-12" style="margin-bottom: 10px;">
+											<img src="{{ asset(user.profilePicture) }}" alt="" class="img-responsive center-block" style="max-height: 118px;">
+										</div>										
+
+										<div class="col-md-4 col-sm-6 col-xs-6">
+											<strong>{{ 'points'|trans({}, 'users') }}:</strong>
+											{{ user.points | default(0) }}
+										</div>
+										
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-6 col-sm-12 col-xs-12">
+						<div class="x_panel">
+							{{ title.title_users("personal_information"|trans({}, 'users')) }}
+							<div class="x_content">
+								<div class="row">
+									<div class="col-md-12 col-sm-12 col-xs-12">
+										<div class="col-md-12 col-sm-12 col-xs-12" style="margin-bottom: 10px;">
+											<strong>{{ 'name'|trans({}, 'users') }}:</strong>
+											{{ user.name }}
+										</div>
+										<div class="col-md-12 col-sm-12 col-xs-12" style="margin-bottom: 10px;">
+											<strong>{{ 'last_name'|trans({}, 'users') }}:</strong>
+											{{ user.lastname }}
+										</div>
+										<div class="col-md-12 col-sm-12 col-xs-12" style="margin-bottom: 10px;">
+											<strong>{{ 'phone'|trans({}, 'users') }}:</strong>
+											(+{{ user.prefix | default(0) }})
+											{{ user.phone | default(000000000) }}
+										</div>
+										<div class="col-md-12 col-sm-12 col-xs-12" style="margin-bottom: 10px;">
+											<strong>{{ 'email'|trans({}, 'users') }}:</strong>
+											{{ user.email }}
+										</div>
+										<div class="col-md-12 col-sm-12 col-xs-12" style="margin-bottom: 10px;">
+											<strong>{{ 'birthday_date'|trans({}, 'users') }}:</strong>
+											{{ user.dateOfBirth | date('d/m/Y') }}
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="col-md-12 col-sm-12 col-xs-12">
+					<div class="col-md-6 col-sm-12 col-xs-12">
+						<div class="x_panel">
+							{{ title.title_users("location"|trans({}, 'users')) }}
+							<div class="x_content">
+								<div class="row">
+									<div class="col-md-12 col-sm-12 col-xs-12">
+
+										<div class="col-md-12 col-sm-12 col-xs-12" style="margin-bottom: 10px;">
+											<strong>{{ 'country_of_residence'|trans({}, 'users') }}:</strong>
+											{{ user.country.getName(app.locale) | default("") }}
+										</div>
+										<div class="col-md-12 col-sm-12 col-xs-12" style="margin-bottom: 10px;">
+											<strong>{{ 'region_of_residence'|trans({}, 'users') }}:</strong>
+											{{ user.region.getName(app.locale) | default("") }}
+										</div>
+										<div class="col-md-12 col-sm-12 col-xs-12" style="margin-bottom: 10px;">
+											<strong>{{ 'city_of_residence'|trans({}, 'users') }}:</strong>
+											{{ user.city.getName(app.locale) | default("") }}
+										</div>
+										<div class="col-md-12 col-sm-12 col-xs-12" style="margin-bottom: 10px;">
+											<strong>{{ 'neighborhood'|trans({}, 'users') }}:</strong>
+											{{ user.neighborhood }}
+										</div>
+										<div class="col-md-12 col-sm-12 col-xs-12" style="margin-bottom: 10px;">
+											<strong>{{ 'address'|trans({}, 'users') }}:</strong>
+											{{ user.address }}
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-6 col-sm-12 col-xs-12">
+						<div class="x_panel">
+							{{ title.title_users("system_interaction"|trans({}, 'users')) }}
+							<div class="x_content">
+								<div class="row">
+									<div class="col-md-12 col-sm-12 col-xs-12">
+										{% for userDomain in user.getUserDomainsActives() %}
+											<div class="x_title">
+												<div class="col-md-12 col-sm-12 col-xs-12" style="margin-bottom: 10px;">
+													<strong>{{ 'tenant'|trans({}, 'users') }}:</strong>
+													{{ userDomain.domain.tenant.name }}
+												</div>
+												<div class="col-md-12 col-sm-12 col-xs-12" style="margin-bottom: 10px;">
+													<strong>{{ 'domain'|trans({}, 'users') }}:</strong>
+													{{ userDomain.domain.domain }}
+												</div>
+												<div class="col-md-12 col-sm-12 col-xs-12" style="margin-bottom: 10px;">
+													<strong>{{ 'roles'|trans({}, 'users') }}:</strong>
+													{% for rol in userDomain.roles %}
+														<li>{{ rol }}</li>												
+													{% endfor %}
+												</div>		
+												<div class="clearfix"></div>
+											</div>						
+										{% endfor %}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="col-md-12 col-sm-12 col-xs-12">
+					<div class="col-md-6 col-sm-12 col-xs-12">
+						<div class="x_panel">
+							{{ title.title_users("status"|trans({}, 'users')) }}
+							<div class="x_content">
+								<div class="row">
+									<div class="col-md-12 col-sm-12 col-xs-12">
+										<div class="col-md-12 col-sm-12 col-xs-12">
+											<strong>{{ 'email_validated'|trans({}, 'users') }}:</strong>
+											<span class="label label-{{ (user.validatedEmail ? 'success' : 'danger') }}">
+												{{ (user.validatedEmail ? 'yes' : 'no') |trans({}, 'users') }}
+											</span>
+										</div>
+										<div class="col-md-12 col-sm-12 col-xs-12">
+											<strong>{{ 'active'|trans({}, 'users') }}:</strong>
+											<span class="label label-{{ (user.active ? 'success' : 'danger') }}">
+												{{ (user.active ? 'yes' : 'no') |trans({}, 'users') }}
+											</span>
+										</div>
+										<div class="col-md-12 col-sm-12 col-xs-12">
+											<strong>{{ 'creation_date'|trans({}, 'users') }}:</strong>
+											{{ user.createdAt | date('d/m/Y') }}
+										</div>
+										<div class="col-md-12 col-sm-12 col-xs-12">
+											<strong>{{ 'last_modified'|trans({}, 'users') }}:</strong>
+											{{ user.updatedAt | date('d/m/Y') }}
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div> 
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+	<!-- /page content -->
+	
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'dashboard/base_dashboard.html.twig' %}
+{% import 'macros/register_form_script.html.twig' as registerScript %}
+{% import 'macros/alert.html.twig' as alert %}
+
+{% set type = isEdit | default(false) ? "edit" : "add" %}
+
+{% block title %}{{ (type ~ '_domain')|trans({}, 'domains') }}
+{% endblock %}
+
+{% block body %}
+	<!-- page content -->
+	<div class="right_col" role="main">
+		<div class="">
+			<div class="page-title">
+				{{ alert.alert_success() }}
+				{{ alert.alert_error() }}
+				<div class="title_left">
+					<h3>{{ (type ~ '_domain')|trans({}, 'domains') }}</h3>
+				</div>
+
+				<div class="title_right">
+					<div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+						<div class="input-group">
+							<a href="{{ path("dashboard_configurations_domains") }}" class="btn btn-default form-control">
+								<i class="fa fa-arrow-left" aria-hidden="true"></i>&nbsp;&nbsp;{{ 'back'|trans({}, 'users') }}</a>
+							<span class="input-group-btn">
+								<button class="btn btn-default" type="button" onclick="window.location.href='{{ path('dashboard') }}'">
+									<i class="fa fa-home" aria-hidden="true"></i>
+								</button>
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="clearfix"></div>
+			{{ include('dashboard/domains/_form.html.twig') }}
+
+		</div>
+	</div>
+	<!-- /page content -->
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+	{{ registerScript.form_script_validations("add_domain_form") }}
+{% endblock %}

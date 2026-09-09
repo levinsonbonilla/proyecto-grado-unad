@@ -1,0 +1,203 @@
+{% macro general(form, prefix, img = "#") %}
+	<div class="col-md-6 col-sm-6 col-xs-12">
+		<div class="image-upload-wrapper">
+			<div class="image-upload-container">
+				<div class="image-preview-container" style="display: {{(img != '#') ? 'flex' : 'none' }};">
+					<img id="image-preview" src="{{img}}" alt="Image Preview" class="image-preview">
+				</div>
+				{{ form_widget(form.image, {'attr': {'id': prefix ~ '_image', 'class': 'file-input'}}) }}
+				<label for="{{prefix}}_image" class="upload-label">
+					{{(img != '#') ? '' : ('upload_image'|trans()) }}
+                </label>
+			</div>
+			<button type="button" id="remove-image" class="btn btn-danger btn-xs remove-image" style="display: none;">&times;</button>
+		</div>
+	</div>
+	<script>
+		var prefix = '{{ prefix }}';
+        if ("{{img}}" != '#') {
+            var logoInput = document.getElementById(`${prefix}_image`);
+            logoInput.removeAttribute('required');
+        }
+	</script>
+	<script src="{{ asset('custome_js/preview_image.js') }}"></script>
+{% endmacro %}
+
+{% macro products(form, prefix, img = "#") %}
+{% set img = form.currentImage.vars.data ?? '#' %}
+<div class="image-upload-wrapper improved-image-upload" data-prefix="{{ prefix }}" style="height: 100%;">
+    <div class="image-upload-container improved-image-container" style="height: 100%; position: relative;">
+        <div class="image-preview-container improved-preview-container" style="display: {{(img != '#') ? 'flex' : 'none' }};">
+            <img id="{{prefix}}_image-preview" src="{{img}}" alt="Image Preview" class="img-responsive improved-preview-img">
+        </div>
+        {{ form_widget(form.image, {
+            'attr': {
+                'id': prefix ~ '_image',
+                'class': 'file-input improved-file-input',
+                'style': 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 1;'
+            }
+        }) }}
+
+        <label class="upload-label improved-upload-label" for="{{prefix}}_image" style="display: {{(img != '#') ? 'none' : 'flex' }}; z-index: 2;">
+            <div class="upload-label-content">
+                <i class="fa fa-cloud-upload" style="font-size: 32px; color: #3498db; margin-bottom: 8px;"></i>
+                <span style="font-size: 15px; color: #555;">Subir imagen</span>
+            </div>
+        </label>
+        <button type="button" class="btn btn-danger btn-xs remove-image improved-remove-btn" style="display: {{(img != '#') ? 'block' : 'none' }};">
+            <i class="fa fa-trash"></i>
+        </button>
+    </div>
+</div>
+<style>
+.improved-image-upload {
+    min-height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.improved-image-container {
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    background: #fafbfc;
+    min-height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: border-color 0.2s;
+}
+.improved-image-container:hover {
+    border-color: #3498db;
+    background: #f0f8ff;
+}
+.improved-preview-container {
+    width: 100%;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #fff;
+    margin-bottom: 8px;
+}
+.improved-preview-img {
+    max-width: 100%;
+    max-height: 150px;
+    object-fit: contain;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.improved-upload-label {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-direction: column;
+    background: rgba(245, 245, 245, 0.7);
+    border-radius: 10px;
+    transition: background 0.2s;
+    z-index: 2;
+}
+.improved-upload-label:hover {
+    background: rgba(52, 152, 219, 0.08);
+}
+.improved-remove-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 3;
+    border-radius: 50%;
+    padding: 4px 7px;
+    font-size: 14px;
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    transition: background 0.2s;
+}
+.improved-remove-btn:hover {
+    background: #c0392b;
+}
+</style>
+
+<script>
+(function () {
+    var prefix = '{{ prefix|e('js') }}';
+    var initialImg = '{{ img|e('js') }}';
+    var maxRetries = 12;
+    var attempt = 0;
+
+    function bindOnce() {
+        var input = document.getElementById(prefix + '_image');
+        if (!input) {
+            if (attempt++ < maxRetries) {
+                setTimeout(bindOnce, 100);
+            }
+            return;
+        }
+
+        if (input.__previewBound) return;
+        input.__previewBound = true;
+
+        var container = input.closest('.improved-image-container') || input.parentElement;
+        var previewContainer = container.querySelector('.improved-preview-container');
+        var previewImage = container.querySelector('#' + prefix + '_image-preview');
+        var removeButton = container.querySelector('.improved-remove-btn');
+        var uploadLabel = container.querySelector('.improved-upload-label');
+
+        try { input.style.zIndex = 1; } catch (e) {}
+        if (uploadLabel) { try { uploadLabel.style.zIndex = 2; } catch (e) {} }
+
+        input.addEventListener('change', function () {
+            var file = this.files && this.files[0];
+            if (!file) return;
+            if (!previewImage) return;
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                previewImage.src = e.target.result;
+                if (previewContainer) previewContainer.style.display = 'flex';
+                if (uploadLabel) uploadLabel.style.display = 'none';
+                if (removeButton) removeButton.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        if (uploadLabel) {
+            uploadLabel.addEventListener('click', function (e) {
+
+                if (input) input.click();
+            });
+        }
+
+        if (removeButton) {
+            removeButton.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                input.value = '';
+                if (previewImage) previewImage.src = '#';
+                if (previewContainer) previewContainer.style.display = 'none';
+                if (uploadLabel) uploadLabel.style.display = 'flex';
+                this.style.display = 'none';
+            });
+        }
+
+        if (initialImg && initialImg !== '#') {
+            if (previewContainer) previewContainer.style.display = 'flex';
+            if (uploadLabel) uploadLabel.style.display = 'none';
+            if (removeButton) removeButton.style.display = 'block';
+        }
+    }
+
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        bindOnce();
+    } else {
+        document.addEventListener('DOMContentLoaded', bindOnce);
+    }
+})();
+</script>
+{% endmacro %}
+

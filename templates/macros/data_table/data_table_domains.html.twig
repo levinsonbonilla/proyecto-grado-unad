@@ -1,0 +1,87 @@
+{% macro data_table_domains(isSuperAdmin) %}
+    <script>
+
+        var ajaxPath = "{{ path('dashboard_configurations_domains_list') }}";
+        var pathEdit = "{{ path('dashboard_configurations_domains_edit', {'id': 'CHANGE'}) }}";
+        var pathToggleStatus = "{{ path('dashboard_configurations_domains_toggle_status', {'id': 'CHANGE'}) }}";
+
+        var columnDefs = [
+            { data: "active", render: function(data) { return data ? "<span class='label label-success'>{{ 'yes'|trans({}, 'users') }}</span>" :  "<span class='label label-danger'>{{ 'no'|trans({}, 'users') }}</span>"; }, targets: 0 },
+            {
+                data: null,
+                render: function(data, type, row) {
+                    return `<li class="text-center" style="list-style-type: none; ">
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-bars fa-1x pull-center"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="dropdownMenuButton">
+                                <li>
+                                    <a class="dropdown-item" href="${pathEdit.replace('CHANGE', row.id)}">
+                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{ 'edit'|trans({}, 'users') }}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-warning" href="#" onclick="openDomainStatusModal('${row.id}'); return false;">
+                                        <i class="fa fa-refresh" aria-hidden="true"></i> {{ 'change_status'|trans({}, 'messages') }}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>`;
+                },
+                targets: 1
+            },
+            {% if isSuperAdmin %}
+            { data: "tenantName", targets: 2 },
+            { data: "domainName", targets: 3 },
+            { data: "domain", targets: 4 },
+            { data: "notificationEmail", targets: 5 },
+            { data: "supportEmail", targets: 6 },
+            { data: "id", visible: false, targets: 7 },
+            {% else %}
+            { data: "domainName", targets: 2 },
+            { data: "domain", targets: 3 },
+            { data: "notificationEmail", targets: 4 },
+            { data: "supportEmail", targets: 5 },
+            { data: "id", visible: false, targets: 6 },
+            {% endif %}
+        ];
+
+        var pendingDomainStatusId = null;
+
+        function openDomainStatusModal(id) {
+            pendingDomainStatusId = id;
+            $('#domainStatusModalError').hide();
+            $('#domainStatusModal').modal('show');
+        }
+
+        $('#domainStatusModalConfirmBtn').on('click', function() {
+            if (!pendingDomainStatusId) return;
+            var id = pendingDomainStatusId;
+            pendingDomainStatusId = null;
+            $('#domainStatusModalError').hide();
+
+            fetch(pathToggleStatus.replace('CHANGE', id), {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    $('#domainStatusModal').modal('hide');
+                    $('#datatable-domains-loading').show();
+                    $('#datatable-domains').DataTable().ajax.reload(function() {
+                        $('#datatable-domains-loading').hide();
+                    }, false);
+                } else {
+                    $('#domainStatusModalError').show();
+                }
+            })
+            .catch(function() {
+                $('#domainStatusModalError').show();
+            });
+        });
+
+    </script>
+{% endmacro %}
