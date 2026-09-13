@@ -13,6 +13,6 @@ final class BusinessesController extends AbstractController
     #[Route('', name: '', methods: ['GET'])]
     public function index(Request $request): Response
     {
-        return $this->redirectToRoute('dashboard_businesses_modules', ['_locale' => $request->getLocale()]);
+        return $this->redirectToRoute('dashboard_tenants', ['_locale' => $request->getLocale()]);
     }
 }
