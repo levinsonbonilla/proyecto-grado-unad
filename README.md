@@ -11,7 +11,6 @@ Plataforma web construida con Symfony que incluye un panel de administración (d
 - **Cola de mensajes:** Symfony Messenger (transporte Doctrine, `doctrine://default`)
 - **Correo:** Symfony Mailer (SMTP vía Mailpit en desarrollo)
 - **Almacenamiento de archivos:** AWS SDK PHP (`aws/aws-sdk-php`) contra un endpoint S3-compatible (AWS S3 en producción, MinIO en desarrollo)
-- **Generación de PDF:** KnpSnappyBundle (wkhtmltopdf / wkhtmltoimage)
 - **Geolocalización:** GeoIP2 (base de datos MaxMind GeoLite2)
 - **Detección de dispositivo:** Matomo Device Detector
 - **Editor de texto:** FriendsOfSymfony CKEditor Bundle
@@ -24,7 +23,6 @@ Plataforma web construida con Symfony que incluye un panel de administración (d
 - PHP **8.3** o superior, con las extensiones: `ctype`, `iconv`, `pdo_mysql`, `mbstring`, `exif`, `pcntl`, `bcmath`, `gd` (con freetype y jpeg), `intl`, `zip`, `opcache`
 - Composer 2
 - MySQL 8.4 (o compatible)
-- Binarios `wkhtmltopdf` y `wkhtmltoimage` (requeridos por KnpSnappyBundle para generar PDFs)
 - Docker y Docker Compose (recomendado; ver más abajo)
 - Git
 
@@ -33,7 +31,7 @@ Plataforma web construida con Symfony que incluye un panel de administración (d
 Estos pasos replican lo que hace automáticamente el contenedor PHP (`docker/php/entrypoint.sh`), adaptado a una instalación sin Docker:
 
 1. Clonar el repositorio.
-2. Instalar PHP 8.3 con las extensiones listadas en **Requisitos**, y los binarios `wkhtmltopdf`/`wkhtmltoimage`.
+2. Instalar PHP 8.3 con las extensiones listadas en **Requisitos**.
 3. Instalar dependencias:
    ```bash
    composer install --no-interaction --prefer-dist
@@ -210,7 +208,6 @@ Variables detectadas en `.env` / `docker/env/*.template` (se omiten los valores 
 | `BUCKET_NAME` | Nombre del bucket de assets (`proyecto-grado-unad-assets`) |
 | `AWS_ENDPOINT` | Endpoint del storage S3-compatible (MinIO en desarrollo) |
 | `CDN_BASE_URL` | URL base pública para servir los assets |
-| `WKHTMLTOPDF_PATH` / `WKHTMLTOIMAGE_PATH` | Rutas a los binarios usados por KnpSnappyBundle para generar PDFs |
 | `PAYMENT_GATEWAY_INTERNAL_URL` / `PAYMENT_GATEWAY_SECRET` | URL interna y secreto HMAC compartido con la pasarela de pago simulada (ver sección **Pasarela de pago simulada**) |
 | `PLATFORM_BASE_DOMAIN` | Dominio base para subdominios de tenants nuevos (`{slug}.PLATFORM_BASE_DOMAIN`) creados vía el registro público `/comenzar` |
 | `PLATFORM_SCHEME` | Scheme de esos domains (`https` en prod; `http` en dev local, ver sección **DNS wildcard local**) |

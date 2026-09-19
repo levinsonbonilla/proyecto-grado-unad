@@ -18,12 +18,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libfontconfig1 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN wget -q https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.bookworm_amd64.deb \
-    && apt-get update \
-    && apt-get install -y ./wkhtmltox_0.12.6.1-3.bookworm_amd64.deb \
-    && rm wkhtmltox_0.12.6.1-3.bookworm_amd64.deb \
-    && rm -rf /var/lib/apt/lists/*
-
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 
 RUN docker-php-ext-install -j$(nproc) \
