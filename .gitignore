@@ -3,6 +3,7 @@
 /var/test.db
 /vendor/*
 /public/*
+!/public/index.php
 /node_modules/*
 .env.local
 .env.test
