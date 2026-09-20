@@ -22,10 +22,10 @@ echo "🧹 Limpiando caché de Symfony..."
 php bin/console cache:clear --no-warmup || true
 
 echo ""
-echo "🔐 Ajustando permisos de var/cache y var/log..."
+echo "🔐 Ajustando permisos de var/..."
 mkdir -p var/cache var/log
-chown -R www-data:www-data var/cache var/log 2>/dev/null || true
-chmod -R ug+rwX var/cache var/log
+chown -R www-data:www-data var 2>/dev/null || true
+chmod -R ug+rwX var
 
 echo ""
 echo "🚀 Iniciando PHP-FPM..."
