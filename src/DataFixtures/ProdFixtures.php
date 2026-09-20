@@ -170,7 +170,9 @@ class ProdFixtures extends Fixture implements FixtureGroupInterface
         }
         $adminData ??= reset($data);
 
-        $adminData['password'] = $_ENV['PROD_SEED_ADMIN_PASSWORD'] ?? $adminData['password'];
+        if (!empty($_ENV['PROD_SEED_ADMIN_PASSWORD'])) {
+            $adminData['password'] = $_ENV['PROD_SEED_ADMIN_PASSWORD'];
+        }
 
         $entity = new Users($this->userPasswordHasher);
         $argument = new UsersArgument(
