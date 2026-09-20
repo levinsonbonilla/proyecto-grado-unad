@@ -7,6 +7,7 @@ services:
       context: .
       dockerfile: docker/php/Dockerfile
     entrypoint: ["sh", "/var/www/html/docker/php/entrypoint.prod.sh"]
+    command: ["php-fpm", "-F"]
     volumes:
       - .:/var/www/html
       - vendor_data:/var/www/html/vendor
