@@ -69,7 +69,7 @@ final class LocationHandler implements LocationInterface
 
         try {
             $city = $this->reader->city($ipAddress);
-            $this->isoCode = $city->country->isoCode;
+            $this->isoCode = $city->country->isoCode ?? "CO";
             return $city;
         } catch (\Exception $e) {
             $this->isoCode = "CO";
