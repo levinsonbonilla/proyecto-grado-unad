@@ -12,7 +12,7 @@ final class StringUtil
     {
         $search = [
             "http://",
-            "http://"
+            "https://"
         ];
 
         return trim(str_replace($search, '', trim($link)), "/");
