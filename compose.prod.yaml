@@ -1,0 +1,46 @@
+name: proyecto-grado-unad
+
+services:
+
+  php:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    entrypoint: ["sh", "/var/www/html/docker/php/entrypoint.prod.sh"]
+    volumes:
+      - .:/var/www/html
+      - vendor_data:/var/www/html/vendor
+      - var_cache_data:/var/www/html/var/cache
+      - composer_cache:/home/www-data/.composer
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/127.0.0.1/9000'"]
+      interval: 5s
+      timeout: 3s
+      retries: 90
+      start_period: 10s
+    networks:
+      - proyecto-grado-unad
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      php:
+        condition: service_healthy
+    networks:
+      - proyecto-grado-unad
+    restart: unless-stopped
+
+networks:
+  proyecto-grado-unad:
+    driver: bridge
+
+volumes:
+  composer_cache:
+  vendor_data:
+  var_cache_data:
