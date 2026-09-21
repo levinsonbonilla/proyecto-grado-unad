@@ -58,6 +58,52 @@
       .section-slide { overflow: hidden; }
 
       .slick3 .item-slick3 img { width: 100%; max-height: 440px; object-fit: cover; }
+
+      /* Nombre de la tienda (dominio) en el header, en vez del logo genérico */
+      .store-brand-name {
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 20px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        color: #333;
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+        max-width: 260px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      /* Header más compacto desde el inicio (en vez de solo al hacer scroll) */
+      .container-menu-desktop .wrap-menu-desktop {
+        height: 64px !important;
+        min-height: 64px !important;
+      }
+      .container-menu-desktop .logo,
+      .container-menu-desktop .menu-desktop,
+      .container-menu-desktop .wrap-icon-header {
+        display: flex;
+        align-items: center;
+        height: 64px;
+      }
+
+      /* Texto del slide legible sobre cualquier imagen: overlay oscuro + texto blanco */
+      .item-slick1 { position: relative; }
+      .item-slick1::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, rgba(0,0,0,.62) 0%, rgba(0,0,0,.38) 48%, rgba(0,0,0,.08) 78%);
+        z-index: 1;
+        pointer-events: none;
+      }
+      .item-slick1 > .container { position: relative; z-index: 2; }
+      .item-slick1 .ltext-101,
+      .item-slick1 .ltext-201 {
+        color: #fff !important;
+        text-shadow: 0 2px 10px rgba(0,0,0,.6);
+      }
     </style>
   </head>
   <body>

@@ -9,8 +9,8 @@
 				<nav class="limiter-menu-desktop container">
 
 					<!-- Logo desktop -->
-					<a href="{{ path('store', {_locale: app.request.locale}) }}" class="logo">
-						<img src="{{ asset('theme_1/images/icons/logo-01.png') }}" alt="Logo">
+					<a href="{{ path('store', {_locale: app.request.locale}) }}" class="logo store-brand-name">
+						{{ store_current_domain() ? store_current_domain().displayName : ('home' | trans({}, 'store')) }}
 					</a>
 
 					<!-- Menu desktop -->
@@ -103,8 +103,8 @@
 		<div class="wrap-header-mobile">
 			<!-- Logo mobile -->
 			<div class="logo-mobile">
-				<a href="{{ path('store', {_locale: app.request.locale}) }}">
-					<img src="{{ asset('theme_1/images/icons/logo-01.png') }}" alt="Logo">
+				<a href="{{ path('store', {_locale: app.request.locale}) }}" class="store-brand-name">
+					{{ store_current_domain() ? store_current_domain().displayName : ('home' | trans({}, 'store')) }}
 				</a>
 			</div>
 
