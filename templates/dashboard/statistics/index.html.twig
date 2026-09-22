@@ -340,7 +340,7 @@ async function loadCampaigns() {
     root.setThemes([am5themes_Animated.new(root)]);
     var chart = root.container.children.push(am5xy.XYChart.new(root, {}));
     var xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
-        categoryField: "campaign",
+        categoryField: "label",
         renderer: am5xy.AxisRendererX.new(root, { minGridDistance: 20 }),
     }));
     var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
@@ -348,10 +348,13 @@ async function loadCampaigns() {
     }));
     var series = chart.series.push(am5xy.ColumnSeries.new(root, {
         xAxis: xAxis, yAxis: yAxis,
-        valueYField: "visits", categoryXField: "campaign",
-        tooltip: am5.Tooltip.new(root, { labelText: "{categoryX} ({source}): {valueY}" }),
+        valueYField: "visits", categoryXField: "label",
+        tooltip: am5.Tooltip.new(root, { labelText: "{categoryX}: {valueY}" }),
     }));
-    var mappedData = data.map(function(d) { return { campaign: d.campaign, source: d.source, visits: parseInt(d.visits) }; });
+    var mappedData = data.map(function(d) {
+        var label = (d.source && d.source !== '(none)') ? (d.source + ' · ' + d.campaign) : d.campaign;
+        return { label: label, campaign: d.campaign, source: d.source, visits: parseInt(d.visits) };
+    });
     xAxis.data.setAll(mappedData);
     series.data.setAll(mappedData);
 }
