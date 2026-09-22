@@ -75,12 +75,20 @@
         text-overflow: ellipsis;
       }
 
-      /* Header más compacto desde el inicio (en vez de solo al hacer scroll) */
+      /* Header más compacto desde el inicio (en vez de solo al hacer scroll).
+         El tema original asume una barra superior de 40px (top-bar) que este
+         proyecto no usa, por eso el menú (position:fixed) quedaba flotando
+         con un hueco arriba y montado sobre el slide en vez de empujarlo.
+         Se fija top:0 para que el menú quede pegado arriba, y la altura del
+         "container-menu-desktop" (que sí ocupa espacio en el flujo normal)
+         coincide con la altura real del menú para que el contenido de abajo
+         (el slide) empiece justo después, sin solaparse. */
       .container-menu-desktop {
         height: 64px !important;
         min-height: 64px !important;
       }
       .container-menu-desktop .wrap-menu-desktop {
+        top: 0 !important;
         height: 64px !important;
         min-height: 64px !important;
       }
