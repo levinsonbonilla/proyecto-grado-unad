@@ -92,6 +92,33 @@
         height: 64px;
       }
 
+      /* Altura fija del slide (tipo banner) en vez de casi toda la pantalla --
+         así cualquier imagen ancha queda bien encuadrada con background-size: cover,
+         sin necesitar zoom/recorte extremo. */
+      .section-slide,
+      .wrap-slick1,
+      .slick1,
+      .slick-list,
+      .slick-track,
+      .item-slick1 {
+        height: 520px !important;
+        max-height: 520px !important;
+      }
+      .item-slick1 { min-height: 520px !important; }
+
+      @media (max-width: 767px) {
+        .section-slide,
+        .wrap-slick1,
+        .slick1,
+        .slick-list,
+        .slick-track,
+        .item-slick1 {
+          height: 380px !important;
+          max-height: 380px !important;
+        }
+        .item-slick1 { min-height: 380px !important; }
+      }
+
       /* Texto del slide legible sobre cualquier imagen: overlay oscuro + texto blanco */
       .item-slick1 { position: relative; }
       .item-slick1::before {
