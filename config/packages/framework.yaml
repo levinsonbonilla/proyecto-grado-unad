@@ -3,6 +3,12 @@ framework:
     http_method_override: false
     default_locale: '%locale%'
 
+    # Detrás de Cloudflare: confía en quien conecta directo (REMOTE_ADDR) para
+    # leer X-Forwarded-For y así obtener la IP real del visitante, no la de
+    # borde de Cloudflare (afecta GeoIP: idioma detectado y estadísticas).
+    trusted_proxies: '127.0.0.1,REMOTE_ADDR'
+    trusted_headers: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port']
+
     session:
         handler_id: null
         cookie_secure: auto
