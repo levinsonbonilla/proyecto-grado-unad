@@ -66,11 +66,13 @@
 						{{ 'get_in_touch' | trans({}, 'store') | default('Get In Touch') }}
 					</h4>
 
+					{% set footerDomain = store_current_domain() %}
 					<p class="stext-107 cl7 size-201">
-						{{ 'footer_contact_text' | trans({}, 'store') | default('Any questions? Let us know in store at 8th floor, 379 Hudson St, New York, NY 10018 or call us on (+1) 96 716 6879') }}
+						{{ 'footer_contact_text' | trans({}, 'store') | default('Any questions? Reach out through our contact page.') }}
+						{% if footerDomain and footerDomain.contactAddress %}<br />{{ footerDomain.contactAddress | e | nl2br }}{% endif %}
+						{% if footerDomain and footerDomain.contactPhone %}<br />{{ footerDomain.contactPhone }}{% endif %}
 					</p>
 
-					{% set footerDomain = store_current_domain() %}
 					<div class="p-t-27">
 						{% if footerDomain and footerDomain.facebookUrl %}
 							<a href="{{ footerDomain.facebookUrl }}" target="_blank" rel="noopener" class="fs-18 cl7 hov-cl1 trans-04 m-r-16">

@@ -54,3 +54,6 @@ select_active_domain_subtitle: You have access to more than one domain. Choose w
 active_domain_label: Active domain
 
 auto_refresh_label: Auto-refresh
+
+about_us: About us
+contact: Contact

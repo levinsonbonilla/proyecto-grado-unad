@@ -89,13 +89,6 @@ confirming_payment_fallback: Seguimos confirmando tu pago. Te avisaremos por cor
 your_order_link_text: tu pedido
 
 about_title: Nosotros
-about_our_story_title: Nuestra historia
-about_our_story_p1: Acá va la historia de tu tienda. Cada negocio detrás de esta tienda tiene su propio comienzo — reemplaza este párrafo con cómo empezó la tuya, qué te propusiste vender y qué la hace valer la pena contar.
-about_our_story_p2: Usa este segundo párrafo para lo que cambió desde entonces — cómo creció el catálogo, a quién le vendes hoy y qué distingue a tu tienda del resto.
-about_our_story_p3: ¿Alguna pregunta? Contáctanos en la tienda o a través de la página de contacto.
-about_our_mission_title: Nuestra misión
-about_our_mission_p1: Acá va la misión de tu tienda — qué quieres que sientan los clientes al comprarte, y el estándar al que sometes tus productos y servicio. Reemplaza este párrafo con eso.
-about_mission_quote: La creatividad es solo conectar cosas. Cuando le preguntas a gente creativa cómo hicieron algo, se sienten un poco culpables porque en realidad no lo hicieron, solo vieron algo. Les pareció obvio después de un tiempo.
 
 contact_title: Contacto
 contact_send_message: Envíanos un mensaje
@@ -130,7 +123,7 @@ returns: Devoluciones
 shipping: Envíos
 faqs: Preguntas frecuentes
 get_in_touch: Contáctanos
-footer_contact_text: "¿Alguna pregunta? Cuéntanos en tienda, en 8th floor, 379 Hudson St, New York, NY 10018, o llámanos al (+1) 96 716 6879"
+footer_contact_text: "¿Alguna pregunta? Escríbenos desde la página de contacto."
 footer_newsletter_title: Boletín
 subscribe_button: Suscribirse
 rights_reserved: Todos los derechos reservados
@@ -172,3 +165,5 @@ payment_method_not_available_for_location: El método de pago seleccionado no es
 order_processing_error_ref: "Error al procesar el pedido. Ref: %ref%"
 
 remove_item: Eliminar
+
+about_empty: Pronto compartiremos aquí nuestra historia.

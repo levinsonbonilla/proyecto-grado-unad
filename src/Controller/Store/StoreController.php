@@ -5,6 +5,8 @@ namespace App\Controller\Store;
 use App\Entity\Products\Categories\Categories;
 use App\Entity\Products\Products;
 use App\Interface\UseCase\Store\Cart\GetCartInterface;
+use App\Interface\UseCase\Store\Pages\GetPublicAboutSectionsInterface;
+use App\Interface\UseCase\Store\Pages\GetPublicContactInterface;
 use App\Interface\UseCase\Store\Products\GetPublicCategoriesInterface;
 use App\Interface\UseCase\Store\Products\GetPublicHomeInterface;
 use App\Interface\UseCase\Store\Products\GetPublicProductDetailInterface;
@@ -114,15 +116,19 @@ class StoreController extends AbstractController
     }
 
     #[Route('/about', name: '_about', methods: ['GET'])]
-    public function about(): Response
+    public function about(GetPublicAboutSectionsInterface $aboutSections): Response
     {
-        return $this->render('e_commerce/theme_1/about.html.twig');
+        return $this->render('e_commerce/theme_1/about.html.twig', [
+            'sections' => $aboutSections->handler(),
+        ]);
     }
 
     #[Route('/contact', name: '_contact', methods: ['GET', 'POST'])]
-    public function contact(Request $request): Response
+    public function contact(Request $request, GetPublicContactInterface $publicContact): Response
     {
-        return $this->render('e_commerce/theme_1/contact.html.twig');
+        return $this->render('e_commerce/theme_1/contact.html.twig', [
+            'contact' => $publicContact->handler(),
+        ]);
     }
 
     #[Route('/api/autocomplete', name: '_api_autocomplete', methods: ['GET'])]

@@ -1,0 +1,28 @@
+id: Identificación
+actions: Acciones
+active: Activo
+yes: Sí
+no: No
+title: Título
+text: Texto
+image: Imagen
+position: Posición
+info: Información de la sección
+create_about_section: Crear sección
+list_about_sections: Secciones de la página Nosotros
+add_about_section: Creación de sección
+edit_about_section: Edición de sección
+about_hint: Cada sección muestra un título, un texto y una imagen. En la tienda se intercalan automáticamente, una con el texto a la izquierda y la siguiente con el texto a la derecha, según la posición.
+text_help: Separa los párrafos con una línea en blanco.
+position_help: Define el orden en la página. Si lo dejas vacío, la sección se agrega al final.
+change_status: Cambiar estado
+change_status_modal_title: Cambiar estado de la sección
+change_status_modal_body: "¿Estás seguro de que deseas cambiar el estado de esta sección?"
+change_status_modal_confirm: Confirmar cambio
+change_status_error: Ocurrió un error al cambiar el estado de la sección.
+about_section_created_successfully: La sección ha sido creada con éxito.
+about_section_edited_successfully: La sección ha sido editada con éxito.
+about_section_image_error: No fue posible cargar la imagen.
+drop_here: Suelta aquí
+remove_file: Eliminar archivo
+cancel_upload: Cancelar carga

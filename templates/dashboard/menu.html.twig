@@ -55,12 +55,18 @@
 								<span class="fa fa-chevron-down"></span>
 							</a>
 
-							<ul class="nav child_menu" style="display: {{ 'configurations_domains,slides' | isCurrentRoute ? 'block' : 'none' }};">
+							<ul class="nav child_menu" style="display: {{ 'configurations_domains,slides,configurations_about,configurations_contact' | isCurrentRoute ? 'block' : 'none' }};">
 								<li class="{{ 'configurations_domains' | isCurrentRoute ? 'current-page' : '' }}">
 									<a href="{{ path('dashboard_configurations_domains') }}">{{ 'domains'|trans({}, 'dashboard') }}</a>
 								</li>
 								<li class="{{ 'slides' | isCurrentRoute ? 'current-page' : '' }}">
 									<a href="{{ path('dashboard_configurations_slides') }}">{{ 'slides'|trans({}, 'dashboard') }}</a>
+								</li>
+								<li class="{{ 'configurations_about' | isCurrentRoute ? 'current-page' : '' }}">
+									<a href="{{ path('dashboard_configurations_about') }}">{{ 'about_us'|trans({}, 'dashboard') }}</a>
+								</li>
+								<li class="{{ 'configurations_contact' | isCurrentRoute ? 'current-page' : '' }}">
+									<a href="{{ path('dashboard_configurations_contact') }}">{{ 'contact'|trans({}, 'dashboard') }}</a>
 								</li>
 							</ul>
 						</li>

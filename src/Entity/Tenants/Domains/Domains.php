@@ -49,6 +49,15 @@ class Domains
     #[ORM\Column(length: 500, nullable: true)]
     private ?string $pinterestUrl = null;
 
+    #[ORM\Column(length: 500, nullable: true)]
+    private ?string $contactAddress = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $contactPhone = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $contactEmail = null;
+
     public function getTenant(): Tenants
     {
         return $this->tenant;
@@ -97,6 +106,35 @@ class Domains
     public function getPinterestUrl(): ?string
     {
         return $this->pinterestUrl;
+    }
+
+    public function getContactAddress(): ?string
+    {
+        return $this->contactAddress;
+    }
+
+    public function getContactPhone(): ?string
+    {
+        return $this->contactPhone;
+    }
+
+    public function getContactEmail(): ?string
+    {
+        return $this->contactEmail;
+    }
+
+    public function changeContact(?string $address, ?string $phone, ?string $email): Domains
+    {
+        $this->contactAddress = $this->normalize($address);
+        $this->contactPhone = $this->normalize($phone);
+        $this->contactEmail = $this->normalize($email);
+        return $this;
+    }
+
+    private function normalize(?string $value): ?string
+    {
+        $value = $value === null ? null : trim($value);
+        return $value === '' ? null : $value;
     }
 
     public function add(DomainsArgument $argument) : Domains

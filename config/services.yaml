@@ -30,6 +30,7 @@ parameters:
     upload_products: 'uploads/products/'
     upload_categories: 'uploads/categories/'
     upload_slides: 'uploads/slides/'
+    upload_about: 'uploads/about/'
     upload_messages: 'uploads/messages/'
 
 services:

@@ -1,0 +1,28 @@
+id: Id
+actions: Actions
+active: Active
+yes: Yes
+no: "No"
+title: Title
+text: Text
+image: Image
+position: Position
+info: Section information
+create_about_section: Create section
+list_about_sections: About us page sections
+add_about_section: Create section
+edit_about_section: Edit section
+about_hint: Each section shows a title, a text and an image. In the store they alternate automatically, one with the text on the left and the next with the text on the right, following the position.
+text_help: Separate paragraphs with a blank line.
+position_help: Sets the order on the page. If left empty, the section is added at the end.
+change_status: Change status
+change_status_modal_title: Change section status
+change_status_modal_body: Are you sure you want to change the status of this section?
+change_status_modal_confirm: Confirm change
+change_status_error: An error occurred while changing the section status.
+about_section_created_successfully: The section was created successfully.
+about_section_edited_successfully: The section was edited successfully.
+about_section_image_error: The image could not be uploaded.
+drop_here: Drop here
+remove_file: Remove file
+cancel_upload: Cancel upload

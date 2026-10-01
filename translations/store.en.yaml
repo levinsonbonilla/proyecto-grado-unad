@@ -89,13 +89,6 @@ confirming_payment_fallback: We're still confirming your payment. We'll email yo
 your_order_link_text: your order
 
 about_title: About
-about_our_story_title: Our Story
-about_our_story_p1: This is where your store's story goes. Every business behind this storefront has its own beginning — replace this paragraph with how yours started, what you set out to sell, and what makes it worth telling.
-about_our_story_p2: Use this second paragraph for what's changed since then — how the catalog has grown, who you serve today, and anything that sets your store apart from the rest.
-about_our_story_p3: Any questions? Let us know in store or reach out through the contact page.
-about_our_mission_title: Our Mission
-about_our_mission_p1: This is where your store's mission goes — what you want customers to feel when they shop with you, and the standard you hold your products and service to. Replace this paragraph with that.
-about_mission_quote: Creativity is just connecting things. When you ask creative people how they did something, they feel a little guilty because they didn't really do it, they just saw something. It seemed obvious to them after a while.
 
 contact_title: Contact
 contact_send_message: Send Us A Message
@@ -130,7 +123,7 @@ returns: Returns
 shipping: Shipping
 faqs: FAQs
 get_in_touch: Get In Touch
-footer_contact_text: "Any questions? Let us know in store at 8th floor, 379 Hudson St, New York, NY 10018 or call us on (+1) 96 716 6879"
+footer_contact_text: "Any questions? Reach out through our contact page."
 footer_newsletter_title: Newsletter
 subscribe_button: Subscribe
 rights_reserved: All rights reserved
@@ -172,3 +165,5 @@ payment_method_not_available_for_location: The selected payment method is not av
 order_processing_error_ref: "Error processing the order. Ref: %ref%"
 
 remove_item: Remove
+
+about_empty: We will share our story here soon.
