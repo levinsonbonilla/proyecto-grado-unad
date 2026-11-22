@@ -25,22 +25,35 @@ final class GeoNameNormalizerUtil
         return trim(preg_replace('/\s+/', ' ', $value) ?? $value);
     }
 
-    public static function keysFromJson(string $json): array
+    public static function primaryKey(string $json): ?string
     {
         $decoded = json_decode($json, true);
         if (!is_array($decoded)) {
-            return array_values(array_filter([self::key($json)]));
+            $key = self::key($json);
+            return $key === '' ? null : $key;
         }
 
         $names = isset($decoded['names']) && is_array($decoded['names']) ? $decoded['names'] : $decoded;
-        $keys = [];
-        foreach ($names as $name) {
-            if (is_string($name) && $name !== '') {
-                $keys[] = self::key($name);
+        foreach (['es', 'en'] as $language) {
+            if (isset($names[$language]) && is_string($names[$language]) && $names[$language] !== '') {
+                return self::key($names[$language]);
             }
         }
 
-        return array_values(array_unique(array_filter($keys)));
+        foreach ($names as $name) {
+            if (is_string($name) && $name !== '') {
+                return self::key($name);
+            }
+        }
+
+        return null;
+    }
+
+    public static function sameName(string $jsonA, string $jsonB): bool
+    {
+        $a = self::primaryKey($jsonA);
+
+        return $a !== null && $a === self::primaryKey($jsonB);
     }
 
     public static function stripAdministrativeSuffix(string $name): string

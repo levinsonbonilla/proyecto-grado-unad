@@ -78,23 +78,10 @@ final readonly class GeoDuplicateMergerService
     private function groupDuplicates(array $entities, callable $rawNames): array
     {
         $groups = [];
-        $keyToGroup = [];
         foreach ($entities as $entity) {
-            $keys = GeoNameNormalizerUtil::keysFromJson($rawNames($entity));
-            $groupIndex = null;
-            foreach ($keys as $key) {
-                if (isset($keyToGroup[$key])) {
-                    $groupIndex = $keyToGroup[$key];
-                    break;
-                }
-            }
-            if ($groupIndex === null) {
-                $groupIndex = count($groups);
-                $groups[$groupIndex] = [];
-            }
-            $groups[$groupIndex][] = $entity;
-            foreach ($keys as $key) {
-                $keyToGroup[$key] ??= $groupIndex;
+            $key = GeoNameNormalizerUtil::primaryKey($rawNames($entity));
+            if ($key !== null) {
+                $groups[$key][] = $entity;
             }
         }
 
@@ -120,10 +107,11 @@ final readonly class GeoDuplicateMergerService
             if (!is_array($names)) {
                 continue;
             }
-            $clean = array_map(
-                fn ($value) => is_string($value) ? GeoNameNormalizerUtil::stripAdministrativeSuffix($value) : $value,
-                $names
-            );
+            if (!isset($names['es']) || !is_string($names['es'])) {
+                continue;
+            }
+            $clean = $names;
+            $clean['es'] = GeoNameNormalizerUtil::stripAdministrativeSuffix($names['es']);
             if ($clean === $names) {
                 continue;
             }

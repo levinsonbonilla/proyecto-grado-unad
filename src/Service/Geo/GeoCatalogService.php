@@ -107,13 +107,12 @@ final class GeoCatalogService implements GeoCatalogInterface
             return $byCode;
         }
 
-        $wanted = GeoNameNormalizerUtil::keysFromJson($namesJson);
         $candidates = array_merge(
             $this->regionsRepository->findBy(['country' => $country]),
             $this->pendingRegions[$this->key($country)] ?? []
         );
         foreach ($candidates as $candidate) {
-            if (array_intersect($wanted, GeoNameNormalizerUtil::keysFromJson($candidate->getRawName())) !== []) {
+            if (GeoNameNormalizerUtil::sameName($namesJson, $candidate->getRawName())) {
                 return $candidate;
             }
         }
@@ -146,13 +145,12 @@ final class GeoCatalogService implements GeoCatalogInterface
             return $byGeoNameId;
         }
 
-        $wanted = GeoNameNormalizerUtil::keysFromJson($namesJson);
         $candidates = array_merge(
             $this->citiesRepository->findBy(['region' => $region]),
             $this->pendingCities[$this->key($region)] ?? []
         );
         foreach ($candidates as $candidate) {
-            if (array_intersect($wanted, GeoNameNormalizerUtil::keysFromJson($candidate->getRawNames())) !== []) {
+            if (GeoNameNormalizerUtil::sameName($namesJson, $candidate->getRawNames())) {
                 return $candidate;
             }
         }

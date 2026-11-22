@@ -295,4 +295,25 @@ class H04GeoDuplicatesTest extends IntegrationTestCase
         $connection->executeStatement('CREATE UNIQUE INDEX uniq_regions_country_iso_code ON regions (country_id, iso_code)');
         $connection->executeStatement('CREATE UNIQUE INDEX uniq_cities_geoname_id ON cities (name)');
     }
+
+    public function testRegionsThatOnlyShareAForeignLanguageNameAreNotConsideredDuplicates(): void
+    {
+        $country = $this->colombia();
+        $estado = (new Regions())->add(new RegionsArgument(['name' => json_encode(['es' => 'México', 'fr' => 'État de Mexico', 'ru' => 'Мехико'], JSON_UNESCAPED_UNICODE), 'description' => 'Región', 'isoCode' => 'MEX'], $country));
+        $this->em->persist($estado);
+        $this->em->flush();
+
+        $catalog = static::getContainer()->get(\App\Service\Geo\GeoCatalogInterface::class);
+        $capital = $catalog->ensureRegion($country, 'CMX', json_encode(['es' => 'Ciudad de México', 'fr' => 'Mexico', 'ru' => 'Мехико'], JSON_UNESCAPED_UNICODE));
+        $this->assertFalse($capital->getId()->equals($estado->getId()), 'Ciudad de México no puede reutilizar la región México');
+
+        $application = new Application(static::$kernel);
+        $tester = new CommandTester($application->find('app:geo:merge-duplicates'));
+        $tester->execute([]);
+        $this->em->clear();
+
+        $labels = $this->regionLabels();
+        $this->assertContains('méxico', $labels);
+        $this->assertContains('ciudad de méxico', $labels);
+    }
 }
