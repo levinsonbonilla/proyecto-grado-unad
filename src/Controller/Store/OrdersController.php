@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[IsGranted('ROLE_USER')]
 #[Route(path: '{_locale<%supported_locales%>}/orders', name: 'store_orders')]
@@ -38,13 +39,13 @@ class OrdersController extends AbstractController
     }
 
     #[Route('/{id}/cancel', name: '_cancel', methods: ['POST'])]
-    public function cancel(Orders $order, CancelOrderInterface $cancel): Response
+    public function cancel(Orders $order, CancelOrderInterface $cancel, TranslatorInterface $translator): Response
     {
         $result = $cancel->handler($order);
         if ($result['success']) {
-            $this->addFlash('success', 'Pedido cancelado correctamente.');
+            $this->addFlash('success', $translator->trans('order_cancel_success', [], 'store'));
         } else {
-            $this->addFlash('error', $result['message'] ?? 'No se pudo cancelar el pedido.');
+            $this->addFlash('error', $result['message'] ?? $translator->trans('order_cancel_error', [], 'store'));
         }
         return $this->redirectToRoute('store_orders_detail', [
             '_locale' => $this->getParameter('locale'),

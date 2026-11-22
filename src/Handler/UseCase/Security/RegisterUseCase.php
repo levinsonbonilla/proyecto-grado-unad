@@ -149,7 +149,7 @@ final class RegisterUseCase implements RegisterInterface
 
         $domain = new Domains();
         $domain->add(new DomainsArgument([
-            'domain' => $this->translator->trans('new_tenant_domain_placeholder', [], 'login'),
+            'domain' => Domains::pendingConfigurationPlaceholder(),
             'logo' => '',
             'notificationEmail' => $data['email'] ?? '',
             'supportEmail' => $data['email'] ?? '',

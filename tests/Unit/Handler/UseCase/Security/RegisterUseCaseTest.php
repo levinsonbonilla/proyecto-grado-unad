@@ -212,7 +212,7 @@ class RegisterUseCaseTest extends TestCase
 
         $domain = array_values(array_filter($captured, fn($e) => $e instanceof Domains))[0] ?? null;
         $this->assertInstanceOf(Domains::class, $domain);
-        $this->assertSame('new_tenant_domain_placeholder', $domain->getDomain());
+        $this->assertTrue($domain->isPendingConfiguration(), 'el dominio provisional no debe guardar texto de plantilla traducido');
         $this->assertSame('nuevo.negocio@example.com', $domain->getNotificationEmail());
         $this->assertSame('nuevo.negocio@example.com', $domain->getSupportEmail());
 

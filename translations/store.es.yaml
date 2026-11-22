@@ -167,3 +167,19 @@ order_processing_error_ref: "Error al procesar el pedido. Ref: %ref%"
 remove_item: Eliminar
 
 about_empty: Pronto compartiremos aquí nuestra historia.
+
+cart_product_not_found: Producto no encontrado.
+cart_variant_not_available: La variante elegida no está disponible para este producto.
+cart_quantity_exceeds_stock: "Solo hay %max% unidades disponibles de \"%name%\"."
+cart_quantity_exceeds_stock_with_cart: "Ya tienes %current% en el carrito y solo hay %max% unidades disponibles de \"%name%\"."
+cart_max_available: "Máximo disponible: %max%"
+cart_item_not_found: Ítem no encontrado.
+cart_update_error: Error al actualizar cantidad.
+payment_method_required: Selecciona un método de pago para confirmar el pedido.
+payment_method_invalid: El método de pago seleccionado no es válido para esta tienda.
+no_payment_methods_available: Esta tienda aún no tiene métodos de pago disponibles para tu ubicación, por lo que no es posible confirmar el pedido. Contacta a la tienda.
+order_cancel_unauthorized: No autorizado.
+order_cancel_not_allowed: Este pedido no se puede cancelar en su estado actual.
+order_cancel_error: Error al cancelar el pedido.
+order_cancel_success: Pedido cancelado correctamente.
+footer_newsletter_placeholder: Tu correo electrónico

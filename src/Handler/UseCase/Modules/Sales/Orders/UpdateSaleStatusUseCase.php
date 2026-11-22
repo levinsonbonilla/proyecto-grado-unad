@@ -10,6 +10,7 @@ use App\Interface\UseCase\Modules\Sales\Orders\UpdateSaleStatusInterface;
 use App\Interface\UseCase\Security\LogInterface;
 use App\Repository\Configurations\Globals\StatusRepository;
 use App\Repository\Products\Orders\PaymentTransactionsRepository;
+use App\Service\Orders\OrderCancellationInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 
@@ -38,6 +39,7 @@ final class UpdateSaleStatusUseCase implements UpdateSaleStatusInterface
         private readonly MailerInterface $mailer,
         private readonly GetDomainDataInterface $getDomainData,
         private readonly LogInterface $log,
+        private readonly OrderCancellationInterface $orderCancellation,
     ) {
     }
 
@@ -61,6 +63,22 @@ final class UpdateSaleStatusUseCase implements UpdateSaleStatusInterface
             $newStatus = $this->statusRepository->findOneBy(['name' => $newStatusName, 'active' => true]);
             if ($newStatus === null) {
                 throw new GenericException('Estado no disponible.', 500);
+            }
+
+            if ($newStatusName === OrderCancellationInterface::CANCELLED_STATUS) {
+                $cancellableFrom = array_keys(array_filter(
+                    self::TRANSITIONS,
+                    fn (array $next) => in_array(OrderCancellationInterface::CANCELLED_STATUS, $next, true)
+                ));
+                if (!$this->orderCancellation->cancel($order, $cancellableFrom)) {
+                    return [
+                        'success' => false,
+                        'message' => 'El pedido cambió de estado mientras se procesaba la solicitud. Recarga la página.',
+                    ];
+                }
+                $this->sendStatusEmail($order, $newStatusName);
+
+                return ['success' => true];
             }
 
             if ($newStatusName === 'Enviado') {

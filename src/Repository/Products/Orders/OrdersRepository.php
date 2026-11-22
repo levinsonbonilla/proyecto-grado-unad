@@ -4,6 +4,7 @@ namespace App\Repository\Products\Orders;
 
 use App\Entity\Products\Orders\Orders;
 use App\Entity\Tenants\Domains\Domains;
+use App\Entity\Products\Orders\OrdersProducts;
 use App\Interface\Configuration\ListDataTableInterface;
 use App\Repository\Configurations\Globals\CitiesRepository;
 use App\Repository\Configurations\Globals\CountriesRepository;
@@ -177,6 +178,7 @@ class OrdersRepository extends ServiceEntityRepository
     {
         return [
             'totalVentas'           => $this->getTotalSalesAmount($domain, $from, $to),
+            'montoPendientePago'    => $this->getAmountByStatus($domain, $from, $to, 'Pendiente'),
             'pedidosPendientesPago' => $this->getOrdersCountByStatus($domain, $from, $to, 'Pendiente'),
             'pedidosPorEnviar'      => $this->getOrdersCountByStatus($domain, $from, $to, 'Procesando'),
             'ticketPromedio'        => $this->getAverageTicket($domain, $from, $to),
@@ -191,6 +193,30 @@ class OrdersRepository extends ServiceEntityRepository
             ->setParameter('paidStatuses', self::PAID_STATUSES)
             ->getQuery()
             ->getSingleScalarResult());
+    }
+
+    private function getAmountByStatus(Domains $domain, \DateTimeImmutable $from, \DateTimeImmutable $to, string $statusName): int
+    {
+        return (int) ($this->baseDomainQuery($domain, $from, $to)
+            ->select('COALESCE(SUM(o.totalAmount), 0)')
+            ->andWhere('s.name = :statusName')
+            ->setParameter('statusName', $statusName)
+            ->getQuery()
+            ->getSingleScalarResult());
+    }
+
+    public function belongsToDomain(Orders $order, Domains $domain): bool
+    {
+        return (int) $this->getEntityManager()->createQueryBuilder()
+            ->select('COUNT(op.id)')
+            ->from(OrdersProducts::class, 'op')
+            ->join('op.product', 'p')
+            ->where('op.orders = :order')
+            ->andWhere('p.domain = :domain')
+            ->setParameter('order', UUIDUtil::convertIdToSearch($order))
+            ->setParameter('domain', UUIDUtil::convertIdToSearch($domain))
+            ->getQuery()
+            ->getSingleScalarResult() > 0;
     }
 
     private function getOrdersCountByStatus(Domains $domain, \DateTimeImmutable $from, \DateTimeImmutable $to, string $statusName): int

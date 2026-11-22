@@ -339,6 +339,24 @@
             })
         })
 
+        function clampQuantityInput($input) {
+          var max = parseInt($input.attr('max'), 10)
+          var value = parseInt($input.val(), 10) || 1
+          if (!isNaN(max) && max > 0 && value > max) {
+            $input.val(max)
+          } else if (value < 1) {
+            $input.val(1)
+          }
+        }
+
+        $(document).on('click', '.btn-num-product-up, .btn-num-product-down', function () {
+          clampQuantityInput($(this).siblings('.num-product'))
+        })
+
+        $(document).on('change input', '.num-product', function () {
+          clampQuantityInput($(this))
+        })
+
         $(document).on('click', '.js-buynow-detail', function (e) {
           e.preventDefault()
 

@@ -11,6 +11,7 @@ use App\Entity\Products\Products;
 use App\Repository\Users\UsersRepository;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
+use App\Entity\Tenants\Domains\PaymentMethods;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -70,6 +71,7 @@ class CheckoutStockAndLowStockAlertTest extends WebTestCase
             'countryId' => (string) $country->getId(),
             'regionId'  => (string) $region->getId(),
             'cityId'    => (string) $city->getId(),
+            'paymentMethodId' => (string) $em->getRepository(PaymentMethods::class)->findOneBy(['name' => 'Efectivo'])->getId(),
         ];
     }
 

@@ -2,7 +2,9 @@
 
 namespace App\Handler\UseCase\Store\Cart;
 
+use App\Entity\Products\Colors\ProductsColors;
 use App\Entity\Products\Others\ShoppingCart;
+use App\Entity\Products\Products;
 use App\Entity\Users\Users;
 use App\Interface\Configuration\CustomeEntityManagerInterface;
 use App\Interface\Configuration\GetDomainDataInterface;
@@ -11,10 +13,11 @@ use App\Interface\UseCase\Store\Cart\AddToCartInterface;
 use App\Repository\Products\Colors\ProductsColorsRepository;
 use App\Repository\Products\Others\ShoppingCartRepository;
 use App\Repository\Products\ProductsRepository;
+use App\Service\Products\ProductStockInterface;
 use App\Util\StringUtil;
-use App\Util\UUIDUtil;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class AddToCartUseCase implements AddToCartInterface
 {
@@ -27,28 +30,34 @@ final class AddToCartUseCase implements AddToCartInterface
         private readonly CustomeEntityManagerInterface $em,
         private readonly RequestStack $requestStack,
         private readonly LogInterface $log,
+        private readonly ProductStockInterface $productStock,
+        private readonly TranslatorInterface $translator,
     ) {}
 
     public function handler(string $productId, int $quantity = 1, ?string $colorId = null): array
     {
         try {
-            $user = $this->security->getUser();
-
-            if ($user === null) {
-                return $this->addToSession($productId, $quantity, $colorId);
+            if ($quantity < 1) {
+                $quantity = 1;
             }
 
-            $product = $this->productsRepository->find(StringUtil::convertToUuid($productId));
-            if ($product === null || !$product->isActive()) {
-                return ['success' => false, 'message' => 'Producto no encontrado.'];
+            $product = $this->findStoreProduct($productId);
+            if ($product === null) {
+                return ['success' => false, 'message' => $this->translator->trans('cart_product_not_found', [], 'store')];
             }
 
             $productColor = null;
             if (!empty($colorId)) {
                 $productColor = $this->productsColorsRepository->find(StringUtil::convertToUuid($colorId));
                 if ($productColor === null || !$productColor->isActive() || (string) $productColor->getProduct()->getId() !== (string) $product->getId()) {
-                    return ['success' => false, 'message' => 'Color no disponible para este producto.'];
+                    return ['success' => false, 'message' => $this->translator->trans('cart_variant_not_available', [], 'store')];
                 }
+            }
+
+            $user = $this->security->getUser();
+
+            if ($user === null) {
+                return $this->addToSession($product, $quantity, $productColor);
             }
 
             $existing = $this->cartRepository->findOneBy([
@@ -58,8 +67,14 @@ final class AddToCartUseCase implements AddToCartInterface
                 'active'       => true,
             ]);
 
+            $currentQuantity = $existing?->getQuantity() ?? 0;
+            $rejection = $this->rejectIfExceedsStock($product, $productColor, $currentQuantity, $quantity);
+            if ($rejection !== null) {
+                return $rejection;
+            }
+
             if ($existing !== null) {
-                $existing->updateQuantity($existing->getQuantity() + $quantity);
+                $existing->updateQuantity($currentQuantity + $quantity);
                 $this->em->add($existing, true);
             } else {
                 $item = (new ShoppingCart())->add($user, $product, $quantity, $productColor);
@@ -69,23 +84,65 @@ final class AddToCartUseCase implements AddToCartInterface
             return ['success' => true, 'count' => $this->getDbCount($user)];
         } catch (\Throwable $th) {
             $this->log->handler($th);
-            return ['success' => false, 'message' => 'Error al agregar al carrito.'];
+            return ['success' => false, 'message' => $this->translator->trans('cart_add_error', [], 'store')];
         }
     }
 
-    private function addToSession(string $productId, int $quantity, ?string $colorId = null): array
+    private function findStoreProduct(string $productId): ?Products
+    {
+        $product = $this->productsRepository->find(StringUtil::convertToUuid($productId));
+        if ($product === null || !$product->isActive()) {
+            return null;
+        }
+
+        $domain = $this->getDomainData->getDomainCache();
+        if ((string) $product->getDomain()->getId() !== (string) $domain->getId()) {
+            return null;
+        }
+
+        return $product;
+    }
+
+    private function rejectIfExceedsStock(Products $product, ?ProductsColors $productColor, int $currentQuantity, int $quantity): ?array
+    {
+        $available = $this->productStock->available($product, $productColor);
+        if ($available === null || $currentQuantity + $quantity <= $available) {
+            return null;
+        }
+
+        $message = $currentQuantity > 0
+            ? $this->translator->trans('cart_quantity_exceeds_stock_with_cart', ['%max%' => $available, '%current%' => $currentQuantity, '%name%' => $product->getName()], 'store')
+            : $this->translator->trans('cart_quantity_exceeds_stock', ['%max%' => $available, '%name%' => $product->getName()], 'store');
+
+        return [
+            'success'     => false,
+            'message'     => $message,
+            'maxQuantity' => $available,
+            'inCart'      => $currentQuantity,
+        ];
+    }
+
+    private function addToSession(Products $product, int $quantity, ?ProductsColors $productColor): array
     {
         $session  = $this->requestStack->getSession();
         $domainId = (string) $this->getDomainData->getDomainCache()->getId();
         $key      = "cart_{$domainId}";
         $cart     = $session->get($key, []);
 
-        $itemKey = empty($colorId) ? $productId : "{$productId}:{$colorId}";
+        $productId = (string) $product->getId();
+        $colorId   = $productColor !== null ? (string) $productColor->getId() : null;
+        $itemKey   = $colorId === null ? $productId : "{$productId}:{$colorId}";
+
+        $currentQuantity = (int) ($cart[$itemKey]['quantity'] ?? 0);
+        $rejection = $this->rejectIfExceedsStock($product, $productColor, $currentQuantity, $quantity);
+        if ($rejection !== null) {
+            return $rejection;
+        }
 
         $cart[$itemKey] = [
             'productId' => $productId,
             'colorId'   => $colorId,
-            'quantity'  => ($cart[$itemKey]['quantity'] ?? 0) + $quantity,
+            'quantity'  => $currentQuantity + $quantity,
             'addedAt'   => $cart[$itemKey]['addedAt'] ?? time(),
         ];
 
@@ -95,6 +152,6 @@ final class AddToCartUseCase implements AddToCartInterface
 
     private function getDbCount(Users $user): int
     {
-        return $this->cartRepository->getTotalQuantityForUser($user);
+        return $this->cartRepository->getTotalQuantityForUser($user, $this->getDomainData->getDomainCache());
     }
 }

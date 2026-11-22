@@ -27,7 +27,7 @@ visits_unit_suffix: " visitas"
 
 product_stats_title: Estadísticas de Productos
 view_traffic_stats: Ver estadísticas de tráfico
-kpi_total_sales: Total Ventas
+kpi_total_sales: Ventas confirmadas
 kpi_pending_payment: Pendientes de pago
 kpi_to_ship: Por enviar
 kpi_avg_ticket: Ticket promedio

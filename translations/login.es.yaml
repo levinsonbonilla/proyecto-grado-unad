@@ -93,5 +93,4 @@ registration_not_available_here: El registro de clientes no está disponible en 
 
 phone_label: Teléfono
 phone_required_message: El teléfono es obligatorio.
-new_tenant_domain_placeholder: Reemplace por su dominio
 registration_form_invalid_message: Revisa los campos marcados e intenta de nuevo.

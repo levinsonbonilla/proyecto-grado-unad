@@ -129,7 +129,7 @@
                                     <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
                                         <i class="fs-16 zmdi zmdi-minus"></i>
                                     </div>
-                                    <input class="mtext-104 cl3 txt-center num-product" type="number" value="1" min="1">
+                                    <input class="mtext-104 cl3 txt-center num-product" type="number" value="1" min="1"{% if product.stock is not null %} max="{{ product.stock }}"{% endif %}>
                                     <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
                                         <i class="fs-16 zmdi zmdi-plus"></i>
                                     </div>
@@ -245,6 +245,20 @@ document.addEventListener('DOMContentLoaded', function () {
         return true;
     }
 
+    var quantityInput = document.querySelector('.sec-product-detail input.num-product');
+
+    function applyQuantityLimit(limit) {
+        if (!quantityInput) return;
+        if (limit === null || limit === undefined) {
+            quantityInput.removeAttribute('max');
+            return;
+        }
+        quantityInput.setAttribute('max', limit);
+        if ((parseInt(quantityInput.value, 10) || 1) > limit) {
+            quantityInput.value = Math.max(1, limit);
+        }
+    }
+
     var stockDisplay = document.getElementById('product-stock-display');
     var stockTemplate = stockDisplay ? stockDisplay.getAttribute('data-stock-template') : null;
     var mainImage = document.querySelector('.slick3 .item-slick3 img') || document.querySelector('.sec-product-detail img.img-fluid');
@@ -322,6 +336,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             input.value = match.id;
+            applyQuantityLimit(match.stock);
 
             if (stockDisplay && stockTemplate) {
                 if (match.stock !== null && match.stock !== undefined) {

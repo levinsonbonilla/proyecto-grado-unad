@@ -3,11 +3,11 @@
 namespace App\Handler\UseCase\Store\Orders;
 
 use App\Entity\Products\Orders\Orders;
-use App\Interface\Configuration\CustomeEntityManagerInterface;
 use App\Interface\UseCase\Security\LogInterface;
 use App\Interface\UseCase\Store\Orders\CancelOrderInterface;
-use App\Repository\Configurations\Globals\StatusRepository;
+use App\Service\Orders\OrderCancellationInterface;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class CancelOrderUseCase implements CancelOrderInterface
 {
@@ -15,9 +15,9 @@ final class CancelOrderUseCase implements CancelOrderInterface
 
     public function __construct(
         private readonly Security $security,
-        private readonly StatusRepository $statusRepository,
-        private readonly CustomeEntityManagerInterface $em,
+        private readonly OrderCancellationInterface $orderCancellation,
         private readonly LogInterface $log,
+        private readonly TranslatorInterface $translator,
     ) {}
 
     public function handler(Orders $order): array
@@ -25,25 +25,18 @@ final class CancelOrderUseCase implements CancelOrderInterface
         try {
             $user = $this->security->getUser();
             if ($user === null || (string) $order->getUser()->getId() !== (string) $user->getId()) {
-                return ['success' => false, 'message' => 'No autorizado.'];
+                return ['success' => false, 'message' => $this->translator->trans('order_cancel_unauthorized', [], 'store')];
             }
 
-            if (!in_array($order->getStatus()->getName(), self::CANCELLABLE_STATUSES, true)) {
-                return ['success' => false, 'message' => 'Este pedido no se puede cancelar en su estado actual.'];
+            if (!in_array($order->getStatus()->getName(), self::CANCELLABLE_STATUSES, true)
+                || !$this->orderCancellation->cancel($order, self::CANCELLABLE_STATUSES)) {
+                return ['success' => false, 'message' => $this->translator->trans('order_cancel_not_allowed', [], 'store')];
             }
-
-            $cancelStatus = $this->statusRepository->findOneBy(['name' => 'Cancelado', 'active' => true]);
-            if ($cancelStatus === null) {
-                return ['success' => false, 'message' => 'Estado de cancelación no disponible.'];
-            }
-
-            $order->edit($cancelStatus);
-            $this->em->add($order, true);
 
             return ['success' => true];
         } catch (\Throwable $th) {
             $this->log->handler($th);
-            return ['success' => false, 'message' => 'Error al cancelar el pedido.'];
+            return ['success' => false, 'message' => $this->translator->trans('order_cancel_error', [], 'store')];
         }
     }
 }

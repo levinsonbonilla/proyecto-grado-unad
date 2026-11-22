@@ -23,6 +23,7 @@
                         <div class="x_content">
                             <p style="margin:4px 0; color:#888;">{{ 'kpi_total_sales'|trans({}, 'sales') }}</p>
                             <h2 id="kpiTotalVentas" style="margin:0; font-size:1.8rem;">—</h2>
+                            <small style="color:#888;">{{ 'kpi_total_sales_hint'|trans({}, 'sales') }}</small>
                         </div>
                     </div>
                 </div>
@@ -31,6 +32,7 @@
                         <div class="x_content">
                             <p style="margin:4px 0; color:#888;">{{ 'kpi_pending_payment'|trans({}, 'sales') }}</p>
                             <h2 id="kpiPendientesPago" style="margin:0; font-size:1.8rem;">—</h2>
+                            <small style="color:#888;">{{ 'kpi_pending_payment_amount'|trans({}, 'sales') }} <span id="kpiMontoPendientePago">—</span></small>
                         </div>
                     </div>
                 </div>
@@ -99,6 +101,7 @@
 
                 document.getElementById('kpiTotalVentas').textContent = window.formatCurrencyAmount(data.totalVentas || 0);
                 document.getElementById('kpiPendientesPago').textContent = data.pedidosPendientesPago || 0;
+                document.getElementById('kpiMontoPendientePago').textContent = window.formatCurrencyAmount(data.montoPendientePago || 0);
                 document.getElementById('kpiPorEnviar').textContent = data.pedidosPorEnviar || 0;
                 document.getElementById('kpiTicketPromedio').textContent = window.formatCurrencyAmount(data.ticketPromedio || 0);
             })

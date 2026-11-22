@@ -167,3 +167,19 @@ order_processing_error_ref: "Error processing the order. Ref: %ref%"
 remove_item: Remove
 
 about_empty: We will share our story here soon.
+
+cart_product_not_found: Product not found.
+cart_variant_not_available: The selected variant is not available for this product.
+cart_quantity_exceeds_stock: "Only %max% units of \"%name%\" are available."
+cart_quantity_exceeds_stock_with_cart: "You already have %current% in your cart and only %max% units of \"%name%\" are available."
+cart_max_available: "Max available: %max%"
+cart_item_not_found: Item not found.
+cart_update_error: Could not update the quantity.
+payment_method_required: Select a payment method to confirm the order.
+payment_method_invalid: The selected payment method is not valid for this store.
+no_payment_methods_available: This store has no payment methods available for your location yet, so the order cannot be confirmed. Please contact the store.
+order_cancel_unauthorized: Not authorized.
+order_cancel_not_allowed: This order cannot be cancelled in its current status.
+order_cancel_error: Could not cancel the order.
+order_cancel_success: Order cancelled successfully.
+footer_newsletter_placeholder: Your email address

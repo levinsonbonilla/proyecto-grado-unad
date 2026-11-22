@@ -33,7 +33,7 @@ final class ClearCartUseCase implements ClearCartInterface
                 return;
             }
 
-            $items = $this->cartRepository->findBy(['user' => $user, 'active' => true]);
+            $items = $this->cartRepository->findActiveForUserInDomain($user, $this->getDomainData->getDomainCache());
             foreach ($items as $item) {
                 $item->deactivate();
                 $this->em->add($item, false);

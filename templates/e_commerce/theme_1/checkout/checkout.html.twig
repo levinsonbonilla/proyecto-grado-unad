@@ -80,6 +80,9 @@
                             </select>
                         </div>
                         <div id="paymentInstructions" class="stext-109 cl6 p-t-8" style="display:none;"></div>
+                        <div id="noPaymentMethodsNotice" class="alert alert-warning m-t-10" role="alert"{% if paymentMethods is not empty %} style="display:none;"{% endif %}>
+                            {{ 'no_payment_methods_available' | trans({}, 'store') }}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -122,7 +125,7 @@
                     </div>
 
                     <button id="confirmOrderBtn"
-                            class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 trans-04">
+                            class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 trans-04"{% if paymentMethods is empty %} disabled{% endif %}>
                         {{ 'confirm_order' | trans({}, 'store') | default('Confirmar pedido') }}
                     </button>
                 </div>
@@ -150,6 +153,7 @@ document.addEventListener('DOMContentLoaded', function () {
         processingOrder: '{{ 'processing_order' | trans({}, 'store') | default('Procesando...') | e('js') }}',
         orderProcessingError: '{{ 'order_processing_error' | trans({}, 'store') | default('Error al procesar el pedido.') | e('js') }}',
         confirmOrder: '{{ 'confirm_order' | trans({}, 'store') | default('Confirmar pedido') | e('js') }}',
+        paymentMethodRequired: '{{ 'payment_method_required' | trans({}, 'store') | e('js') }}',
     };
 
     const paymentMethodSelect = document.getElementById('paymentMethodSelect');
@@ -190,6 +194,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     opt.setAttribute('data-instructions', pm.instructions || '');
                     paymentMethodSelect.appendChild(opt);
                 });
+                const hasMethods = data.length > 0;
+                document.getElementById('noPaymentMethodsNotice').style.display = hasMethods ? 'none' : 'block';
+                document.getElementById('confirmOrderBtn').disabled = !hasMethods;
                 const stillAvailable = Array.from(paymentMethodSelect.options).some(o => o.value === previousValue);
                 if (previousValue && stillAvailable) {
                     paymentMethodSelect.value = previousValue;
@@ -271,6 +278,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (!address || !countryId || !regionId || !cityId) {
             alert(i18n.shippingFieldsRequired);
+            return;
+        }
+
+        if (!paymentMethodId) {
+            alert(i18n.paymentMethodRequired);
             return;
         }
 

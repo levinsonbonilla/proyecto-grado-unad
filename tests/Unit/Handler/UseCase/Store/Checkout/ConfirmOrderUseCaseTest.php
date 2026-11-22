@@ -29,6 +29,10 @@ use App\Interface\Service\Currency\CurrentCurrencyResolverInterface;
 use App\Service\Payments\PaymentIntentResult;
 use App\Service\Payments\PaymentMethodAvailabilityResolverInterface;
 use App\Service\Products\LowStockAlertInterface;
+use App\Service\Products\ProductStockInterface;
+use App\Entity\Tenants\Domains\Domains;
+use Doctrine\DBAL\Connection;
+use Doctrine\ORM\EntityManagerInterface;
 use App\Service\Products\VariantLabelFormatterInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -63,6 +67,10 @@ class ConfirmOrderUseCaseTest extends TestCase
     private LowStockAlertInterface&MockObject $lowStockAlert;
     private PaymentMethodAvailabilityResolverInterface&MockObject $paymentMethodAvailability;
     private TranslatorInterface&MockObject $translator;
+    private ProductStockInterface&MockObject $productStock;
+    private EntityManagerInterface&MockObject $entityManager;
+    private Connection&MockObject $connection;
+    private Domains&MockObject $domain;
     private ConfirmOrderUseCase $useCase;
 
     protected function setUp(): void
@@ -102,11 +110,27 @@ class ConfirmOrderUseCaseTest extends TestCase
                     'invalid_shipping_location' => 'Ubicación de envío inválida.',
                     'pending_status_not_found' => 'Estado "Pendiente" no encontrado.',
                     'payment_method_not_available_for_location' => 'El método de pago seleccionado no está disponible para tu ubicación de envío.',
+                    'payment_method_required' => 'Selecciona un método de pago para confirmar el pedido.',
+                    'payment_method_invalid' => 'El método de pago seleccionado no es válido para esta tienda.',
                     'order_processing_error_ref' => 'Error al procesar el pedido. Ref: ' . ($parameters['%ref%'] ?? ''),
                     default => $id,
                 };
             }
         );
+
+        $this->productStock = $this->createMock(ProductStockInterface::class);
+        $this->productStock->method('available')->willReturnCallback(
+            fn (Products $product, ?ProductsColors $block = null) => $block !== null ? $block->getStock() : $product->getStock()
+        );
+        $this->connection = $this->createMock(Connection::class);
+        $this->connection->method('isTransactionActive')->willReturn(true);
+        $this->entityManager = $this->createMock(EntityManagerInterface::class);
+        $this->entityManager->method('getConnection')->willReturn($this->connection);
+
+        $this->domain = $this->createMock(Domains::class);
+        $this->domain->method('getId')->willReturn(Uuid::v4());
+        $this->domain->method('getDomain')->willReturn('localhost');
+        $this->getDomainData->method('getDomainCache')->willReturn($this->domain);
 
         $this->useCase = new ConfirmOrderUseCase(
             $this->security,
@@ -131,28 +155,30 @@ class ConfirmOrderUseCaseTest extends TestCase
             $this->lowStockAlert,
             $this->paymentMethodAvailability,
             $this->translator,
+            $this->productStock,
+            $this->entityManager,
         );
     }
 
     private function makeValidData(): array
     {
         return [
-            'address'   => 'Calle 123',
-            'countryId' => (string) Uuid::v4(),
-            'regionId'  => (string) Uuid::v4(),
-            'cityId'    => (string) Uuid::v4(),
+            'address'         => 'Calle 123',
+            'countryId'       => (string) Uuid::v4(),
+            'regionId'        => (string) Uuid::v4(),
+            'cityId'          => (string) Uuid::v4(),
+            'paymentMethodId' => (string) Uuid::v4(),
         ];
     }
 
-    private function makeCartWithItems(): array
+    private function makeCartWithItems(int $quantity = 1, ?string $colorId = null): array
     {
         $productId = (string) Uuid::v4();
-        return [
-            'items'    => [
-                ['cartItemId' => $productId, 'productId' => $productId, 'name' => 'Prod A', 'quantity' => 1, 'publicPrice' => 5000, 'itemTotal' => 5000],
-            ],
-            'subtotal' => 5000,
-        ];
+        $item = ['cartItemId' => $productId, 'productId' => $productId, 'name' => 'Prod A', 'quantity' => $quantity, 'publicPrice' => 5000, 'itemTotal' => 5000 * $quantity];
+        if ($colorId !== null) {
+            $item['colorId'] = $colorId;
+        }
+        return ['items' => [$item], 'subtotal' => 5000 * $quantity];
     }
 
     private function makeGeo(): array
@@ -161,6 +187,48 @@ class ConfirmOrderUseCaseTest extends TestCase
         $region  = $this->createMock(Regions::class);
         $city    = $this->createMock(Cities::class);
         return [$country, $region, $city];
+    }
+
+    private function givenAuthenticatedUserWithCart(array $cart): void
+    {
+        $user = $this->createMock(Users::class);
+        $user->method('getName')->willReturn('Test');
+        $user->method('getEmail')->willReturn('test@test.com');
+        $this->security->method('getUser')->willReturn($user);
+        $this->getCart->method('handler')->willReturn($cart);
+    }
+
+    private function givenValidGeoAndStatus(): void
+    {
+        [$country, $region, $city] = $this->makeGeo();
+        $country->method('getName')->willReturn('Colombia');
+        $this->countriesRepository->method('find')->willReturn($country);
+        $this->regionsRepository->method('find')->willReturn($region);
+        $this->citiesRepository->method('find')->willReturn($city);
+
+        $status = $this->createMock(Status::class);
+        $status->method('getName')->willReturn('Pendiente');
+        $this->statusRepository->method('findOneBy')->willReturn($status);
+    }
+
+    private function givenPaymentMethod(string $provider = PaymentMethods::PROVIDER_MANUAL, bool $active = true, ?Domains $owner = null, bool $available = true): PaymentMethods&MockObject
+    {
+        $paymentMethod = $this->createMock(PaymentMethods::class);
+        $paymentMethod->method('getProvider')->willReturn($provider);
+        $paymentMethod->method('isActive')->willReturn($active);
+        $paymentMethod->method('getDomain')->willReturn($owner ?? $this->domain);
+        $this->paymentMethodsRepository->method('find')->willReturn($paymentMethod);
+        $this->paymentMethodAvailability->method('isAvailable')->willReturn($available);
+        return $paymentMethod;
+    }
+
+    private function givenProduct(?int $stock): Products&MockObject
+    {
+        $product = $this->createMock(Products::class);
+        $product->method('getName')->willReturn('Prod A');
+        $product->method('getStock')->willReturn($stock);
+        $this->productsRepository->method('find')->willReturn($product);
+        return $product;
     }
 
     public function testHandlerReturnsFalseWhenNotAuthenticated(): void
@@ -173,9 +241,7 @@ class ConfirmOrderUseCaseTest extends TestCase
 
     public function testHandlerReturnsFalseWhenCartIsEmpty(): void
     {
-        $user = $this->createMock(Users::class);
-        $this->security->method('getUser')->willReturn($user);
-        $this->getCart->method('handler')->willReturn(['items' => [], 'subtotal' => 0]);
+        $this->givenAuthenticatedUserWithCart(['items' => [], 'subtotal' => 0]);
 
         $result = $this->useCase->handler($this->makeValidData());
         $this->assertFalse($result['success']);
@@ -184,9 +250,7 @@ class ConfirmOrderUseCaseTest extends TestCase
 
     public function testHandlerReturnsFalseWhenAddressIsIncomplete(): void
     {
-        $user = $this->createMock(Users::class);
-        $this->security->method('getUser')->willReturn($user);
-        $this->getCart->method('handler')->willReturn($this->makeCartWithItems());
+        $this->givenAuthenticatedUserWithCart($this->makeCartWithItems());
 
         $result = $this->useCase->handler(['address' => '', 'countryId' => '', 'regionId' => '', 'cityId' => '']);
         $this->assertFalse($result['success']);
@@ -195,9 +259,7 @@ class ConfirmOrderUseCaseTest extends TestCase
 
     public function testHandlerReturnsFalseWhenLocationNotFound(): void
     {
-        $user = $this->createMock(Users::class);
-        $this->security->method('getUser')->willReturn($user);
-        $this->getCart->method('handler')->willReturn($this->makeCartWithItems());
+        $this->givenAuthenticatedUserWithCart($this->makeCartWithItems());
         $this->countriesRepository->method('find')->willReturn(null);
 
         $result = $this->useCase->handler($this->makeValidData());
@@ -207,10 +269,7 @@ class ConfirmOrderUseCaseTest extends TestCase
 
     public function testHandlerReturnsFalseWhenStatusNotFound(): void
     {
-        $user = $this->createMock(Users::class);
-        $this->security->method('getUser')->willReturn($user);
-        $this->getCart->method('handler')->willReturn($this->makeCartWithItems());
-
+        $this->givenAuthenticatedUserWithCart($this->makeCartWithItems());
         [$country, $region, $city] = $this->makeGeo();
         $this->countriesRepository->method('find')->willReturn($country);
         $this->regionsRepository->method('find')->willReturn($region);
@@ -222,31 +281,65 @@ class ConfirmOrderUseCaseTest extends TestCase
         $this->assertFalse($result['success']);
     }
 
+    public function testHandlerRejectsWhenPaymentMethodIsMissing(): void
+    {
+        $this->givenAuthenticatedUserWithCart($this->makeCartWithItems());
+        $this->givenValidGeoAndStatus();
+        $this->givenProduct(5);
+        $this->productStock->expects($this->never())->method('reserve');
+        $this->em->expects($this->never())->method('flush');
+
+        $data = $this->makeValidData();
+        unset($data['paymentMethodId']);
+        $result = $this->useCase->handler($data);
+
+        $this->assertFalse($result['success']);
+        $this->assertStringContainsString('método de pago', $result['message']);
+    }
+
+    public function testHandlerRejectsInactivePaymentMethod(): void
+    {
+        $this->givenAuthenticatedUserWithCart($this->makeCartWithItems());
+        $this->givenValidGeoAndStatus();
+        $this->givenProduct(5);
+        $this->givenPaymentMethod(active: false);
+        $this->productStock->expects($this->never())->method('reserve');
+
+        $result = $this->useCase->handler($this->makeValidData());
+
+        $this->assertFalse($result['success']);
+        $this->assertStringContainsString('no es válido', $result['message']);
+    }
+
+    public function testHandlerRejectsPaymentMethodOfAnotherDomain(): void
+    {
+        $this->givenAuthenticatedUserWithCart($this->makeCartWithItems());
+        $this->givenValidGeoAndStatus();
+        $this->givenProduct(5);
+        $foreignDomain = $this->createMock(Domains::class);
+        $foreignDomain->method('getId')->willReturn(Uuid::v4());
+        $this->givenPaymentMethod(owner: $foreignDomain);
+        $this->productStock->expects($this->never())->method('reserve');
+
+        $result = $this->useCase->handler($this->makeValidData());
+
+        $this->assertFalse($result['success']);
+        $this->assertStringContainsString('no es válido', $result['message']);
+    }
+
     public function testHandlerCreatesOrderSuccessfully(): void
     {
-        $user = $this->createMock(Users::class);
-        $user->method('getName')->willReturn('Test');
-        $user->method('getEmail')->willReturn('test@test.com');
-        $this->security->method('getUser')->willReturn($user);
-        $this->getCart->method('handler')->willReturn($this->makeCartWithItems());
-
-        [$country, $region, $city] = $this->makeGeo();
-        $country->method('getName')->willReturn('Colombia');
-        $this->countriesRepository->method('find')->willReturn($country);
-        $this->regionsRepository->method('find')->willReturn($region);
-        $this->citiesRepository->method('find')->willReturn($city);
-
-        $status = $this->createMock(Status::class);
-        $status->method('getName')->willReturn('Pendiente');
-        $this->statusRepository->method('findOneBy')->willReturn($status);
+        $this->givenAuthenticatedUserWithCart($this->makeCartWithItems());
+        $this->givenValidGeoAndStatus();
+        $this->givenProduct(null);
+        $this->givenPaymentMethod();
+        $this->productStock->method('reserve')->willReturn(true);
 
         $this->em->expects($this->atLeastOnce())->method('add');
-        $this->em->expects($this->once())->method('flush');
+        $this->em->expects($this->atLeastOnce())->method('flush');
+        $this->connection->expects($this->once())->method('beginTransaction');
+        $this->connection->expects($this->once())->method('commit');
         $this->clearCart->expects($this->once())->method('handler');
-
-        $domain = $this->createMock(\App\Entity\Tenants\Domains\Domains::class);
-        $domain->method('getDomain')->willReturn('localhost');
-        $this->getDomainData->method('getDomainCache')->willReturn($domain);
 
         $result = $this->useCase->handler($this->makeValidData());
         $this->assertTrue($result['success']);
@@ -255,29 +348,15 @@ class ConfirmOrderUseCaseTest extends TestCase
 
     public function testHandlerRedirectsToGatewayWhenPaymentMethodIsMockGateway(): void
     {
-        $user = $this->createMock(Users::class);
-        $user->method('getEmail')->willReturn('test@test.com');
-        $this->security->method('getUser')->willReturn($user);
-        $this->getCart->method('handler')->willReturn($this->makeCartWithItems());
-
-        [$country, $region, $city] = $this->makeGeo();
-        $this->countriesRepository->method('find')->willReturn($country);
-        $this->regionsRepository->method('find')->willReturn($region);
-        $this->citiesRepository->method('find')->willReturn($city);
-
-        $status = $this->createMock(Status::class);
-        $status->method('getName')->willReturn('Pendiente');
-        $this->statusRepository->method('findOneBy')->willReturn($status);
-
-        $paymentMethod = $this->createMock(PaymentMethods::class);
-        $paymentMethod->method('getProvider')->willReturn(PaymentMethods::PROVIDER_MOCK_GATEWAY);
-        $this->paymentMethodsRepository->method('find')->willReturn($paymentMethod);
-        $this->paymentMethodAvailability->method('isAvailable')->willReturn(true);
+        $this->givenAuthenticatedUserWithCart($this->makeCartWithItems());
+        $this->givenValidGeoAndStatus();
+        $this->givenProduct(null);
+        $this->givenPaymentMethod(PaymentMethods::PROVIDER_MOCK_GATEWAY);
+        $this->productStock->method('reserve')->willReturn(true);
 
         $request = $this->createMock(\Symfony\Component\HttpFoundation\Request::class);
         $request->method('getLocale')->willReturn('es');
         $this->requestStack->method('getCurrentRequest')->willReturn($request);
-
         $this->urlGenerator->method('generate')->willReturn('https://proyecto-grado-unad.test/es/checkout/return/x');
 
         $this->paymentGatewayClient->expects($this->once())
@@ -287,10 +366,7 @@ class ConfirmOrderUseCaseTest extends TestCase
         $this->mailer->expects($this->never())->method('send');
         $this->clearCart->expects($this->once())->method('handler');
 
-        $data = $this->makeValidData();
-        $data['paymentMethodId'] = (string) Uuid::v4();
-
-        $result = $this->useCase->handler($data);
+        $result = $this->useCase->handler($this->makeValidData());
 
         $this->assertTrue($result['success']);
         $this->assertTrue($result['requiresPayment']);
@@ -299,31 +375,12 @@ class ConfirmOrderUseCaseTest extends TestCase
 
     public function testHandlerRejectsWhenStockInsufficientForTrackedProduct(): void
     {
-        $user = $this->createMock(Users::class);
-        $this->security->method('getUser')->willReturn($user);
-
-        $productId = (string) Uuid::v4();
-        $this->getCart->method('handler')->willReturn([
-            'items' => [
-                ['cartItemId' => $productId, 'productId' => $productId, 'name' => 'Prod A', 'quantity' => 5, 'publicPrice' => 5000, 'itemTotal' => 25000],
-            ],
-            'subtotal' => 25000,
-        ]);
-
-        [$country, $region, $city] = $this->makeGeo();
-        $this->countriesRepository->method('find')->willReturn($country);
-        $this->regionsRepository->method('find')->willReturn($region);
-        $this->citiesRepository->method('find')->willReturn($city);
-
-        $status = $this->createMock(Status::class);
-        $status->method('getName')->willReturn('Pendiente');
-        $this->statusRepository->method('findOneBy')->willReturn($status);
-
-        $product = $this->createMock(Products::class);
-        $product->method('getName')->willReturn('Prod A');
-        $product->method('getStock')->willReturn(2);
-        $product->expects($this->never())->method('decreaseStock');
-        $this->productsRepository->method('find')->willReturn($product);
+        $this->givenAuthenticatedUserWithCart($this->makeCartWithItems(5));
+        $this->givenValidGeoAndStatus();
+        $this->givenProduct(2);
+        $this->givenPaymentMethod();
+        $this->productStock->method('currentAvailable')->willReturn(2);
+        $this->productStock->expects($this->never())->method('reserve');
 
         $this->em->expects($this->never())->method('flush');
         $this->clearCart->expects($this->never())->method('handler');
@@ -333,185 +390,96 @@ class ConfirmOrderUseCaseTest extends TestCase
         $this->assertFalse($result['success']);
         $this->assertStringContainsString('stock', $result['message']);
         $this->assertStringContainsString('Prod A', $result['message']);
+        $this->assertStringContainsString('Disponible: 2', $result['message']);
+    }
+
+    public function testHandlerRollsBackWhenAtomicReservationLosesTheRace(): void
+    {
+        $this->givenAuthenticatedUserWithCart($this->makeCartWithItems(3));
+        $this->givenValidGeoAndStatus();
+        $this->givenProduct(5);
+        $this->givenPaymentMethod();
+        $this->productStock->method('reserve')->willReturn(false);
+        $this->productStock->method('currentAvailable')->willReturn(0);
+
+        $this->connection->expects($this->once())->method('rollBack');
+        $this->connection->expects($this->never())->method('commit');
+        $this->em->expects($this->never())->method('flush');
+        $this->clearCart->expects($this->never())->method('handler');
+
+        $result = $this->useCase->handler($this->makeValidData());
+
+        $this->assertFalse($result['success']);
+        $this->assertStringContainsString('Disponible: 0, solicitado: 3', $result['message']);
     }
 
     public function testHandlerCreatesOrderWhenProductStockIsNull(): void
     {
-        $user = $this->createMock(Users::class);
-        $user->method('getName')->willReturn('Test');
-        $user->method('getEmail')->willReturn('test@test.com');
-        $this->security->method('getUser')->willReturn($user);
-        $this->getCart->method('handler')->willReturn($this->makeCartWithItems());
-
-        [$country, $region, $city] = $this->makeGeo();
-        $country->method('getName')->willReturn('Colombia');
-        $this->countriesRepository->method('find')->willReturn($country);
-        $this->regionsRepository->method('find')->willReturn($region);
-        $this->citiesRepository->method('find')->willReturn($city);
-
-        $status = $this->createMock(Status::class);
-        $status->method('getName')->willReturn('Pendiente');
-        $this->statusRepository->method('findOneBy')->willReturn($status);
-
-        $product = $this->createMock(Products::class);
-        $product->method('getStock')->willReturn(null);
-        $product->expects($this->once())->method('decreaseStock');
-
-        $this->productsRepository->method('find')->willReturn($product);
-
-        $domain = $this->createMock(\App\Entity\Tenants\Domains\Domains::class);
-        $domain->method('getDomain')->willReturn('localhost');
-        $this->getDomainData->method('getDomainCache')->willReturn($domain);
+        $this->givenAuthenticatedUserWithCart($this->makeCartWithItems());
+        $this->givenValidGeoAndStatus();
+        $product = $this->givenProduct(null);
+        $this->givenPaymentMethod();
+        $this->productStock->expects($this->once())->method('reserve')->with($product, null, 1)->willReturn(true);
 
         $result = $this->useCase->handler($this->makeValidData());
         $this->assertTrue($result['success']);
     }
 
-    public function testHandlerDecreasesStockOnSuccessfulConfirmation(): void
+    public function testHandlerReservesStockOnSuccessfulConfirmation(): void
     {
-        $user = $this->createMock(Users::class);
-        $user->method('getName')->willReturn('Test');
-        $user->method('getEmail')->willReturn('test@test.com');
-        $this->security->method('getUser')->willReturn($user);
-
-        $productId = (string) Uuid::v4();
-        $this->getCart->method('handler')->willReturn([
-            'items' => [
-                ['cartItemId' => $productId, 'productId' => $productId, 'name' => 'Prod A', 'quantity' => 2, 'publicPrice' => 5000, 'itemTotal' => 10000],
-            ],
-            'subtotal' => 10000,
-        ]);
-
-        [$country, $region, $city] = $this->makeGeo();
-        $country->method('getName')->willReturn('Colombia');
-        $this->countriesRepository->method('find')->willReturn($country);
-        $this->regionsRepository->method('find')->willReturn($region);
-        $this->citiesRepository->method('find')->willReturn($city);
-
-        $status = $this->createMock(Status::class);
-        $status->method('getName')->willReturn('Pendiente');
-        $this->statusRepository->method('findOneBy')->willReturn($status);
-
-        $product = $this->createMock(Products::class);
-        $product->method('getStock')->willReturn(5);
-        $product->expects($this->once())->method('decreaseStock')->with(2);
-        $this->productsRepository->method('find')->willReturn($product);
-
-        $domain = $this->createMock(\App\Entity\Tenants\Domains\Domains::class);
-        $domain->method('getDomain')->willReturn('localhost');
-        $this->getDomainData->method('getDomainCache')->willReturn($domain);
+        $this->givenAuthenticatedUserWithCart($this->makeCartWithItems(2));
+        $this->givenValidGeoAndStatus();
+        $product = $this->givenProduct(5);
+        $this->givenPaymentMethod();
+        $product->expects($this->never())->method('decreaseStock');
+        $this->productStock->expects($this->once())->method('reserve')->with($product, null, 2)->willReturn(true);
 
         $result = $this->useCase->handler($this->makeValidData());
         $this->assertTrue($result['success']);
     }
 
-    public function testHandlerDecreasesGeneralStockEvenWithColorSelected(): void
+    public function testHandlerReservesBlockAndGeneralStockWhenColorSelected(): void
     {
-        $user = $this->createMock(Users::class);
-        $user->method('getName')->willReturn('Test');
-        $user->method('getEmail')->willReturn('test@test.com');
-        $this->security->method('getUser')->willReturn($user);
-
-        $productId = (string) Uuid::v4();
-        $colorId   = (string) Uuid::v4();
-        $this->getCart->method('handler')->willReturn([
-            'items' => [
-                ['cartItemId' => $productId, 'productId' => $productId, 'colorId' => $colorId, 'name' => 'Prod A', 'quantity' => 2, 'publicPrice' => 5000, 'itemTotal' => 10000],
-            ],
-            'subtotal' => 10000,
-        ]);
-
-        [$country, $region, $city] = $this->makeGeo();
-        $country->method('getName')->willReturn('Colombia');
-        $this->countriesRepository->method('find')->willReturn($country);
-        $this->regionsRepository->method('find')->willReturn($region);
-        $this->citiesRepository->method('find')->willReturn($city);
-
-        $status = $this->createMock(Status::class);
-        $status->method('getName')->willReturn('Pendiente');
-        $this->statusRepository->method('findOneBy')->willReturn($status);
-
-        $product = $this->createMock(Products::class);
-        $product->method('getStock')->willReturn(20);
-        $product->expects($this->once())->method('decreaseStock')->with(2);
-        $this->productsRepository->method('find')->willReturn($product);
+        $colorId = (string) Uuid::v4();
+        $this->givenAuthenticatedUserWithCart($this->makeCartWithItems(2, $colorId));
+        $this->givenValidGeoAndStatus();
+        $product = $this->givenProduct(20);
+        $this->givenPaymentMethod();
 
         $productColor = $this->createMock(ProductsColors::class);
         $productColor->method('getStock')->willReturn(10);
-        $productColor->expects($this->once())->method('decreaseStock')->with(2);
         $this->productsColorsRepository->method('find')->willReturn($productColor);
 
-        $domain = $this->createMock(\App\Entity\Tenants\Domains\Domains::class);
-        $domain->method('getDomain')->willReturn('localhost');
-        $this->getDomainData->method('getDomainCache')->willReturn($domain);
+        $this->productStock->expects($this->once())->method('reserve')->with($product, $productColor, 2)->willReturn(true);
 
         $result = $this->useCase->handler($this->makeValidData());
         $this->assertTrue($result['success']);
     }
 
-    public function testHandlerNotifiesLowStockForProductAfterFlush(): void
+    public function testHandlerNotifiesLowStockForProductAfterCommit(): void
     {
-        $user = $this->createMock(Users::class);
-        $user->method('getName')->willReturn('Test');
-        $user->method('getEmail')->willReturn('test@test.com');
-        $this->security->method('getUser')->willReturn($user);
-        $this->getCart->method('handler')->willReturn($this->makeCartWithItems());
+        $this->givenAuthenticatedUserWithCart($this->makeCartWithItems());
+        $this->givenValidGeoAndStatus();
+        $product = $this->givenProduct(3);
+        $this->givenPaymentMethod();
+        $this->productStock->method('reserve')->willReturn(true);
 
-        [$country, $region, $city] = $this->makeGeo();
-        $country->method('getName')->willReturn('Colombia');
-        $this->countriesRepository->method('find')->willReturn($country);
-        $this->regionsRepository->method('find')->willReturn($region);
-        $this->citiesRepository->method('find')->willReturn($city);
-
-        $status = $this->createMock(Status::class);
-        $status->method('getName')->willReturn('Pendiente');
-        $this->statusRepository->method('findOneBy')->willReturn($status);
-
-        $product = $this->createMock(Products::class);
-        $product->method('getStock')->willReturn(3);
-        $this->productsRepository->method('find')->willReturn($product);
-
+        $this->entityManager->expects($this->atLeastOnce())->method('refresh')->with($product);
         $this->lowStockAlert->method('markProductIfLow')->with($product)->willReturn(true);
         $this->lowStockAlert->expects($this->once())->method('notifyProduct')->with($product);
         $this->lowStockAlert->expects($this->never())->method('notifyBlock');
 
-        $domain = $this->createMock(\App\Entity\Tenants\Domains\Domains::class);
-        $domain->method('getDomain')->willReturn('localhost');
-        $this->getDomainData->method('getDomainCache')->willReturn($domain);
-
         $result = $this->useCase->handler($this->makeValidData());
         $this->assertTrue($result['success']);
     }
 
-    public function testHandlerNotifiesLowStockForBlockAfterFlush(): void
+    public function testHandlerNotifiesLowStockForBlockAfterCommit(): void
     {
-        $user = $this->createMock(Users::class);
-        $user->method('getName')->willReturn('Test');
-        $user->method('getEmail')->willReturn('test@test.com');
-        $this->security->method('getUser')->willReturn($user);
-
-        $productId = (string) Uuid::v4();
-        $colorId   = (string) Uuid::v4();
-        $this->getCart->method('handler')->willReturn([
-            'items' => [
-                ['cartItemId' => $productId, 'productId' => $productId, 'colorId' => $colorId, 'name' => 'Prod A', 'quantity' => 1, 'publicPrice' => 5000, 'itemTotal' => 5000],
-            ],
-            'subtotal' => 5000,
-        ]);
-
-        [$country, $region, $city] = $this->makeGeo();
-        $country->method('getName')->willReturn('Colombia');
-        $this->countriesRepository->method('find')->willReturn($country);
-        $this->regionsRepository->method('find')->willReturn($region);
-        $this->citiesRepository->method('find')->willReturn($city);
-
-        $status = $this->createMock(Status::class);
-        $status->method('getName')->willReturn('Pendiente');
-        $this->statusRepository->method('findOneBy')->willReturn($status);
-
-        $product = $this->createMock(Products::class);
-        $product->method('getStock')->willReturn(20);
-        $this->productsRepository->method('find')->willReturn($product);
+        $this->givenAuthenticatedUserWithCart($this->makeCartWithItems(1, (string) Uuid::v4()));
+        $this->givenValidGeoAndStatus();
+        $this->givenProduct(20);
+        $this->givenPaymentMethod();
+        $this->productStock->method('reserve')->willReturn(true);
 
         $productColor = $this->createMock(ProductsColors::class);
         $productColor->method('getStock')->willReturn(1);
@@ -521,40 +489,22 @@ class ConfirmOrderUseCaseTest extends TestCase
         $this->lowStockAlert->expects($this->once())->method('notifyBlock')->with($productColor);
         $this->lowStockAlert->expects($this->never())->method('notifyProduct');
 
-        $domain = $this->createMock(\App\Entity\Tenants\Domains\Domains::class);
-        $domain->method('getDomain')->willReturn('localhost');
-        $this->getDomainData->method('getDomainCache')->willReturn($domain);
-
         $result = $this->useCase->handler($this->makeValidData());
         $this->assertTrue($result['success']);
     }
 
     public function testHandlerRejectsWhenPaymentMethodNotAvailableForShippingLocation(): void
     {
-        $user = $this->createMock(Users::class);
-        $this->security->method('getUser')->willReturn($user);
-        $this->getCart->method('handler')->willReturn($this->makeCartWithItems());
+        $this->givenAuthenticatedUserWithCart($this->makeCartWithItems());
+        $this->givenValidGeoAndStatus();
+        $this->givenProduct(5);
+        $this->givenPaymentMethod(available: false);
 
-        [$country, $region, $city] = $this->makeGeo();
-        $this->countriesRepository->method('find')->willReturn($country);
-        $this->regionsRepository->method('find')->willReturn($region);
-        $this->citiesRepository->method('find')->willReturn($city);
-
-        $status = $this->createMock(Status::class);
-        $status->method('getName')->willReturn('Pendiente');
-        $this->statusRepository->method('findOneBy')->willReturn($status);
-
-        $paymentMethod = $this->createMock(PaymentMethods::class);
-        $this->paymentMethodsRepository->method('find')->willReturn($paymentMethod);
-        $this->paymentMethodAvailability->method('isAvailable')->willReturn(false);
-
+        $this->productStock->expects($this->never())->method('reserve');
         $this->em->expects($this->never())->method('flush');
         $this->clearCart->expects($this->never())->method('handler');
 
-        $data = $this->makeValidData();
-        $data['paymentMethodId'] = (string) Uuid::v4();
-
-        $result = $this->useCase->handler($data);
+        $result = $this->useCase->handler($this->makeValidData());
 
         $this->assertFalse($result['success']);
         $this->assertStringContainsString('no está disponible', $result['message']);

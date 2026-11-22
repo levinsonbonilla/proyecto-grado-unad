@@ -40,7 +40,7 @@ final class GetCartUseCase implements GetCartInterface
 
     private function getDbCart(Users $user): array
     {
-        $items = $this->cartRepository->getActiveItemsForUser($user);
+        $items = $this->cartRepository->getActiveItemsForUser($user, $this->getDomainData->getDomainCache());
 
         foreach ($items as &$item) {
 
@@ -48,6 +48,8 @@ final class GetCartUseCase implements GetCartInterface
                 $item['image'] = $item['colorImage'];
             }
             $item['colorId'] = $item['productColorId'] ?? null;
+            $item['maxQuantity'] = $item['colorId'] !== null ? $item['blockStock'] : $item['productStock'];
+            unset($item['blockStock'], $item['productStock']);
         }
         unset($item);
 
@@ -74,6 +76,7 @@ final class GetCartUseCase implements GetCartInterface
             if ($product === null || !$product->isActive()) {
                 continue;
             }
+            $maxQuantity = $product->getStock();
 
             $colorName  = null;
             $colorHex   = null;
@@ -82,6 +85,7 @@ final class GetCartUseCase implements GetCartInterface
             if (!empty($colorId)) {
                 $productColor = $this->productsColorsRepository->find(StringUtil::convertToUuid($colorId));
                 if ($productColor !== null && $productColor->isActive()) {
+                    $maxQuantity = $productColor->getStock();
 
                     $colorName  = $productColor->getColor()?->getName();
                     $colorHex   = $productColor->getColor()?->getHexCode();
@@ -102,6 +106,7 @@ final class GetCartUseCase implements GetCartInterface
                 'colorName'     => $colorName,
                 'colorHexCode'  => $colorHex,
                 'medidaName'    => $medidaName,
+                'maxQuantity'   => $maxQuantity,
             ];
         }
 

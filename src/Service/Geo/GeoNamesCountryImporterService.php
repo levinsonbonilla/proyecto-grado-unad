@@ -2,17 +2,14 @@
 
 namespace App\Service\Geo;
 
-use App\ArgumentHandler\CitiesArgument;
 use App\ArgumentHandler\CountriesArgument;
-use App\ArgumentHandler\RegionsArgument;
-use App\Entity\Configurations\Globals\Cities;
 use App\Entity\Configurations\Globals\Countries;
-use App\Entity\Configurations\Globals\Regions;
 use App\Exception\GenericException;
 use App\Interface\Configuration\CustomeEntityManagerInterface;
 use App\Repository\Configurations\Globals\CitiesRepository;
 use App\Repository\Configurations\Globals\CountriesRepository;
 use App\Repository\Configurations\Globals\RegionsRepository;
+use App\Util\GeoNameNormalizerUtil;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final readonly class GeoNamesCountryImporterService implements GeoNamesCountryImporterInterface
@@ -21,13 +18,17 @@ final readonly class GeoNamesCountryImporterService implements GeoNamesCountryIm
 
     private const ALWAYS_INCLUDE_FEATURE_CODES = ['PPLC', 'PPLA', 'PPLA2'];
 
+    private GeoCatalogInterface $geoCatalog;
+
     public function __construct(
         private HttpClientInterface $httpClient,
         private CountriesRepository $countriesRepository,
-        private RegionsRepository $regionsRepository,
-        private CitiesRepository $citiesRepository,
+        RegionsRepository $regionsRepository,
+        CitiesRepository $citiesRepository,
         private CustomeEntityManagerInterface $em,
+        ?GeoCatalogInterface $geoCatalog = null,
     ) {
+        $this->geoCatalog = $geoCatalog ?? new GeoCatalogService($regionsRepository, $citiesRepository, $em);
     }
 
     public function importCountry(string $isoCode, int $minPopulation = 5000): GeoNamesImportResult
@@ -103,22 +104,16 @@ final readonly class GeoNamesCountryImporterService implements GeoNamesCountryIm
                 continue;
             }
             $admin1Code = substr($code, strlen($isoCode) + 1);
+            $namesJson  = json_encode(['es' => GeoNameNormalizerUtil::stripAdministrativeSuffix($name)], JSON_UNESCAPED_UNICODE);
 
-            $existing = $this->regionsRepository->findOneBy(['isoCode' => $admin1Code, 'country' => $country]);
+            $existing = $this->geoCatalog->findRegion($country, $admin1Code, $namesJson);
             if ($existing !== null) {
                 $regionsById[$admin1Code] = $existing;
                 $skipped++;
                 continue;
             }
 
-            $region = (new Regions())->add(new RegionsArgument([
-                'name'        => json_encode(['es' => $name], JSON_UNESCAPED_UNICODE),
-                'description' => 'Región',
-                'isoCode'     => $admin1Code,
-            ], $country));
-            $this->em->add($region, false);
-
-            $regionsById[$admin1Code] = $region;
+            $regionsById[$admin1Code] = $this->geoCatalog->findOrCreateRegion($country, $admin1Code, $namesJson);
             $created++;
         }
 
@@ -142,18 +137,13 @@ final readonly class GeoNamesCountryImporterService implements GeoNamesCountryIm
                 continue;
             }
 
-            $existing = $this->citiesRepository->findOneBy(['name' => $geonameId]);
-            if ($existing !== null) {
+            $namesJson = json_encode(['es' => $name], JSON_UNESCAPED_UNICODE);
+            if ($this->geoCatalog->findCity($region, $geonameId, $namesJson) !== null) {
                 $skipped++;
                 continue;
             }
 
-            $city = (new Cities())->add(new CitiesArgument([
-                'name'        => $geonameId,
-                'description' => 'Ciudad',
-                'names'       => json_encode(['es' => $name], JSON_UNESCAPED_UNICODE),
-            ], $region));
-            $this->em->add($city, false);
+            $this->geoCatalog->findOrCreateCity($region, $geonameId, $namesJson);
             $created++;
         }
 

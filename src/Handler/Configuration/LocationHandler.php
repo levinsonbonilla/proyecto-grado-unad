@@ -2,9 +2,7 @@
 
 namespace App\Handler\Configuration;
 
-use App\ArgumentHandler\CitiesArgument;
 use App\ArgumentHandler\CountriesArgument;
-use App\ArgumentHandler\RegionsArgument;
 use App\Entity\Configurations\Globals\Cities;
 use App\Entity\Configurations\Globals\Countries;
 use App\Entity\Configurations\Globals\Regions;
@@ -13,6 +11,8 @@ use App\Interface\Configuration\LocationInterface;
 use App\Repository\Configurations\Globals\CitiesRepository;
 use App\Repository\Configurations\Globals\CountriesRepository;
 use App\Repository\Configurations\Globals\RegionsRepository;
+use App\Service\Geo\GeoCatalogInterface;
+use App\Service\Geo\GeoCatalogService;
 use GeoIp2\Database\Reader;
 use GeoIp2\Model\City;
 use GeoIp2\Record\City as RecordCity;
@@ -31,15 +31,19 @@ final class LocationHandler implements LocationInterface
     private ?Cities $city;
     private string $routeDirGeoIp;
     private string $isoCode;
+    private readonly GeoCatalogInterface $geoCatalog;
 
     public function __construct(
         private readonly RequestStack $request,
         private readonly ParameterBagInterface $parameters,
         private readonly CountriesRepository $countriesRepository,
-        private readonly RegionsRepository $regionsRepository,
-        private readonly CitiesRepository $citiesRepository,
-        private readonly CustomeEntityManagerInterface $customeEntityManager
+        RegionsRepository $regionsRepository,
+        CitiesRepository $citiesRepository,
+        private readonly CustomeEntityManagerInterface $customeEntityManager,
+        ?GeoCatalogInterface $geoCatalog = null,
     ) {
+        $this->geoCatalog = $geoCatalog ?? new GeoCatalogService($regionsRepository, $citiesRepository, $customeEntityManager);
+
         $this->routeDirGeoIp = rtrim(
             $parameters->get('kernel.project_dir'),
             DIRECTORY_SEPARATOR
@@ -140,26 +144,16 @@ final class LocationHandler implements LocationInterface
             return null;
         }
 
-        $return = $this->regionsRepository->findOneBy([
-            "isoCode" => $subdivisions->isoCode,
-            "active" => true
-        ]);
-
-        if (empty($return)) {
-            $data = [
-                "name" =>  json_encode($subdivisions->names),
-                "description" => json_encode($subdivisions),
-                "isoCode" => $subdivisions->isoCode
-            ];
-
-            $argument = new RegionsArgument($data, $this->country);
-            $regions = new Regions();
-            $regions->add($argument);
-            $this->customeEntityManager->add($regions, true);
-            $return = $regions;
+        if ($this->country === null) {
+            return null;
         }
 
-        return $return;
+        return $this->geoCatalog->ensureRegion(
+            $this->country,
+            $subdivisions->isoCode,
+            json_encode($subdivisions->names),
+            json_encode($subdivisions)
+        );
     }
 
     private function city(?RecordCity $city): ?Cities
@@ -168,26 +162,16 @@ final class LocationHandler implements LocationInterface
             return null;
         }
 
-        $return = $this->citiesRepository->findOneBy([
-            "name" => $city->geonameId,
-            "active" => true
-        ]);
-
-        if (empty($return)) {
-            $data = [
-                "names" =>  json_encode($city->names),
-                "description" => json_encode($city),
-                "name" => $city->geonameId
-            ];
-
-            $argument = new CitiesArgument($data, $this->region);
-            $cities = new Cities();
-            $cities->add($argument);
-            $this->customeEntityManager->add($cities, true);
-            $return = $cities;
+        if ($this->region === null) {
+            return null;
         }
 
-        return $return;
+        return $this->geoCatalog->ensureCity(
+            $this->region,
+            (string) $city->geonameId,
+            json_encode($city->names),
+            json_encode($city)
+        );
     }
 
     public function getCountry(): ?Countries

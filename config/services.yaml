@@ -61,6 +61,19 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: -10 }
 
+    App\EventListener\TenantResourceGuardListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller_arguments, method: onKernelControllerArguments }
+
+    App\Service\Products\ProductStockInterface:
+        class: App\Service\Products\ProductStockService
+
+    App\Service\Orders\OrderCancellationInterface:
+        class: App\Service\Orders\OrderCancellationService
+
+    App\Service\Geo\GeoCatalogInterface:
+        class: App\Service\Geo\GeoCatalogService
+
     App\Interface\UseCase\Messages\ComposeMessageInterface:
         class: App\Handler\UseCase\Messages\ComposeMessageUseCase
 

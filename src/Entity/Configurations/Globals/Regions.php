@@ -12,6 +12,7 @@ use App\Trait\Entity\DateFields;
 use App\Trait\Entity\IdFields;
 
 #[ORM\Entity(repositoryClass: RegionsRepository::class)]
+#[ORM\UniqueConstraint(name: 'uniq_regions_country_iso_code', columns: ['country_id', 'iso_code'])]
 #[ORM\HasLifecycleCallbacks]
 class Regions
 {
@@ -49,6 +50,11 @@ class Regions
         if ($names = json_decode($this->name, true)) {
             return $names[$locale] ?? $names[array_key_first($names)] ?? $this->name;
         }
+        return $this->name;
+    }
+
+    public function getRawName(): string
+    {
         return $this->name;
     }
 

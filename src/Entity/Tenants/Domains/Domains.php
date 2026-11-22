@@ -14,6 +14,8 @@ use App\Trait\Entity\IdFields;
 #[ORM\HasLifecycleCallbacks]
 class Domains
 {
+    public const PENDING_CONFIGURATION_SUFFIX = '.dominio-pendiente.invalid';
+
     use IdFields {
         initializeUuid as private initializeId;
     }
@@ -76,6 +78,16 @@ class Domains
     public function getDisplayName(): string
     {
         return $this->name ?: $this->domain;
+    }
+
+    public static function pendingConfigurationPlaceholder(): string
+    {
+        return 'pendiente-' . bin2hex(random_bytes(4)) . self::PENDING_CONFIGURATION_SUFFIX;
+    }
+
+    public function isPendingConfiguration(): bool
+    {
+        return str_ends_with($this->domain, self::PENDING_CONFIGURATION_SUFFIX);
     }
 
     public function getLogo(): string

@@ -91,5 +91,7 @@ registration_not_available_here: Customer registration is not available on this 
 
 phone_label: Phone
 phone_required_message: Phone is required.
-new_tenant_domain_placeholder: Replace with your domain
 registration_form_invalid_message: Please check the highlighted fields and try again.
+
+access_denied: Access denied
+internal_server_error: Internal server error

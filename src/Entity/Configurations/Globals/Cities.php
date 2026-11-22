@@ -10,6 +10,7 @@ use App\Trait\Entity\DateFields;
 use App\Trait\Entity\IdFields;
 
 #[ORM\Entity(repositoryClass: CitiesRepository::class)]
+#[ORM\UniqueConstraint(name: 'uniq_cities_geoname_id', columns: ['name'])]
 #[ORM\HasLifecycleCallbacks]
 class Cities
 {
@@ -40,6 +41,16 @@ class Cities
             $names = $data['names'] ?? $data;
             return $names[$locale] ?? $names['en'] ?? reset($names) ?? '';
         }
+        return $this->names;
+    }
+
+    public function getGeoNameId(): string
+    {
+        return $this->name;
+    }
+
+    public function getRawNames(): string
+    {
         return $this->names;
     }
 

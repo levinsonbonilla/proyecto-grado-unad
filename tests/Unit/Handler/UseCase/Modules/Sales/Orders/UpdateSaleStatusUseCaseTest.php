@@ -13,6 +13,7 @@ use App\Interface\Configuration\GetDomainDataInterface;
 use App\Interface\UseCase\Security\LogInterface;
 use App\Repository\Configurations\Globals\StatusRepository;
 use App\Repository\Products\Orders\PaymentTransactionsRepository;
+use App\Service\Orders\OrderCancellationInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Mailer\MailerInterface;
@@ -55,6 +56,7 @@ class UpdateSaleStatusUseCaseTest extends TestCase
             $this->mailer,
             $this->getDomainData,
             $this->log,
+            $this->createMock(OrderCancellationInterface::class),
         );
     }
 

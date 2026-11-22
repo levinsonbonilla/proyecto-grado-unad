@@ -17,6 +17,7 @@ use App\Repository\Products\Orders\PaymentTransactionsRepository;
 use App\Service\Currency\CurrencyFormat;
 use App\Interface\Service\Currency\CurrentCurrencyResolverInterface;
 use App\Service\Products\VariantLabelFormatterInterface;
+use App\Service\Orders\OrderCancellationInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Mailer\MailerInterface;
@@ -37,8 +38,11 @@ class HandlePaymentWebhookUseCaseTest extends TestCase
     private VariantLabelFormatterInterface&MockObject $variantLabelFormatter;
     private HandlePaymentWebhookUseCase $useCase;
 
+    private OrderCancellationInterface&MockObject $orderCancellation;
+
     protected function setUp(): void
     {
+        $this->orderCancellation = $this->createMock(OrderCancellationInterface::class);
         $this->paymentTransactionsRepository = $this->createMock(PaymentTransactionsRepository::class);
         $this->ordersProductsRepository = $this->createMock(OrdersProductsRepository::class);
         $this->statusRepository = $this->createMock(StatusRepository::class);
@@ -62,6 +66,7 @@ class HandlePaymentWebhookUseCaseTest extends TestCase
             self::SECRET,
             $this->currencyResolver,
             $this->variantLabelFormatter,
+            $this->orderCancellation,
         );
     }
 
@@ -162,7 +167,7 @@ class HandlePaymentWebhookUseCaseTest extends TestCase
         $this->statusRepository->method('findOneBy')->willReturn($newStatus);
 
         $order = $this->createMock(Orders::class);
-        $order->expects($this->once())->method('edit')->willReturnSelf();
+        $order->expects($this->never())->method('edit');
 
         $transaction = $this->createMock(PaymentTransactions::class);
         $transaction->method('getStatus')->willReturn($currentStatus);
@@ -171,6 +176,10 @@ class HandlePaymentWebhookUseCaseTest extends TestCase
 
         $this->paymentTransactionsRepository->method('findByGatewayReference')->willReturn($transaction);
 
+        $this->orderCancellation->expects($this->once())
+            ->method('cancel')
+            ->with($order, ['Pendiente'])
+            ->willReturn(true);
         $this->mailer->expects($this->never())->method('send');
 
         $result = $this->useCase->handler($body, $this->sign($body));

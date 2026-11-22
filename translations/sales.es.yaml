@@ -1,5 +1,5 @@
 view_detail: Ver detalle
-kpi_total_sales: Total ventas
+kpi_total_sales: Ventas confirmadas
 kpi_pending_payment: Pendientes de pago
 kpi_pending_shipment: Por enviar
 kpi_average_ticket: Ticket promedio
@@ -28,3 +28,5 @@ current_status: Estado actual
 new_status: Nuevo estado
 no_transitions_available: No hay transiciones disponibles desde este estado
 update_status_error: No se pudo actualizar el estado del pedido.
+kpi_total_sales_hint: Solo pedidos con pago confirmado (Procesando, Enviado, Entregado)
+kpi_pending_payment_amount: "Monto pendiente:"

@@ -22,10 +22,10 @@ final readonly class GeoCascadeResolverService implements GeoCascadeResolverInte
 
         $regions = $this->regionsRepository->findActiveByCountryIds($countryIds);
 
-        return array_map(fn ($r) => [
+        return $this->sortByName(array_map(fn ($r) => [
             'id'   => (string) $r->getId(),
             'name' => $r->getName($locale),
-        ], $regions);
+        ], $regions), $locale);
     }
 
     public function citiesForRegions(array $regionIds, string $locale): array
@@ -37,9 +37,17 @@ final readonly class GeoCascadeResolverService implements GeoCascadeResolverInte
 
         $cities = $this->citiesRepository->findActiveByRegionIds($regionIds);
 
-        return array_map(fn ($c) => [
+        return $this->sortByName(array_map(fn ($c) => [
             'id'   => (string) $c->getId(),
             'name' => $c->getName($locale),
-        ], $cities);
+        ], $cities), $locale);
+    }
+
+    private function sortByName(array $rows, string $locale): array
+    {
+        $collator = new \Collator($locale);
+        usort($rows, fn (array $a, array $b) => $collator->compare($a['name'], $b['name']));
+
+        return $rows;
     }
 }

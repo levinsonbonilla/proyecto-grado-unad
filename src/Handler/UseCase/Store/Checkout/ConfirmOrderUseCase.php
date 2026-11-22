@@ -27,8 +27,10 @@ use App\Interface\Service\Currency\CurrentCurrencyResolverInterface;
 use App\Service\Geo\GeoLocation;
 use App\Service\Payments\PaymentMethodAvailabilityResolverInterface;
 use App\Service\Products\LowStockAlertInterface;
+use App\Service\Products\ProductStockInterface;
 use App\Service\Products\VariantLabelFormatterInterface;
 use App\Util\StringUtil;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Mailer\MailerInterface;
@@ -61,6 +63,8 @@ final class ConfirmOrderUseCase implements ConfirmOrderInterface
         private readonly LowStockAlertInterface $lowStockAlert,
         private readonly PaymentMethodAvailabilityResolverInterface $paymentMethodAvailability,
         private readonly TranslatorInterface $translator,
+        private readonly ProductStockInterface $productStock,
+        private readonly EntityManagerInterface $entityManager,
     ) {}
 
     public function handler(array $data): array
@@ -116,28 +120,28 @@ final class ConfirmOrderUseCase implements ConfirmOrderInterface
                 }
                 $productColors[(string) $item['cartItemId']] = $productColor;
 
-                $stock = $productColor !== null ? $productColor->getStock() : $product->getStock();
+                $stock = $this->productStock->available($product, $productColor);
                 if ($stock !== null && $stock < (int) $item['quantity']) {
                     return [
                         'success' => false,
-                        'message' => sprintf(
-                            'No hay suficiente stock de "%s"%s. Disponible: %d, solicitado: %d.',
-                            $product->getName(),
-
-                            ($productColor !== null && $productColor->getColor() !== null) ? ' (' . $productColor->getColor()->getName() . ')' : '',
-                            $stock,
-                            (int) $item['quantity']
-                        ),
+                        'message' => $this->insufficientStockMessage($product, $productColor, (int) $item['quantity']),
                     ];
                 }
             }
 
-            $paymentMethod = null;
-            if (!empty($data['paymentMethodId'])) {
-                $paymentMethod = $this->paymentMethodsRepository->find(StringUtil::convertToUuid($data['paymentMethodId']));
+            if (empty($data['paymentMethodId'])) {
+                return ['success' => false, 'message' => $this->translator->trans('payment_method_required', [], 'store', $locale)];
             }
 
-            if ($paymentMethod !== null && !$this->paymentMethodAvailability->isAvailable($paymentMethod, new GeoLocation($country, $region, $city))) {
+            $paymentMethod = $this->paymentMethodsRepository->find(StringUtil::convertToUuid((string) $data['paymentMethodId']));
+            $domain = $this->getDomainData->getDomainCache();
+            if ($paymentMethod === null
+                || !$paymentMethod->isActive()
+                || (string) $paymentMethod->getDomain()->getId() !== (string) $domain->getId()) {
+                return ['success' => false, 'message' => $this->translator->trans('payment_method_invalid', [], 'store', $locale)];
+            }
+
+            if (!$this->paymentMethodAvailability->isAvailable($paymentMethod, new GeoLocation($country, $region, $city))) {
                 return [
                     'success' => false,
                     'message' => $this->translator->trans('payment_method_not_available_for_location', [], 'store', $locale),
@@ -146,61 +150,69 @@ final class ConfirmOrderUseCase implements ConfirmOrderInterface
 
             $totalAmount = (string) $cart['subtotal'];
 
-            $order = (new Orders())->add(
-                $user,
-                $totalAmount,
-                $address,
-                $country,
-                $region,
-                $city,
-                $status,
-            );
-            $this->em->add($order, false);
-
-            $lowStockProducts = [];
-            $lowStockBlocks = [];
-
-            foreach ($cart['items'] as $item) {
-                $product = $products[(string) $item['cartItemId']] ?? null;
-                if ($product === null) {
-                    continue;
-                }
-                $productColor = $productColors[(string) $item['cartItemId']] ?? null;
-
-                $orderProduct = (new OrdersProducts())->add(
-                    $order,
-                    $product,
-                    (string) $item['quantity'],
-                    (string) $item['publicPrice'],
-                    (string) $item['itemTotal'],
-                    $productColor,
-                );
-                $this->em->add($orderProduct, false);
-
-                if ($productColor !== null) {
-                    $productColor->decreaseStock((int) $item['quantity']);
-                    $this->em->add($productColor, false);
-                    if ($this->lowStockAlert->markBlockIfLow($productColor)) {
-                        $lowStockBlocks[] = $productColor;
+            $connection = $this->entityManager->getConnection();
+            $connection->beginTransaction();
+            try {
+                foreach ($cart['items'] as $item) {
+                    $product = $products[(string) $item['cartItemId']] ?? null;
+                    if ($product === null) {
+                        continue;
+                    }
+                    $productColor = $productColors[(string) $item['cartItemId']] ?? null;
+                    if (!$this->productStock->reserve($product, $productColor, (int) $item['quantity'])) {
+                        $connection->rollBack();
+                        return [
+                            'success' => false,
+                            'message' => $this->insufficientStockMessage($product, $productColor, (int) $item['quantity']),
+                        ];
                     }
                 }
-                $product->decreaseStock((int) $item['quantity']);
-                $this->em->add($product, false);
-                if ($this->lowStockAlert->markProductIfLow($product)) {
-                    $lowStockProducts[] = $product;
-                }
-            }
 
-            $tx = null;
-            if ($paymentMethod !== null || $cart['subtotal'] > 0) {
+                $order = (new Orders())->add(
+                    $user,
+                    $totalAmount,
+                    $address,
+                    $country,
+                    $region,
+                    $city,
+                    $status,
+                );
+                $this->em->add($order, false);
+
+                foreach ($cart['items'] as $item) {
+                    $product = $products[(string) $item['cartItemId']] ?? null;
+                    if ($product === null) {
+                        continue;
+                    }
+                    $productColor = $productColors[(string) $item['cartItemId']] ?? null;
+
+                    $orderProduct = (new OrdersProducts())->add(
+                        $order,
+                        $product,
+                        (string) $item['quantity'],
+                        (string) $item['publicPrice'],
+                        (string) $item['itemTotal'],
+                        $productColor,
+                    );
+                    $this->em->add($orderProduct, false);
+                }
+
                 $txStatus = $this->statusRepository->findOneBy(['name' => 'Pendiente', 'active' => true]);
                 $tx = (new PaymentTransactions())->add($order, $txStatus, $totalAmount, $paymentMethod);
                 $this->em->add($tx, false);
+
+                $this->em->flush();
+                $connection->commit();
+            } catch (\Throwable $th) {
+                if ($connection->isTransactionActive()) {
+                    $connection->rollBack();
+                }
+                throw $th;
             }
 
-            if ($paymentMethod !== null && $paymentMethod->getProvider() === PaymentMethods::PROVIDER_MOCK_GATEWAY && $tx !== null) {
-                $this->em->flush();
+            [$lowStockProducts, $lowStockBlocks] = $this->collectLowStock($cart['items'], $products, $productColors);
 
+            if ($paymentMethod->getProvider() === PaymentMethods::PROVIDER_MOCK_GATEWAY) {
                 $returnUrl = $this->urlGenerator->generate(
                     'store_checkout_return',
                     ['id' => (string) $order->getId(), '_locale' => $locale],
@@ -251,6 +263,48 @@ final class ConfirmOrderUseCase implements ConfirmOrderInterface
             $log = $this->log->handler($th);
             return ['success' => false, 'message' => $this->translator->trans('order_processing_error_ref', ['%ref%' => (string) $log?->getShortReference()], 'store', $locale ?? 'es')];
         }
+    }
+
+    private function insufficientStockMessage(Products $product, ?ProductsColors $productColor, int $requested): string
+    {
+        return sprintf(
+            'No hay suficiente stock de "%s"%s. Disponible: %d, solicitado: %d.',
+            $product->getName(),
+            ($productColor !== null && $productColor->getColor() !== null) ? ' (' . $productColor->getColor()->getName() . ')' : '',
+            (int) $this->productStock->currentAvailable($product, $productColor),
+            $requested
+        );
+    }
+
+    private function collectLowStock(array $items, array $products, array $productColors): array
+    {
+        $lowStockProducts = [];
+        $lowStockBlocks = [];
+
+        foreach ($items as $item) {
+            $product = $products[(string) $item['cartItemId']] ?? null;
+            if ($product === null) {
+                continue;
+            }
+            $productColor = $productColors[(string) $item['cartItemId']] ?? null;
+
+            if ($productColor !== null) {
+                $this->entityManager->refresh($productColor);
+                if ($this->lowStockAlert->markBlockIfLow($productColor)) {
+                    $lowStockBlocks[] = $productColor;
+                }
+            }
+            $this->entityManager->refresh($product);
+            if ($this->lowStockAlert->markProductIfLow($product)) {
+                $lowStockProducts[] = $product;
+            }
+        }
+
+        if ($lowStockProducts !== [] || $lowStockBlocks !== []) {
+            $this->em->flush();
+        }
+
+        return [$lowStockProducts, $lowStockBlocks];
     }
 
     private function notifyLowStock(array $lowStockProducts, array $lowStockBlocks): void

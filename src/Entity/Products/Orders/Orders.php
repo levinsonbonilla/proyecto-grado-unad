@@ -58,6 +58,9 @@ class Orders
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $trackingCarrier = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $stockReleasedAt = null;
+
     public function getUser(): Users
     {
         return $this->user;
@@ -101,6 +104,11 @@ class Orders
     public function getTrackingCarrier(): ?string
     {
         return $this->trackingCarrier;
+    }
+
+    public function getStockReleasedAt(): ?\DateTimeImmutable
+    {
+        return $this->stockReleasedAt;
     }
 
     public function add(

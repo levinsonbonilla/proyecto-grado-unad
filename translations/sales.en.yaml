@@ -1,5 +1,5 @@
 view_detail: View detail
-kpi_total_sales: Total sales
+kpi_total_sales: Confirmed sales
 kpi_pending_payment: Pending payment
 kpi_pending_shipment: Pending shipment
 kpi_average_ticket: Average ticket
@@ -28,3 +28,5 @@ current_status: Current status
 new_status: New status
 no_transitions_available: No transitions available from this status
 update_status_error: Could not update the order status.
+kpi_total_sales_hint: Only orders with confirmed payment (Processing, Shipped, Delivered)
+kpi_pending_payment_amount: "Pending amount:"

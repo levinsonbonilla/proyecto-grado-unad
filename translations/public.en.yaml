@@ -13,3 +13,5 @@ report_this: Report this?
 search_label: Search
 search_placeholder: "Search for..."
 go_button: "Go!"
+
+existing_user: Existing user

@@ -12,6 +12,7 @@ use App\Repository\Configurations\Globals\StatusRepository;
 use App\Repository\Products\Orders\OrdersProductsRepository;
 use App\Repository\Products\Orders\PaymentTransactionsRepository;
 use App\Interface\Service\Currency\CurrentCurrencyResolverInterface;
+use App\Service\Orders\OrderCancellationInterface;
 use App\Service\Products\VariantLabelFormatterInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
@@ -31,6 +32,7 @@ final class HandlePaymentWebhookUseCase implements HandlePaymentWebhookInterface
         private readonly string $gatewaySecret,
         private readonly CurrentCurrencyResolverInterface $currencyResolver,
         private readonly VariantLabelFormatterInterface $variantLabelFormatter,
+        private readonly OrderCancellationInterface $orderCancellation,
     ) {
     }
 
@@ -74,12 +76,17 @@ final class HandlePaymentWebhookUseCase implements HandlePaymentWebhookInterface
             $this->em->add($transaction, false);
 
             $order = $transaction->getOrders();
-            $order->edit($newStatus);
-            $this->em->add($order, true);
 
             if ($outcome === 'succeeded') {
+                $order->edit($newStatus);
+                $this->em->add($order, true);
                 $this->sendConfirmationEmail($order);
+
+                return ['success' => true];
             }
+
+            $this->em->flush();
+            $this->orderCancellation->cancel($order, ['Pendiente']);
 
             return ['success' => true];
         } catch (GenericException $e) {

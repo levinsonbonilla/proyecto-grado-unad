@@ -35,13 +35,21 @@
             {% if isSuperAdmin %}
             { data: "tenantName", targets: 2 },
             { data: "domainName", targets: 3 },
-            { data: "domain", targets: 4 },
+            { data: "domain", targets: 4, render: function (value) {
+                return value && value.endsWith('{{ constant('App\\Entity\\Tenants\\Domains\\Domains::PENDING_CONFIGURATION_SUFFIX') }}')
+                    ? '<span class="label label-warning">{{ 'domain_pending_configuration'|trans({}, 'domains')|e('js') }}</span>'
+                    : value;
+            } },
             { data: "notificationEmail", targets: 5 },
             { data: "supportEmail", targets: 6 },
             { data: "id", visible: false, targets: 7 },
             {% else %}
             { data: "domainName", targets: 2 },
-            { data: "domain", targets: 3 },
+            { data: "domain", targets: 3, render: function (value) {
+                return value && value.endsWith('{{ constant('App\\Entity\\Tenants\\Domains\\Domains::PENDING_CONFIGURATION_SUFFIX') }}')
+                    ? '<span class="label label-warning">{{ 'domain_pending_configuration'|trans({}, 'domains')|e('js') }}</span>'
+                    : value;
+            } },
             { data: "notificationEmail", targets: 4 },
             { data: "supportEmail", targets: 5 },
             { data: "id", visible: false, targets: 6 },
