@@ -65,4 +65,17 @@ class H04H05ProductionDatabaseTest extends TestCase
             $this->assertNotSame('No existe', $row['name'], 'El dominio de prueba "No existe" no debe estar activo');
         }
     }
+
+    public function testTheNoExisteTemplateDomainWasRemoved(): void
+    {
+        $this->assertSame([], $this->column("SELECT domain FROM domains WHERE name = 'No existe' OR domain LIKE '%no-existente%'"));
+    }
+
+    public function testEveryConfiguredStoreCanReceivePayments(): void
+    {
+        $stores = $this->column(
+            "SELECT d.name FROM domains d WHERE d.active = 1 AND d.domain NOT LIKE '%.dominio-pendiente.invalid' AND NOT EXISTS (SELECT 1 FROM payment_methods p WHERE p.domain_id = d.id AND p.active = 1)"
+        );
+        $this->assertSame([], $stores, 'Una tienda sin métodos de pago activos no puede completar pedidos');
+    }
 }
