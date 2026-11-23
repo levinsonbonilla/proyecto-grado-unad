@@ -23,7 +23,7 @@ final readonly class GeoDuplicateMergerService
 
         $connection->beginTransaction();
         try {
-            $report['exact'] = $dryRun ? ['regions' => 0, 'cities' => 0] : $repointer->mergeExactDuplicates();
+            $report['exact'] = $dryRun ? ['countries' => 0, 'regions' => 0, 'cities' => 0] : $repointer->mergeExactDuplicates();
             $this->em->clear();
 
             foreach ($this->em->getRepository(Countries::class)->findAll() as $country) {

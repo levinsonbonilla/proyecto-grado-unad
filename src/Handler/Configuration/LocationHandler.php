@@ -2,7 +2,6 @@
 
 namespace App\Handler\Configuration;
 
-use App\ArgumentHandler\CountriesArgument;
 use App\Entity\Configurations\Globals\Cities;
 use App\Entity\Configurations\Globals\Countries;
 use App\Entity\Configurations\Globals\Regions;
@@ -42,7 +41,7 @@ final class LocationHandler implements LocationInterface
         private readonly CustomeEntityManagerInterface $customeEntityManager,
         ?GeoCatalogInterface $geoCatalog = null,
     ) {
-        $this->geoCatalog = $geoCatalog ?? new GeoCatalogService($regionsRepository, $citiesRepository, $customeEntityManager);
+        $this->geoCatalog = $geoCatalog ?? new GeoCatalogService($regionsRepository, $citiesRepository, $customeEntityManager, null, $countriesRepository);
 
         $this->routeDirGeoIp = rtrim(
             $parameters->get('kernel.project_dir'),
@@ -116,26 +115,12 @@ final class LocationHandler implements LocationInterface
             return null;
         }
 
-        $return = $this->countriesRepository->findOneBy([
-            "isoCode" => $country->isoCode,
-            "active" => true
-        ]);
-
-        if (empty($return)) {
-            $data = [
-                "name" =>  json_encode($country->names),
-                "description" => json_encode($country),
-                "isoCode" => $country->isoCode
-            ];
-
-            $argument = new CountriesArgument($data);
-            $countries = new Countries();
-            $countries->add($argument);
-            $this->customeEntityManager->add($countries, true);
-            $return = $countries;
-        }
-
-        return $return;
+        return $this->countriesRepository->findOneBy(["isoCode" => $country->isoCode])
+            ?? $this->geoCatalog->ensureCountry(
+                $country->isoCode,
+                json_encode($country->names),
+                json_encode($country)
+            );
     }
 
     private function region(?Subdivision $subdivisions = null): ?Regions

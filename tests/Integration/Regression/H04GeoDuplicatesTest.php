@@ -3,10 +3,12 @@
 namespace App\Tests\Integration\Regression;
 
 use App\ArgumentHandler\CitiesArgument;
+use App\ArgumentHandler\CountriesArgument;
 use App\ArgumentHandler\RegionsArgument;
 use App\Entity\Configurations\Globals\Cities;
 use App\Entity\Configurations\Globals\Countries;
 use App\Entity\Configurations\Globals\Regions;
+use App\Entity\Configurations\Countries\CountriesDomains;
 use App\Entity\Configurations\Regions\RegionsDomains;
 use App\Entity\Tenants\Domains\Domains;
 use App\Entity\Users\Users;
@@ -283,7 +285,7 @@ class H04GeoDuplicatesTest extends IntegrationTestCase
         $merged = (new \App\Service\Geo\GeoReferenceRepointer($connection))->mergeExactDuplicates();
         $this->em->clear();
 
-        $this->assertSame(['regions' => 2, 'cities' => 1], $merged);
+        $this->assertSame(['countries' => 0, 'regions' => 2, 'cities' => 1], $merged);
         $this->assertSame(1, count(array_keys($this->regionLabels(), 'risaralda')));
         $this->assertSame(['soacha'], $this->cityLabels($this->regionNamed('Cundinamarca')));
         $this->assertSame(1, (int) $connection->fetchOne('SELECT COUNT(*) FROM regions_domains WHERE region_id = ?', [$this->regionNamed('Risaralda')->getId()->toBinary()]));
@@ -315,5 +317,113 @@ class H04GeoDuplicatesTest extends IntegrationTestCase
         $labels = $this->regionLabels();
         $this->assertContains('méxico', $labels);
         $this->assertContains('ciudad de méxico', $labels);
+    }
+
+    private function countryCount(string $isoCode): int
+    {
+        return (int) $this->em->getConnection()->fetchOne('SELECT COUNT(*) FROM countries WHERE iso_code = ?', [$isoCode]);
+    }
+
+    private function icelandCopies(int $copies): array
+    {
+        $created = [];
+        for ($copy = 0; $copy < $copies; $copy++) {
+            $country = (new Countries())->add(new CountriesArgument([
+                'name' => json_encode(['en' => 'Iceland', 'es' => 'Islandia']),
+                'description' => 'País',
+                'isoCode' => 'IS',
+            ]));
+            $this->em->persist($country);
+            $region = (new Regions())->add(new RegionsArgument([
+                'name' => json_encode(['en' => 'Capital Region', 'es' => 'Región Capital']),
+                'description' => 'Región',
+                'isoCode' => '1',
+            ], $country));
+            $this->em->persist($region);
+            $this->em->flush();
+            $created[] = [$country, $region];
+        }
+
+        return $created;
+    }
+
+    public function testDatabaseRejectsDuplicateCountryIsoCode(): void
+    {
+        $this->expectException(UniqueConstraintViolationException::class);
+
+        $duplicate = (new Countries())->add(new CountriesArgument([
+            'name' => json_encode(['es' => 'Colombia']),
+            'description' => 'País',
+            'isoCode' => 'CO',
+        ]));
+        $this->em->persist($duplicate);
+        $this->em->flush();
+    }
+
+    public function testGeoIpVisitsCreateEachCountryOnlyOnceEvenUnderConcurrency(): void
+    {
+        $catalog = static::getContainer()->get(\App\Service\Geo\GeoCatalogInterface::class);
+        $names = json_encode(['en' => 'Israel', 'es' => 'Israel']);
+
+        $first = $catalog->ensureCountry('IL', $names);
+        $second = $catalog->insertCountryOrFetch('IL', $names);
+        $third = $catalog->ensureCountry('IL', $names);
+        $colombia = $catalog->insertCountryOrFetch('CO', json_encode(['es' => 'Colombia']));
+
+        $this->assertTrue($this->em->isOpen(), 'Perder la carrera no puede cerrar el EntityManager (provocaría error 500)');
+        $this->assertTrue($first->getId()->equals($second->getId()));
+        $this->assertTrue($first->getId()->equals($third->getId()));
+        $this->assertTrue($colombia->getId()->equals($this->colombia()->getId()));
+        $this->assertSame(1, $this->countryCount('IL'));
+        $this->assertSame(1, $this->countryCount('CO'));
+    }
+
+    public function testMergeCommandCollapsesDuplicateCountriesAndTheirRegions(): void
+    {
+        $connection = $this->em->getConnection();
+        $connection->executeStatement('DROP INDEX uniq_countries_iso_code');
+
+        $copies = $this->icelandCopies(3);
+        [$keepCountry] = $copies[0];
+        [$secondCountry, $secondRegion] = $copies[1];
+        [$thirdCountry, $thirdRegion] = $copies[2];
+        $this->em->persist((new Cities())->add(new CitiesArgument([
+            'name' => '3413829',
+            'description' => 'Ciudad',
+            'names' => json_encode(['en' => 'Reykjavik', 'es' => 'Reikiavik']),
+        ], $thirdRegion)));
+        $domain = $this->em->getRepository(Domains::class)->findOneBy(['domain' => 'http://localhost:8060']);
+        $this->em->persist((new CountriesDomains())->add($secondCountry, $domain));
+        $this->em->persist((new CountriesDomains())->add($thirdCountry, $domain));
+        $this->em->persist((new RegionsDomains())->add($secondRegion, $domain));
+        $this->em->flush();
+        $customer = $this->em->getRepository(Users::class)->findOneBy(['email' => 'customer.test@proyecto-grado.test']);
+        $connection->executeStatement(
+            'UPDATE orders SET shipping_country_id = ?, shipping_region_id = ? WHERE user_id = ?',
+            [$thirdCountry->getId()->toBinary(), $thirdRegion->getId()->toBinary(), $customer->getId()->toBinary()]
+        );
+        $this->em->clear();
+        $this->assertSame(3, $this->countryCount('IS'));
+
+        $application = new Application(static::$kernel);
+        $tester = new CommandTester($application->find('app:geo:merge-duplicates'));
+        $tester->execute([]);
+        $tester->assertCommandIsSuccessful();
+        $this->em->clear();
+
+        $this->assertSame(1, $this->countryCount('IS'));
+        $keepId = $keepCountry->getId()->toBinary();
+        $this->assertSame($keepId, $connection->fetchOne("SELECT id FROM countries WHERE iso_code = 'IS'"));
+        $this->assertSame(1, (int) $connection->fetchOne('SELECT COUNT(*) FROM regions WHERE country_id = ?', [$keepId]));
+        $regionId = $connection->fetchOne('SELECT id FROM regions WHERE country_id = ?', [$keepId]);
+        $this->assertSame($regionId, $connection->fetchOne("SELECT region_id FROM cities WHERE name = '3413829'"));
+        $this->assertSame(1, (int) $connection->fetchOne('SELECT COUNT(*) FROM countries_domains WHERE country_id = ?', [$keepId]));
+        $this->assertSame(1, (int) $connection->fetchOne('SELECT COUNT(*) FROM regions_domains WHERE region_id = ?', [$regionId]));
+        $orphans = (int) $connection->fetchOne(
+            'SELECT COUNT(*) FROM orders o LEFT JOIN countries c ON c.id = o.shipping_country_id LEFT JOIN regions r ON r.id = o.shipping_region_id WHERE (o.shipping_country_id IS NOT NULL AND c.id IS NULL) OR (o.shipping_region_id IS NOT NULL AND r.id IS NULL)'
+        );
+        $this->assertSame(0, $orphans, 'Los pedidos deben seguir apuntando a un país y región existentes');
+
+        $connection->executeStatement('CREATE UNIQUE INDEX uniq_countries_iso_code ON countries (iso_code)');
     }
 }

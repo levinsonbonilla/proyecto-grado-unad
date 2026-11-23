@@ -14,7 +14,22 @@ final class GeoReferenceRepointer
 
     public function mergeExactDuplicates(): array
     {
-        $merged = ['regions' => 0, 'cities' => 0];
+        $merged = ['countries' => 0, 'regions' => 0, 'cities' => 0];
+
+        $countryGroups = $this->connection->fetchFirstColumn(
+            'SELECT iso_code FROM countries GROUP BY iso_code HAVING COUNT(*) > 1'
+        );
+        foreach ($countryGroups as $isoCode) {
+            $ids = $this->connection->fetchFirstColumn(
+                'SELECT id FROM countries WHERE iso_code = ? ORDER BY created_at ASC, id ASC',
+                [$isoCode]
+            );
+            $keepId = array_shift($ids);
+            foreach ($ids as $duplicateId) {
+                $this->repointCountry($duplicateId, $keepId);
+            }
+            $merged['countries'] += count($ids);
+        }
 
         $regionGroups = $this->connection->fetchAllAssociative(
             'SELECT country_id, iso_code FROM regions GROUP BY country_id, iso_code HAVING COUNT(*) > 1'
@@ -39,6 +54,19 @@ final class GeoReferenceRepointer
         }
 
         return $merged;
+    }
+
+    public function repointCountry(string $duplicateId, string $keepId): void
+    {
+        $collisions = $this->connection->fetchAllAssociative(
+            'SELECT d.id AS duplicate_id, k.id AS keep_id FROM regions d INNER JOIN regions k ON k.iso_code = d.iso_code AND k.country_id = ? WHERE d.country_id = ?',
+            [$keepId, $duplicateId]
+        );
+        foreach ($collisions as $collision) {
+            $this->repoint('regions', $collision['duplicate_id'], $collision['keep_id']);
+        }
+
+        $this->repoint('countries', $duplicateId, $keepId);
     }
 
     public function repoint(string $table, string $duplicateId, string $keepId): void

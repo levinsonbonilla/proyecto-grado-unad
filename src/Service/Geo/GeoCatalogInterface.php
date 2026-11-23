@@ -8,6 +8,10 @@ use App\Entity\Configurations\Globals\Regions;
 
 interface GeoCatalogInterface
 {
+    public function ensureCountry(string $isoCode, string $namesJson, string $description = 'País'): Countries;
+
+    public function insertCountryOrFetch(string $isoCode, string $namesJson, string $description = 'País'): Countries;
+
     public function findRegion(Countries $country, string $isoCode, string $namesJson): ?Regions;
 
     public function findOrCreateRegion(Countries $country, string $isoCode, string $namesJson, string $description = 'Región'): Regions;

@@ -3,12 +3,14 @@
 namespace App\Service\Geo;
 
 use App\ArgumentHandler\CitiesArgument;
+use App\ArgumentHandler\CountriesArgument;
 use App\ArgumentHandler\RegionsArgument;
 use App\Entity\Configurations\Globals\Cities;
 use App\Entity\Configurations\Globals\Countries;
 use App\Entity\Configurations\Globals\Regions;
 use App\Interface\Configuration\CustomeEntityManagerInterface;
 use App\Repository\Configurations\Globals\CitiesRepository;
+use App\Repository\Configurations\Globals\CountriesRepository;
 use App\Repository\Configurations\Globals\RegionsRepository;
 use App\Util\GeoNameNormalizerUtil;
 use Doctrine\DBAL\Connection;
@@ -26,7 +28,39 @@ final class GeoCatalogService implements GeoCatalogInterface
         private readonly CitiesRepository $citiesRepository,
         private readonly CustomeEntityManagerInterface $em,
         private readonly ?Connection $connection = null,
+        private readonly ?CountriesRepository $countriesRepository = null,
     ) {
+    }
+
+    public function ensureCountry(string $isoCode, string $namesJson, string $description = 'País'): Countries
+    {
+        $existing = $this->countriesRepository?->findOneBy(['isoCode' => $isoCode]);
+        if ($existing !== null) {
+            return $existing;
+        }
+
+        if ($this->connection === null || $this->countriesRepository === null) {
+            $country = (new Countries())->add(new CountriesArgument([
+                'name'        => $namesJson,
+                'description' => $description,
+                'isoCode'     => $isoCode,
+            ]));
+            $this->em->add($country, true);
+            return $country;
+        }
+
+        return $this->insertCountryOrFetch($isoCode, $namesJson, $description);
+    }
+
+    public function insertCountryOrFetch(string $isoCode, string $namesJson, string $description = 'País'): Countries
+    {
+        $this->insertIgnoringDuplicate('countries', [
+            'name'        => $namesJson,
+            'description' => $description,
+            'iso_code'    => $isoCode,
+        ]);
+
+        return $this->countriesRepository->findOneBy(['isoCode' => $isoCode]);
     }
 
     public function ensureRegion(Countries $country, string $isoCode, string $namesJson, string $description = 'Región'): Regions

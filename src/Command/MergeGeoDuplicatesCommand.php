@@ -12,7 +12,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:geo:merge-duplicates',
-    description: 'Fusiona regiones y ciudades duplicadas (mismo nombre normalizado) conservando las referencias de pedidos, usuarios y asignaciones',
+    description: 'Fusiona países, regiones y ciudades duplicados conservando las referencias de pedidos, usuarios y asignaciones',
 )]
 class MergeGeoDuplicatesCommand extends Command
 {
@@ -33,6 +33,8 @@ class MergeGeoDuplicatesCommand extends Command
 
         $report = $this->merger->merge($dryRun);
 
+        $io->section('Países');
+        $io->text(sprintf('Duplicados exactos fusionados: %d', $report['exact']['countries'] ?? 0));
         $io->section('Regiones');
         $report['regions'] === [] ? $io->text('Sin duplicados.') : $io->listing($report['regions']);
         $io->section('Nombres de región corregidos');

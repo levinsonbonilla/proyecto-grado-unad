@@ -12,6 +12,7 @@ use App\Trait\Entity\DateFields;
 use App\Trait\Entity\IdFields;
 
 #[ORM\Entity(repositoryClass: CountriesRepository::class)]
+#[ORM\UniqueConstraint(name: 'uniq_countries_iso_code', columns: ['iso_code'])]
 #[ORM\HasLifecycleCallbacks]
 class Countries
 {
